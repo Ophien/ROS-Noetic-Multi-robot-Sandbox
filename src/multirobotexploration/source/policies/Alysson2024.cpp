@@ -545,11 +545,6 @@ int main(int argc, char* argv[]) {
                     }
                     
                     if(CENTROIDS.centroids.poses.size() > 0) {
-                        // TODO::Integrate randomized utility here
-                        // 1 - get relative poses for all robots
-                        // 2 - compute their distances
-                        // 3 - check if their distance to this robot is less than the
-                        //     simulated communication threshold
                         if(CheckNear(robots_in_comm, robot_id)) {
                             RoulettFrontier(CENTROIDS, WORLD_POS, goal_frontier);
                             ROS_INFO("[Explorer] roulett frontier for randomized utility.");
