@@ -676,7 +676,7 @@ int main(int argc, char* argv[]) {
                     // exploring again
                     rendezvous_new_pose_msg.pose.position.x = goal_frontier.getX();
                     rendezvous_new_pose_msg.pose.position.y = goal_frontier.getY();
-                    rendezvous_new_pose_msg.pose.position.z = WORLD_POS.getZ();
+                    rendezvous_new_pose_msg.pose.position.z = 0.0;
                     plan_location_updater.publish(rendezvous_new_pose_msg);
 
                     ChangeState(state_select_frontier);
