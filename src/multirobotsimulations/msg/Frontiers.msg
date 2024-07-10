@@ -1,0 +1,3 @@
+geometry_msgs/PoseArray centroids
+std_msgs/Float64MultiArray utilities
+std_msgs/Float64MultiArray costs
