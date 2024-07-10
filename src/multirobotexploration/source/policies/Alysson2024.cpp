@@ -409,13 +409,15 @@ int main(int argc, char* argv[]) {
     node_handle.getParam("/first_rendezvous", pose);
     first_rendezvous.setX(pose["x"]);
     first_rendezvous.setY(pose["y"]);
-    ROS_INFO("[Explorer] First rendezvous location: %f %f", pose["x"], pose["y"]); 
+    first_rendezvous.setZ(pose["z"]);
+    ROS_INFO("[Explorer] First rendezvous location: %f %f %f", pose["x"], pose["y"], pose["z"]); 
 
     // load rendezvous footprint
     std::string key = "/footprint_robot_" + std::to_string(robot_id);
     node_handle.getParam(key, pose);
     rendezvous_footprint.setX(pose["x"]);
     rendezvous_footprint.setY(pose["y"]);
+    rendezvous_footprint.setZ(pose["z"]);
     ROS_INFO("[Explorer] Rendezvous footprint: %f %f %f", pose["x"], pose["y"], pose["z"]);
 
     // waiting at rendezvous message id should always be this robot's id

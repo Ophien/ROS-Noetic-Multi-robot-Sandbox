@@ -187,6 +187,7 @@
             <param name="rate" type="double" value="5.0"/>
             <param name="dist" type="double" value="3.0"/>
             <param name="queue_size" type="int" value="2"/>
+            <param name="comm_dist" type="double" value="3"/>
         </node>
 
         <node name="node_lasertoworld" pkg="multirobotexploration" type="lasertoworld">
