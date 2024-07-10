@@ -154,6 +154,7 @@ void InflatePoseForPlanner(nav_msgs::OccupancyGrid& cspace,
 int main(int argc, char* argv[]) {
     ros::init(argc, argv, "cspace");
     ros::NodeHandle node_handle;
+    ros::NodeHandle private_handle("~");
     std::string ns = ros::this_node::getNamespace();
 
     int queue_size = 1;
@@ -165,13 +166,13 @@ int main(int argc, char* argv[]) {
     double free_inflate_radius = 0.3;
     double occu_inflate_radius = 0.5;
 
-    node_handle.getParam(ns+"/id", id);
-    node_handle.getParam(ns+"/rate_cspace", rate);
-    node_handle.getParam(ns+"/cspace_queue_size", queue_size);
-    node_handle.getParam(ns+"/cspace_max_lidar_range", laser_range);
-    node_handle.getParam(ns+"/cspace_free_inflation_radius", free_inflate_radius);
-    node_handle.getParam(ns+"/cspace_ocu_inflation_radius", occu_inflate_radius);
-    node_handle.getParam(ns+"/cspace_lidar_sources", lidar_sources_count);
+    private_handle.getParam("id", id);
+    private_handle.getParam("rate", rate);
+    private_handle.getParam("queue_size", queue_size);
+    private_handle.getParam("max_lidar_range", laser_range);
+    private_handle.getParam("free_inflation_radius", free_inflate_radius);
+    private_handle.getParam("ocu_inflation_radius", occu_inflate_radius);
+    private_handle.getParam("lidar_sources", lidar_sources_count);
 
     ros::Rate loop_hz(rate);
 

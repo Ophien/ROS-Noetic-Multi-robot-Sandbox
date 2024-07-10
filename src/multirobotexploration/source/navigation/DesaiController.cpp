@@ -162,7 +162,8 @@ void DesaiController(double& theta, double& dx, double& dy, double& d, double& v
     w = dx * ((-sine_q)/d) + dy * (cosine_q / d);
 }
 
-void GetParameters(ros::NodeHandle& nodeHandle, 
+void GetParameters(ros::NodeHandle& nodeHandle,
+                   ros::NodeHandle& privateHandle,
                    const std::string& ns, 
                    int& robots, 
                    int& robotId, 
@@ -176,32 +177,32 @@ void GetParameters(ros::NodeHandle& nodeHandle,
         throw std::runtime_error("Parameter " + ns + "/robots not found");
     }
 
-    if(!nodeHandle.getParam(ns+"/id", robotId)) {
-        throw std::runtime_error("Parameter " + ns + "/id not found");
+    if(!privateHandle.getParam("id", robotId)) {
+        throw std::runtime_error("Parameter " + ns + "id not found");
     }
 
-    if(!nodeHandle.getParam(ns+"/desai_queue_size", queueSize)) {
-        throw std::runtime_error("Parameter " + ns + "/desai_queue_size not found");
+    if(!privateHandle.getParam("queue_size", queueSize)) {
+        throw std::runtime_error("Parameter " + ns + "queue_size not found");
     }
 
-    if(!nodeHandle.getParam(ns+"/clearing_time", rorationSeconds)) {
-        throw std::runtime_error("Parameter " + ns + "/clearin_time not found");
+    if(!privateHandle.getParam("clearing_time", rorationSeconds)) {
+        throw std::runtime_error("Parameter " + ns + "clearin_time not found");
     }
 
-    if(!nodeHandle.getParam(ns+"/rate_desai", rate)) {
-        throw std::runtime_error("Parameter " + ns + "/rate_desai not found");
+    if(!privateHandle.getParam("rate", rate)) {
+        throw std::runtime_error("Parameter " + ns + "rate not found");
     }
 
-    if(!nodeHandle.getParam(ns+"/desai_max_linear_vel", maxV)) {
-        throw std::runtime_error("Parameter " + ns + "/desai_max_linear_vel not found");
+    if(!privateHandle.getParam("max_linear_vel", maxV)) {
+        throw std::runtime_error("Parameter " + ns + "max_linear_vel not found");
     }
 
-    if(!nodeHandle.getParam(ns+"/desai_max_angular_vel", maxW)) {
-        throw std::runtime_error("Parameter " + ns + "/desai_max_angular_vel not found");
+    if(!privateHandle.getParam("max_angular_vel", maxW)) {
+        throw std::runtime_error("Parameter " + ns + "max_angular_vel not found");
     }
 
-    if(!nodeHandle.getParam(ns+"/desai_D", D)) {
-        throw std::runtime_error("Parameter " + ns + "/desai_D not found");
+    if(!privateHandle.getParam("D", D)) {
+        throw std::runtime_error("Parameter " + ns + "D not found");
     }
 }
 
@@ -209,6 +210,7 @@ int main(int argc, char* argv[]) {
     ros::init(argc, argv, "desai_controller");
     Initialize();
     ros::NodeHandle node_handle;
+    ros::NodeHandle private_handle("~");
 
     int queue_size = 1;
     int rate = 10;
@@ -225,16 +227,7 @@ int main(int argc, char* argv[]) {
 
     try {
         ns = ros::this_node::getNamespace();
-        GetParameters(node_handle, ns, robots, robot_id, queue_size, rate, ROTATION_SECONDS, max_v, max_w, d);
-        ROS_INFO("Parameters retrieved successfully.");
-        ROS_INFO("robots: %d", robots);
-        ROS_INFO("id: %d", robot_id);
-        ROS_INFO("desai_queue_size: %d", queue_size);
-        ROS_INFO("rate_desai: %d", rate);
-        ROS_INFO("clearing_time: %f", ROTATION_SECONDS);
-        ROS_INFO("desai_max_linear_vel: %f", max_v);
-        ROS_INFO("desai_max_angular_vel: %f", max_w);
-        ROS_INFO("desai_D: %f", d);
+        GetParameters(node_handle, private_handle, ns, robots, robot_id, queue_size, rate, ROTATION_SECONDS, max_v, max_w, d);
     } catch(const std::runtime_error& e) {
         ROS_ERROR("%s", e.what());
     }

@@ -129,6 +129,7 @@ int main(int argc, char* argv[]) {
     std::string node_name = "frontier_discovery";
     ros::init(argc, argv, node_name);
     ros::NodeHandle node_handle;
+    ros::NodeHandle private_handle("~");
     std::string ns = ros::this_node::getNamespace();
 
     int queue_size = 1;
@@ -136,10 +137,10 @@ int main(int argc, char* argv[]) {
     int id = -1;
     double max_lidar_range = 10.0;
 
-    node_handle.getParam(ns+"/id", id);
-    node_handle.getParam(ns+"/rate_frontierdiscovery", rate);
-    node_handle.getParam(ns+"/frontierdiscovery_queue_size", queue_size);
-    node_handle.getParam(ns+"/frontierdiscovery_max_lidar_range", max_lidar_range);
+    private_handle.getParam("id", id);
+    private_handle.getParam("rate", rate);
+    private_handle.getParam("queue_size", queue_size);
+    private_handle.getParam("max_lidar_range", max_lidar_range);
 
     // set global ID
     ID = id;

@@ -147,14 +147,14 @@ int main(int argc, char* argv[]) {
     ros::init(argc, argv, "laser_to_world");
     std::string ns = ros::this_node::getNamespace();
     ros::NodeHandle node_handle;
+    ros::NodeHandle private_handle("~");
     int queue_size = 1;
     int rate = 10;
 
-    node_handle.getParam(ns+"/rate_lasertoworld", rate);
-    node_handle.getParam(ns+"/lasertoworld_queue_size", queue_size);
+    private_handle.getParam("rate", rate);
+    private_handle.getParam("queue_size", queue_size);
     ros::Rate loop_rate(rate);
 
-    ros::NodeHandle private_handle("~");
     double x,y,z,r,p,yaw;
     private_handle.getParam("x", x);
     private_handle.getParam("y", y);

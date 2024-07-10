@@ -24,37 +24,37 @@ Queue size of publishers and subscribers.
 
 ## Subscribed Topics
 
-* ```/c_space``` ([nav_msgs::OccupancyGrid](https://docs.ros.org/en/api/nav_msgs/html/msg/OccupancyGrid.html))
+* ```<namespace>/c_space``` ([nav_msgs::OccupancyGrid](https://docs.ros.org/en/api/nav_msgs/html/msg/OccupancyGrid.html))
 
-The configuration space with inflated obstacles for navigation. It must handle other robots, dynamic and static obstacles.
+The configuration space with inflated obstacles for navigation. It must handle other robots, dynamic and static obstacles. The ```<namspace>``` specifies this robot's namespace.
 
-* ```/frontier_discovery/frontiers_clusters``` ([multirobotsimulations::Frontiers](../../src/multirobotsimulations/msg/Frontiers.msg))
+* ```<namespace>/frontier_discovery/frontiers_clusters``` ([multirobotsimulations::Frontiers](../../src/multirobotsimulations/msg/Frontiers.msg))
 
-Frontiers from the frontiers node. They must be filtered and are visibile only for this robot.
+Frontiers from the frontiers node. They must be filtered and are visibile only for this robot. The ```<namspace>``` specifies this robot's namespace.
 
-* ```/gmapping_pose/world_pose``` ([multirobotsimulations::CustomPose](../../src/multirobotsimulations/msg/CustomPose.msg))
+* ```<namespace>/gmapping_pose/world_pose``` ([multirobotsimulations::CustomPose](../../src/multirobotsimulations/msg/CustomPose.msg))
 
-Custom pose used throughout the system, it contains the robot id and a pose.
+Custom pose used throughout the system, it contains the robot id and a pose. The ```<namspace>``` specifies this robot's namespace.
 
-* ```/sub_goal_nav/finish``` ([std_msgs::String](../../src/multirobotsimulations/msg/CustomPose.msg))
+* ```<namespace>/sub_goal_nav/finish``` ([std_msgs::String](../../src/multirobotsimulations/msg/CustomPose.msg))
 
-This topic is used to check wether the sub goal navigation module reached a goal.
+This topic is used to check wether the sub goal navigation module reached a goal. The ```<namspace>``` specifies this robot's namespace.
 
-* ```/explorer/set_idle``` ([std_msgs::String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
+* ```<namespace>/explorer/set_idle``` ([std_msgs::String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
 
-This topic is used to check wether the sub goal navigation module reached a goal.
+This topic is used to check wether the sub goal navigation module reached a goal. The ```<namspace>``` specifies this robot's namespace.
 
-* ```/explorer/set_exploring``` ([std_msgs::String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
+* ```<namespace>/explorer/set_exploring``` ([std_msgs::String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
 
-This topic is used to check wether the sub goal navigation module reached a goal.
+This topic is used to check wether the sub goal navigation module reached a goal. The ```<namspace>``` specifies this robot's namespace.
 
 * ```/global_explorer/back_to_base``` ([std_msgs::String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
 
-This topic is used to check wether the sub goal navigation module reached a goal.
+This topic is used to check wether the sub goal navigation module reached a goal. The ```<namspace>``` specifies this robot's namespace.
 
 * ```/global_explorer/set_exploring``` ([std_msgs::String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
 
-This topic is used to check wether the sub goal navigation module reached a goal.
+This topic is used to check wether the sub goal navigation module reached a goal. The ```<namspace>``` specifies this robot's namespace.
 
 ## Published Topics
 

@@ -240,6 +240,7 @@ int main(int argc, char* argv[]) {
     srand (time(NULL));
     ros::init(argc, argv, "Yamauchi1999");
     ros::NodeHandle node_handle;
+    ros::NodeHandle private_handle("~");
     std::string ns = ros::this_node::getNamespace();
     Initialize();
 
@@ -266,9 +267,9 @@ int main(int argc, char* argv[]) {
     std::vector<ros::Subscriber> subs;
 
     node_handle.getParam("/robots", robots);
-    node_handle.getParam(ns+"/id", robot_id);
-    node_handle.getParam(ns+"/rate_yamauchi1999", rate);
-    node_handle.getParam(ns+"/yamauchi1999_queue_size", queue_size);
+    private_handle.getParam("id", robot_id);
+    private_handle.getParam("rate", rate);
+    private_handle.getParam("queue_size", queue_size);
 
     ros::Rate loop_frequency(rate);
 

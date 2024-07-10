@@ -117,6 +117,7 @@ int main(int argc, char* argv[]) {
     // init node and get node handle
     ros::init(argc, argv, "fbmapfusion");
     ros::NodeHandle nh;
+    ros::NodeHandle private_handle("~");
 
     // come configurations
     int queue_size = 1;
@@ -127,9 +128,9 @@ int main(int argc, char* argv[]) {
 
     // get configurations from parameters
     nh.getParam("/robots", robots);
-    nh.getParam(ns+"/id", id);
-    nh.getParam(ns+"/rate_mapfusion", rate);
-    nh.getParam(ns+"/mapfusion_queue_size", queue_size);
+    private_handle.getParam("id", id);
+    private_handle.getParam("rate", rate);
+    private_handle.getParam("queue_size", queue_size);
     
     std::string package_path = ros::package::getPath("multirobotexploration");
     ros::Rate hz(rate);

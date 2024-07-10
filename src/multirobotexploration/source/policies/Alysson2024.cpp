@@ -331,6 +331,7 @@ int main(int argc, char* argv[]) {
     srand (time(NULL));
     ros::init(argc, argv, "alysson2024");
     ros::NodeHandle node_handle;
+    ros::NodeHandle private_handle("~");
     std::string ns = ros::this_node::getNamespace();
     Initialize();
 
@@ -341,8 +342,8 @@ int main(int argc, char* argv[]) {
     /*
      * loop frequency to publish stuff
      */
-    int queue_size = 1;
-    int rate = 10;
+    int queue_size = -1;
+    int rate = -1;
     int robots = 1;
     int robot_id = -1;
     double delta_time = 0.0;
@@ -357,9 +358,9 @@ int main(int argc, char* argv[]) {
     std::vector<ros::Subscriber> subs;
 
     node_handle.getParam("/robots", robots);
-    node_handle.getParam(ns+"/id", robot_id);
-    node_handle.getParam(ns+"/rate_alysson2024", rate);
-    node_handle.getParam(ns+"/alysson2024_queue_size", queue_size);
+    private_handle.getParam("id", robot_id);
+    private_handle.getParam("rate", rate);
+    private_handle.getParam("queue_size", queue_size);
 
     ros::Rate loop_frequency(rate);
 

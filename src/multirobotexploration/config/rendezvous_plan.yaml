@@ -9,4 +9,4 @@ W: [30, 30, 0 ,
     60, 30, 0 ,
     0 , 30, 60 ]
 
-first_rendezvous: {x: 4.0, y: 6.0}
+first_rendezvous: {x: 4.0, y: 6.0, z: 0.0}

@@ -209,18 +209,19 @@ int main(int argc, char* argv[]) {
      */
     ros::init(argc, argv, "pfield_local_planner");
     ros::NodeHandle node_handle;
+    ros::NodeHandle private_handle("~");
     std::string ns = ros::this_node::getNamespace();
 
     Initialize();
     int queue_size = 1;
     int rate = 30;
 
-    node_handle.getParam(ns+"/pfield_queue_size", queue_size);
-    node_handle.getParam(ns+"/pfield_local_view_size", VIEW_SIZE_METERS);
-    node_handle.getParam(ns+"/pfield_k_rep", K_REP);
-    node_handle.getParam(ns+"/pfield_k_att", K_ATT);
-    node_handle.getParam(ns+"/pfield_r", R);
-    node_handle.getParam(ns+"/rate_pfield", rate);
+    private_handle.getParam("queue_size", queue_size);
+    private_handle.getParam("local_view_size", VIEW_SIZE_METERS);
+    private_handle.getParam("k_rep", K_REP);
+    private_handle.getParam("k_att", K_ATT);
+    private_handle.getParam("r", R);
+    private_handle.getParam("rate", rate);
 
     ros::Rate loop_rate(rate);
 

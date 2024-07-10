@@ -93,6 +93,7 @@ void SetFar(visualization_msgs::Marker& rInput) {
 int main(int argc, char* argv[]) {
     ros::init(argc, argv, "relative_pose_estimator");
     ros::NodeHandle handle;
+    ros::NodeHandle private_handle("~");
 
     int robots = 1;
     int id = -1;
@@ -101,9 +102,9 @@ int main(int argc, char* argv[]) {
     std::string ns = handle.getNamespace();
 
     handle.getParam("/robots", robots);
-    handle.getParam(ns+"/id", id);
-    handle.getParam(ns+"/relativepose_queue_size", queue_size);
-    handle.getParam(ns+"/rate_relativepose", rate);
+    private_handle.getParam("id", id);
+    private_handle.getParam("queue_size", queue_size);
+    private_handle.getParam("rate", rate);
 
     if(robots <= 0) robots = 1;
     

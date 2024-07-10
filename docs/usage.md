@@ -77,7 +77,7 @@ W: [30, 30, 0 ,
     60, 30, 0 ,
     0 , 30, 60 ]
 
-first_rendezvous: {x: 4.0, y: 6.0}
+first_rendezvous: {x: 4.0, y: 6.0, z: 0.0}
 ```
 
 To avoid traffic at rendezvous location, which is a major issue, I've had to make robots use the concept of a ```rendezvous footprint```, which tells them their position at the assigned zone. The rendezvous footprints are loaded through the ```rendezvous_footprint.yaml``` configuration file. It looks like the following.
