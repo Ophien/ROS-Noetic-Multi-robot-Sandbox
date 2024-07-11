@@ -6,9 +6,9 @@ Source: [RandomizedSocialWelfare.cpp](../../src/multirobotexploration/source/pol
 
 ## Parameters
 
-* ```robots```
+* ```/robots```
 
-Number of robots in the pack.
+Number of robots in the pack. This is a global parameter.
 
 * ```id```
 

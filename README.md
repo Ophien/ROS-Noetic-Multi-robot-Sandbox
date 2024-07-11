@@ -28,37 +28,39 @@ It is a deployment of the diagram's components highlighted in red that allows ro
 
 ![Stack](docs/images/spread.png)
 
-### This package is not based on the famous ```move_base``` for navigation, because it had many drawbacks when I first tried to used it for multi-robot exploration research. Thus it also contains its own ```sub-goal``` navigation module with global and local planners made to handle situations posed by ```multi-robot exploration``` applications when they do ```SLAM``` individually.
+## [Disclaimer](#disclaimer)
+
+### This package is not based on the ```move_base``` and the ```nav``` stack for navigation, because they had many drawbacks when I first tried to used them for multi-robot exploration research. Thus this workspace also contains its own ```sub-goal``` navigation module with ```global``` and ```local planners``` made to handle situations posed by ```multi-robot exploration``` applications when robots do ```SLAM``` individually, have to deal with traffic, and share maps.
 
 ## [Packages and their Nodes](#packages)
 
 - [Multi-robot Exploration](docs/multi-robot-exploration.md) - Contains the exploration stack for intermittent communication spread across several nodes.
-  - [Policies]
+  - **Policies**
     - [Yamaychi1999 node](docs/nodes/yamauchi1999.md)
     - [RandomizedSocialWelfare node](docs/nodes/randomized_social_welfare.md)
     - [Alysson2024 node](docs/nodes/alysson2024.md)
-  - [Navigation]
+  - **Navigation**
     - [DesaiController node](docs/nodes/desai_controler.md)
     - [PotentialFieldLocalPlanner node](docs/nodes/potential_field_local_planner.md)
     - [MRELocalPlanner node](docs/nodes/mre_local_planner.md)
     - [SubGoalNav node](docs/nodes/sub_goal_navigation.md)
-  - [Mapping]
+  - **Mapping**
     - [CSpace node](docs/nodes/cspace.md)
     - [FBMapFusionRelative node](docs/nodes/fb_map_fusion_relative.md)
     - [LocalDynamicMap node](docs/nodes/local_dynamic_map.md)
-  - [Localization]
+  - **Localization**
     - [AverageDisplacement node](docs/nodes/average_displacement.md)
     - [GmappingPose node](docs/nodes/gmapping_pose.md)
     - [RelativePoseEstimator node](docs/nodes/relative_pose_estimator.md)
-  - [Lidar]
+  - **Lidar**
     - [LaserNoise node](docs/nodes/laser_noiser.md)
     - [LaserToWorld node](docs/nodes/laser_to_world.md)
-  - [Frontiers]
+  - **Frontiers**
     - [FrontierDiscovery node](docs/nodes/frontier_discovery.md)
-  - [Communication]
+  - **Communication**
     - [MockCommunicationModel node](docs/nodes/mock_communication_model.md)
     - [MockNetworkHandler node](docs/nodes/mock_network_handler.md)
-  - [Objects and Algorithms]
+  - **Objects and Algorithms**
     - [RendezvosPlan](docs/nodes/rendezvous_plan.md)
     - [RRTRoot](docs/nodes/rrt_root.md)
     - [SearchAlgorithms](docs/nodes/search_algorithms.md)

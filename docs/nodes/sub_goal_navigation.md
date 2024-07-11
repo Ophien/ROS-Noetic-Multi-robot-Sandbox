@@ -1,26 +1,30 @@
-# Yamauchi1999
+# SubGoalNav
 
-This node implements Yamauchi's method from 1999. It relies in a configuration space, frontier discovery services, and a sub goal navigation module. Some of its functionality should be coded as services.
+This node implements a simple sub goal following controller.
 
-Source: [Yamauchi1999.cpp](../../src/multirobotexploration/source/policies/Yamauchi1999.cpp)
+Source: [SubGoalNav.cpp](../../src/multirobotexploration/source/navigation/SubGoalNav.cpp)
 
 ## Parameters
-
-* ```robots```
-
-Number of robots in the pack.
 
 * ```id```
 
 Id of this robot.
 
-* ```rate_yamauchi1999```
+* ```rate```
 
 Main loop rate in hertz.
 
-* ```yamauchi1999_queue_size```
+* ```queue_size```
 
 Queue size of publishers and subscribers.
+
+* ```reach_threshold```
+
+Distance in meters used to verify is the robot reached the desired location.
+
+* ```delta_threshold```
+
+Time threshold in seconds that the robot must wait before engaging in recover behavior. If the average robot's velocity is bellow a threshold (e.g., the robot is not moving), then the controller will start counting. If the time that it is stuck is greater than ```delta_threshold```, then the robot will engage in recovery behavior.
 
 ## Subscribed Topics
 
@@ -28,43 +32,11 @@ Queue size of publishers and subscribers.
 
 The configuration space with inflated obstacles for navigation. It must handle other robots, dynamic and static obstacles.
 
-* ```/frontier_discovery/frontiers_clusters``` ([multirobotsimulations::Frontiers](../../src/multirobotsimulations/msg/Frontiers.msg))
-
-Frontiers from the frontiers node. They must be filtered and are visibile only for this robot.
-
-* ```/gmapping_pose/world_pose``` ([multirobotsimulations::CustomPose](../../src/multirobotsimulations/msg/CustomPose.msg))
-
-Custom pose used throughout the system, it contains the robot id and a pose.
-
-* ```/sub_goal_nav/finish``` ([std_msgs::String](../../src/multirobotsimulations/msg/CustomPose.msg))
-
-This topic is used to check wether the sub goal navigation module reached a goal.
-
-* ```/explorer/set_idle``` ([std_msgs::String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
-
-This topic is used to check wether the sub goal navigation module reached a goal.
-
-* ```/explorer/set_exploring``` ([std_msgs::String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
-
-This topic is used to check wether the sub goal navigation module reached a goal.
-
-* ```/global_explorer/back_to_base``` ([std_msgs::String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
-
-This topic is used to check wether the sub goal navigation module reached a goal.
-
-* ```/global_explorer/set_exploring``` ([std_msgs::String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
-
-This topic is used to check wether the sub goal navigation module reached a goal.
-
 ## Published Topics
 
 * ```/sub_goal_nav/goal``` ([geometry_msgs::Pose](https://docs.ros.org/en/api/geometry_msgs/html/msg/Pose.html))
 
 The goal location to explore to the sub goal navigation module.
-
-* ```/frontier_discovery/compute``` ([std_msgs::String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
-
-Communication channel with the frontier discovery module. Used to ask for frontiers.
 
 <!-- ## Published Transforms
 
