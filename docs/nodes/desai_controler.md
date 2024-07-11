@@ -1,70 +1,44 @@
-# Yamauchi1999
+# DesaiController
 
-This node implements Yamauchi's method from 1999. It relies in a configuration space, frontier discovery services, and a sub goal navigation module. Some of its functionality should be coded as services.
-
-Source: [Yamauchi1999.cpp](../../src/multirobotexploration/source/policies/Yamauchi1999.cpp)
+Source: [DesaiController.cpp](../../src/multirobotexploration/source/navigation/DesaiController.cpp)
 
 ## Parameters
 
-* ```robots```
-
-Number of robots in the pack.
+* ```/robots```
 
 * ```id```
 
-Id of this robot.
+* ```queue_size```
 
-* ```rate_yamauchi1999```
+* ```clearing_time```
 
-Main loop rate in hertz.
+* ```rate```
 
-* ```yamauchi1999_queue_size```
+* ```max_linear_vel```
 
-Queue size of publishers and subscribers.
+* ```max_angular_vel```
+
+* ```D```
 
 ## Subscribed Topics
 
-* ```/c_space``` ([nav_msgs::OccupancyGrid](https://docs.ros.org/en/api/nav_msgs/html/msg/OccupancyGrid.html))
+* ```<namespace>/gmapping_pose/world_pose``` ([multirobotsimulations::CustomPose](../../src/multirobotsimulations/msg/CustomPose.msg))
 
-The configuration space with inflated obstacles for navigation. It must handle other robots, dynamic and static obstacles.
+* ```<namespace>/pfield_local_planner/potential_force``` ([geometry_msgs::Pose](https://docs.ros.org/en/api/geometry_msgs/html/msg/Pose.html))
 
-* ```/frontier_discovery/frontiers_clusters``` ([multirobotsimulations::Frontiers](../../src/multirobotsimulations/msg/Frontiers.msg))
+* ```<namespace>/desai_controller/set_clear_state``` ([std_msgs::String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
 
-Frontiers from the frontiers node. They must be filtered and are visibile only for this robot.
+* ```<namespace>/desai_controller/set_goal_state``` ([std_msgs::String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
 
-* ```/gmapping_pose/world_pose``` ([multirobotsimulations::CustomPose](../../src/multirobotsimulations/msg/CustomPose.msg))
-
-Custom pose used throughout the system, it contains the robot id and a pose.
-
-* ```/sub_goal_nav/finish``` ([std_msgs::String](../../src/multirobotsimulations/msg/CustomPose.msg))
-
-This topic is used to check wether the sub goal navigation module reached a goal.
-
-* ```/explorer/set_idle``` ([std_msgs::String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
-
-This topic is used to check wether the sub goal navigation module reached a goal.
-
-* ```/explorer/set_exploring``` ([std_msgs::String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
-
-This topic is used to check wether the sub goal navigation module reached a goal.
-
-* ```/global_explorer/back_to_base``` ([std_msgs::String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
-
-This topic is used to check wether the sub goal navigation module reached a goal.
-
-* ```/global_explorer/set_exploring``` ([std_msgs::String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
-
-This topic is used to check wether the sub goal navigation module reached a goal.
+* ```<namespace>/desai_controller/set_idle_state``` ([std_msgs::String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
 
 ## Published Topics
 
-* ```/sub_goal_nav/goal``` ([geometry_msgs::Pose](https://docs.ros.org/en/api/geometry_msgs/html/msg/Pose.html))
+* ```<namespace>/cmd_vel``` ([geometry_msgs::Twist](https://docs.ros.org/en/api/geometry_msgs/html/msg/Twist.html))
 
-The goal location to explore to the sub goal navigation module.
+* ```<namespace>/desai_controller/clear_complete``` ([std_msgs::String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
 
-* ```/frontier_discovery/compute``` ([std_msgs::String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
-
-Communication channel with the frontier discovery module. Used to ask for frontiers.
+* ```<namespace>/desai_controller/reached_goal``` ([std_msgs::String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
 
 <!-- ## Published Transforms
 

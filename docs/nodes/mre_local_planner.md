@@ -1,70 +1,38 @@
-# Yamauchi1999
+# MRELocalPlanner
 
 This node implements Yamauchi's method from 1999. It relies in a configuration space, frontier discovery services, and a sub goal navigation module. Some of its functionality should be coded as services.
 
-Source: [Yamauchi1999.cpp](../../src/multirobotexploration/source/policies/Yamauchi1999.cpp)
+Source: [MRELocalPlanner.cpp](../../src/multirobotexploration/source/navigation/MRELocalPlanner.cpp)
 
 ## Parameters
 
-* ```robots```
-
-Number of robots in the pack.
+* ```/robots```
 
 * ```id```
 
-Id of this robot.
+* ```min_dist```
 
-* ```rate_yamauchi1999```
-
-Main loop rate in hertz.
-
-* ```yamauchi1999_queue_size```
-
-Queue size of publishers and subscribers.
+* ```min_displacement```
 
 ## Subscribed Topics
 
-* ```/c_space``` ([nav_msgs::OccupancyGrid](https://docs.ros.org/en/api/nav_msgs/html/msg/OccupancyGrid.html))
+* ```<namespace>/obstacle_array``` ([costmap_converter::ObstacleArrayMsg])
 
-The configuration space with inflated obstacles for navigation. It must handle other robots, dynamic and static obstacles.
+* ```<namespace>/gmapping_pose/world_pose``` ([multirobotsimulations::CustomPose](../../src/multirobotsimulations/msg/CustomPose.msg))
 
-* ```/frontier_discovery/frontiers_clusters``` ([multirobotsimulations::Frontiers](../../src/multirobotsimulations/msg/Frontiers.msg))
+* ```<namespace>/sub_goal_nav/current_path``` ([nav_msgs::Path](https://docs.ros.org/en/api/nav_msgs/html/msg/Path.html))
 
-Frontiers from the frontiers node. They must be filtered and are visibile only for this robot.
+* ```<namespace>/mock_communication_model/robots_in_comm``` ([std_msgs::Int8MultiArray](https://docs.ros.org/en/api/std_msgs/html/msg/Int8MultiArray.html))
 
-* ```/gmapping_pose/world_pose``` ([multirobotsimulations::CustomPose](../../src/multirobotsimulations/msg/CustomPose.msg))
+* ```<namespace>/robot_<id>/avgd_average_displacement``` ([std_msgs::Float32](https://docs.ros.org/en/api/std_msgs/html/msg/Float32.html))
 
-Custom pose used throughout the system, it contains the robot id and a pose.
-
-* ```/sub_goal_nav/finish``` ([std_msgs::String](../../src/multirobotsimulations/msg/CustomPose.msg))
-
-This topic is used to check wether the sub goal navigation module reached a goal.
-
-* ```/explorer/set_idle``` ([std_msgs::String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
-
-This topic is used to check wether the sub goal navigation module reached a goal.
-
-* ```/explorer/set_exploring``` ([std_msgs::String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
-
-This topic is used to check wether the sub goal navigation module reached a goal.
-
-* ```/global_explorer/back_to_base``` ([std_msgs::String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
-
-This topic is used to check wether the sub goal navigation module reached a goal.
-
-* ```/global_explorer/set_exploring``` ([std_msgs::String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
-
-This topic is used to check wether the sub goal navigation module reached a goal.
-
+* ```<namespace>/relative_pose_estimator/distances``` ([std_msgs::Float64MultiArray](https://docs.ros.org/en/api/std_msgs/html/msg/Float64MultiArray.html))
+  
 ## Published Topics
 
-* ```/sub_goal_nav/goal``` ([geometry_msgs::Pose](https://docs.ros.org/en/api/geometry_msgs/html/msg/Pose.html))
+* ```<namespace>/node_rosaria/cmd_vel``` ([geometry_msgs::Twist](https://docs.ros.org/en/api/geometry_msgs/html/msg/Twist.html))
 
-The goal location to explore to the sub goal navigation module.
-
-* ```/frontier_discovery/compute``` ([std_msgs::String](https://docs.ros.org/en/api/std_msgs/html/msg/String.html))
-
-Communication channel with the frontier discovery module. Used to ask for frontiers.
+* ```<namespace>/mre_local_planner/global_via_points``` ([visualization_msgs::Marker](https://docs.ros.org/en/api/visualization_msgs/html/msg/Marker.html))
 
 <!-- ## Published Transforms
 
