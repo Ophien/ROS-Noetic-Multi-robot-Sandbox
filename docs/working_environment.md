@@ -75,7 +75,7 @@ In summary, you need to follow these steps:
     esac
     ```
 
-    In this case, your MUST replace ```PATH_TO_RESORRCES``` with the path of the ```ROS-Noetic-Multi-robot-Sandbox/gazebo_resources/worlds``` and ```PATH_TO_MODELS``` shoudl be ```ROS-Noetic-Multi-robot-Sandbox/gazebo_resources/models``` from this workspace. This allows both, Ignition Gazebo and RViz to see the available resources and load the models accordingly.
+    In this case, your MUST replace ```PATH_TO_RESORRCES``` with the path of the ```ROS-Noetic-Multi-robot-Sandbox/gazebo_resources/worlds``` and ```PATH_TO_MODELS``` shoudl be ```ROS-Noetic-Multi-robot-Sandbox/gazebo_resources/models``` from this workspace. This allows both, Gazebo 11 and rviz to see the available resources and load the models accordingly.
 
 ## [Steps to Install and Configure Tmux and Git](#steps-to-install-and-configure-tmux-and-git)
 

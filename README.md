@@ -8,7 +8,7 @@
 
 ## [ROS-Noetic-Multi-robot-Sandbox](#ros-noetic-multi-robot-sandbox)
 
-This package has a fully opperational multi-robot exploration stack for ROS Noetic and Ubuntu 20.04 that allows them to keep intermittent communication in Gazebo 11 simulations from this [research](https://arxiv.org/abs/2309.13494). With some minor modifications it can be deployed into real robots for indoor exploration.
+This package has a fully opperational multi-robot exploration stack for ROS Noetic and Ubuntu 20.04 that allows them to keep intermittent communication in Gazebo 11 simulations. It contains an implementation and integration of the structures from this [research](https://arxiv.org/abs/2309.13494). With some minor modifications it can be deployed into real robots for indoor exploration.
 
 It is a deployment of the diagram's components highlighted in red that allows robots to explore and maintain intermittent connectivity through a rendezvous plan, where the communication is done through topics with a mock communication model.
 
@@ -20,7 +20,7 @@ It is a deployment of the diagram's components highlighted in red that allows ro
 
 ![Example](docs/images/example_exploration.png)
 
-### Complex stack integrated with customized nodes for ROS Noetic, with SLAM, map stitching, trajectory optimization, global and local planning, and more, to simulate a realistic multi-robot exploration application with communication constraints, visualization, and configurations for Gazebo 11 and Rviz.
+### Complex stack integrated with customized nodes for ROS Noetic, with SLAM, map stitching, trajectory optimization, global and local planning, and more, to simulate a realistic multi-robot exploration application with communication constraints, visualization, and configurations for Gazebo 11 and rviz.
 
 ![Stack](docs/images/stack.png)
 
@@ -35,32 +35,32 @@ This workspace is not based on the ```move_base``` and the ```nav``` stack for n
 ## [Packages and their Nodes](#packages)
 
 - [Multi-robot Exploration](docs/multi-robot-exploration.md) - Contains the exploration stack for intermittent communication spread across several nodes.
-  - **Policies**
+  - [Policies](docs/multi-robot-exploration.md)
     - [Yamauchi1999 node](docs/nodes/yamauchi1999.md)
     - [RandomizedSocialWelfare node](docs/nodes/randomized_social_welfare.md)
     - [Alysson2024 node](docs/nodes/alysson2024.md)
-  - **Navigation**
+  - [Navigation](docs/multi-robot-exploration.md)
     - [DesaiController node](docs/nodes/desai_controler.md)
     - [PotentialFieldLocalPlanner node](docs/nodes/potential_field_local_planner.md)
     - [MRELocalPlanner node](docs/nodes/mre_local_planner.md)
     - [SubGoalNav node](docs/nodes/sub_goal_navigation.md)
-  - **Mapping**
+  - [Mapping](docs/multi-robot-exploration.md)
     - [CSpace node](docs/nodes/cspace.md)
     - [FBMapFusionRelative node](docs/nodes/fb_map_fusion_relative.md)
     - [LocalDynamicMap node](docs/nodes/local_dynamic_map.md)
-  - **Localization**
+  - [Localization](docs/multi-robot-exploration.md)
     - [AverageDisplacement node](docs/nodes/average_displacement.md)
     - [GmappingPose node](docs/nodes/gmapping_pose.md)
     - [RelativePoseEstimator node](docs/nodes/relative_pose_estimator.md)
-  - **Lidar**
+  - [Lidar](docs/multi-robot-exploration.md)
     - [LaserNoise node](docs/nodes/laser_noiser.md)
     - [LaserToWorld node](docs/nodes/laser_to_world.md)
-  - **Frontiers**
+  - [Frontiers](docs/multi-robot-exploration.md)
     - [FrontierDiscovery node](docs/nodes/frontier_discovery.md)
-  - **Communication**
+  - [Communication](docs/multi-robot-exploration.md)
     - [MockCommunicationModel node](docs/nodes/mock_communication_model.md)
     - [MockNetworkHandler node](docs/nodes/mock_network_handler.md)
-  - **Objects and Algorithms**
+  - [Objects and Algorithms](docs/multi-robot-exploration.md)
     - [RendezvosPlan](docs/nodes/rendezvous_plan.md)
     - [RRTRoot](docs/nodes/rrt_root.md)
     - [SearchAlgorithms](docs/nodes/search_algorithms.md)
