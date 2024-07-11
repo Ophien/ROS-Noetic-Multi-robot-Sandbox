@@ -79,7 +79,7 @@ W: [30, 30, 0 ,
 first_rendezvous: {x: 4.0, y: 6.0, z: 0.0}
 ```
 
-**The K matrix can be represented by W alone. I call K as a binarized form of the plan represented by W and it can be useful in some evolutionary algorithms, which we suggest using to generate the plan**
+**The K matrix can be represented by W alone. I call K as a binarized form of the plan represented by W and it can be useful in some evolutionary algorithms, which we suggest using to generate the plan.**
 
 To avoid traffic at rendezvous location, which is a major issue, I've had to make robots use the concept of a ```rendezvous footprint```, which tells them their position at the assigned zone. The rendezvous footprints are loaded through the ```rendezvous_footprint.yaml``` configuration file. It looks like the following.
 
