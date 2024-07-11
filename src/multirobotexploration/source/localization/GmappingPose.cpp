@@ -76,6 +76,7 @@ int main(int argc, char* argv[]) {
      * Get node handle to handle publisher and subscribers
      */
     ros::NodeHandle node_handle;
+    ros::NodeHandle private_handle("~");
     std::string ns = ros::this_node::getNamespace();
 
     /*
@@ -85,9 +86,9 @@ int main(int argc, char* argv[]) {
     int loop_frequency = 10;
     int robot_id = -1;
 
-    node_handle.getParam(ns+"/id", robot_id);
-    node_handle.getParam(ns+"/rate_gmappigpose", loop_frequency);
-    node_handle.getParam(ns+"/gmappigpose_queue_size", queue_size);
+    private_handle.getParam("id", robot_id);
+    private_handle.getParam("rate", loop_frequency);
+    private_handle.getParam("queue_size", queue_size);
 
     /*
      * TransformListener is used to listen to all transforms into the 

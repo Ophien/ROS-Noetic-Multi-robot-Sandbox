@@ -99,7 +99,7 @@ This project rely on Tmux. Therefore, you **MUST** install it to work with multi
     git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
     ```
 
-4. Copy the following configuration into a file named ```~/.tmux.conf```
+4. Copy the following configuration into a file named ```~/.tmux.conf```.
 
     ```bash
     set -g @plugin 'o0th/tmux-nova'
@@ -131,7 +131,7 @@ This project rely on Tmux. Therefore, you **MUST** install it to work with multi
 
 5. Open tmux by typing ```tmux``` in a terminal.
 
-6. Enter command mode with ```ctr+b```
+6. Enter command mode with ```ctr+b```.
    
 7. Install plugins with ```shift+i``` while in command mode.
 

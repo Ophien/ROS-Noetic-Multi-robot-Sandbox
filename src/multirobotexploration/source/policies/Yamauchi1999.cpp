@@ -233,24 +233,6 @@ void CreateMarker(visualization_msgs::Marker& rInput, const char* pNs, const int
     rInput.lifetime = ros::Duration(1);
 }
 
-void AssignNearRobots(std::vector<bool>& rNearChecker, const std_msgs::Float64MultiArray& rDistances, const double& rCommDist, const int& rId) {
-    for(size_t i = 0; i < rNearChecker.size(); ++i) {
-        if(rDistances.data[i] < rCommDist) {
-            rNearChecker[i] = true;
-        } else {
-            rNearChecker[i] = false;
-        }
-    }
-}
-
-bool CheckNear(const std_msgs::Int8MultiArray& rMsg, const double& rCommDist, const int& rRobotId) {
-    for(size_t i = 0; i < rMsg.data.size(); ++i) {
-        if(i == rRobotId) continue;
-        if(rMsg.data[i] == 1) return true;
-    }
-    return false;
-}
-
 int main(int argc, char* argv[]) {
     /*
      * ros initialization of the node
@@ -258,6 +240,7 @@ int main(int argc, char* argv[]) {
     srand (time(NULL));
     ros::init(argc, argv, "Yamauchi1999");
     ros::NodeHandle node_handle;
+    ros::NodeHandle private_handle("~");
     std::string ns = ros::this_node::getNamespace();
     Initialize();
 
@@ -284,9 +267,9 @@ int main(int argc, char* argv[]) {
     std::vector<ros::Subscriber> subs;
 
     node_handle.getParam("/robots", robots);
-    node_handle.getParam(ns+"/id", robot_id);
-    node_handle.getParam(ns+"/rate_yamauchi1999", rate);
-    node_handle.getParam(ns+"/yamauchi1999_queue_size", queue_size);
+    private_handle.getParam("id", robot_id);
+    private_handle.getParam("rate", rate);
+    private_handle.getParam("queue_size", queue_size);
 
     ros::Rate loop_frequency(rate);
 
@@ -350,11 +333,6 @@ int main(int argc, char* argv[]) {
                     }
                     
                     if(CENTROIDS.centroids.poses.size() > 0) {
-                        // TODO::Integrate randomized utility here
-                        // 1 - get relative poses for all robots
-                        // 2 - compute their distances
-                        // 3 - check if their distance to this robot is less than the
-                        //     simulated communication threshold
                         SelectFrontier(CENTROIDS, WORLD_POS, goal_frontier);
                         ROS_INFO("[%s Explorer] maximizing utility.", ns.c_str());
                         

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Alysson Ribeiro da Silva
+ * Copyright (c) 2023, Alysson Ribeiro da Silva
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -105,9 +105,9 @@ int main(int argc, char* argv[]) {
     double min_displacement = 0.1;
 
     node_handle.getParam("/robots", robots);
-    node_handle.getParam(ns+"/id", id);
-    node_handle.getParam(ns+"/mrelp_min_dist", comm_dist);
-    node_handle.getParam(ns+"/mrelp_min_displacement", min_displacement);
+    private_handle.getParam("id", id);
+    private_handle.getParam("min_dist", comm_dist);
+    private_handle.getParam("min_displacement", min_displacement);
 
     // load ros parameters from node handle
     config.loadRosParamFromNodeHandle(private_handle);

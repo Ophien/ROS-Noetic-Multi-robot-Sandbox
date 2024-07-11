@@ -207,26 +207,27 @@ void DepthFirstSearchFreePath(
 }
 
 void GetParameters(ros::NodeHandle& node_handle, const std::string& ns, int& id, int& queue_size, double& rate, double& sub_goal_threshold, double& delta_threshold) {
-    if (!node_handle.getParam(ns + "/id", id)) {
-        throw std::runtime_error("Parameter " + ns + "/id not found");
+    if (!node_handle.getParam("id", id)) {
+        throw std::runtime_error("Parameter id not found");
     }
-    if (!node_handle.getParam(ns + "/rate_subgoal", rate)) {
-        throw std::runtime_error("Parameter " + ns + "/rate_subgoal not found");
+    if (!node_handle.getParam("rate", rate)) {
+        throw std::runtime_error("Parameter rate_subgoal not found");
     }
-    if (!node_handle.getParam(ns + "/subgoal_queue_size", queue_size)) {
-        throw std::runtime_error("Parameter " + ns + "/subgoal_queue_size not found");
+    if (!node_handle.getParam("queue_size", queue_size)) {
+        throw std::runtime_error("Parameter queue_size not found");
     }
-    if (!node_handle.getParam(ns + "/subgoal_reach_threshold", sub_goal_threshold)) {
-        throw std::runtime_error("Parameter " + ns + "/subgoal_reach_threshold not found");
+    if (!node_handle.getParam("reach_threshold", sub_goal_threshold)) {
+        throw std::runtime_error("Parameter reach_threshold not found");
     }
-    if(!node_handle.getParam(ns + "/subgoal_delta_threshold", delta_threshold)) {
-        throw std::runtime_error("Parameter " + ns + "/subgoal_delta_threshold");
+    if(!node_handle.getParam("delta_threshold", delta_threshold)) {
+        throw std::runtime_error("Parameter delta_threshold not found");
     }
 }
 
 int main(int argc, char* argv[]) {
     ros::init(argc, argv, "node_sub_goal_nav");
     ros::NodeHandle node_handle;
+    ros::NodeHandle private_handle("~");
 
     // node's parameters
     int queue_size;
@@ -260,13 +261,7 @@ int main(int argc, char* argv[]) {
 
     try {
         ns = node_handle.getNamespace();
-        GetParameters(node_handle, ns, id, queue_size, rate, SUB_GOAL_THRESHOLD, delta_threshold);
-        ROS_INFO("Parameters retrieved successfully.");
-        ROS_INFO("id: %d", id);
-        ROS_INFO("subgoal_queue_size: %d", queue_size);
-        ROS_INFO("rate_subgoal: %f", rate);
-        ROS_INFO("subgoal_reach_threshold: %f", SUB_GOAL_THRESHOLD);
-        ROS_INFO("delta_threshold: %f", delta_threshold);
+        GetParameters(private_handle, ns, id, queue_size, rate, SUB_GOAL_THRESHOLD, delta_threshold);
     } catch (const std::runtime_error& e) {
         ROS_ERROR("%s", e.what());
     }
@@ -291,11 +286,11 @@ int main(int argc, char* argv[]) {
      */
     ros::Subscriber goal_sub = node_handle.subscribe(ns + "/sub_goal_nav/goal", queue_size, &GoalCallback);
     ros::Subscriber clear_sub = node_handle.subscribe(ns + "/sub_goal_nav/clear", queue_size, &ClearCallback);
+    ros::Subscriber stop_callback = node_handle.subscribe(ns + "/sub_goal_nav/stop", queue_size, &StopCallBack);
     ros::Publisher path_pub =  node_handle.advertise<visualization_msgs::Marker>(ns + "/sub_goal_nav/path", queue_size);
     ros::Publisher sub_goal_finish_pub = node_handle.advertise<std_msgs::String>(ns + "/sub_goal_nav/finish", queue_size);
     ros::Publisher clear_pub = node_handle.advertise<std_msgs::String>(ns + "/sub_goal_nav/clear_finish", queue_size);
     ros::Publisher flw_pub = node_handle.advertise<nav_msgs::Path>(ns + "/sub_goal_nav/current_path", queue_size);
-    ros::Subscriber stop_callback = node_handle.subscribe(ns + "/sub_goal_nav/stop", queue_size, &StopCallBack);
 
     while(ros::ok()) {
         if(CELL_DECOMPOSITION_RECEIVED == true && HAS_POSE == true && HAS_AVERAGE_DISPLACEMENT == true) {

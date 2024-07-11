@@ -11,9 +11,9 @@ The robots were initially obtained from [here](https://wiki.ros.org/Robots/AMR_P
 
 ## [Transform trees and sensors](#transform-trees-and-sensors)
 
-The transformation tree is a crucial part of the system, and improper configuration can disrupt your experiments. Unfortunately, ROS 2 still has inconsistencies regarding how namespaces are handled by sensors and transforms defined via nodes and the .sdf files that define a robot.
+The transformation tree is a crucial part of the system, and improper configuration can disrupt your experiments. Unfortunately, ROS still has inconsistencies regarding how namespaces are handled by sensors and transforms.
 
-To improve usability, I have configured all robots in this project with a transformation tree from a parameterized namespace assigned during launch. I added a static transform for ground truth pose in an odom frame, allowing you to correctly use and visualize the 3D and 2D lidars, the 3D model, and robots' models in software like RViz2. This setup makes them ready for experimentation in complex scenarios.
+To improve usability, I have configured all robots in this project with a transformation tree from a parameterized namespace assigned during launch. This setup makes them ready for experimentation in complex scenarios.
 
 ## [Pioneer3At](#clearpath-husky)
 

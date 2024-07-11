@@ -184,6 +184,7 @@ void ApplyDynamicData(nav_msgs::OccupancyGrid& occ,
 int main(int argc, char* argv[]) {
     ros::init(argc, argv, "localdynamicmap");
     ros::NodeHandle node_handle;
+    ros::NodeHandle private_handle("~");
     std::string ns = ros::this_node::getNamespace();
 
     int queue_size = 1;
@@ -196,14 +197,14 @@ int main(int argc, char* argv[]) {
     int lidar_sources_count = 1;
     int local_view_size = 0;
 
-    node_handle.getParam(ns+"/id", id);
-    node_handle.getParam(ns+"/rate_ldm", rate);
-    node_handle.getParam(ns+"/ldm_queue_size", queue_size);
-    node_handle.getParam(ns+"/ldm_max_lidar_range", laser_range);
-    node_handle.getParam(ns+"/ldm_free_inflation_radius", free_inflate_radius);
-    node_handle.getParam(ns+"/ldm_ocu_inflation_radius", occu_inflate_radius);
-    node_handle.getParam(ns+"/ldm_lidar_sources", lidar_sources_count);
-    node_handle.getParam(ns+"/ldm_local_view_size", local_view_size);
+    private_handle.getParam("id", id);
+    private_handle.getParam("rate", rate);
+    private_handle.getParam("queue_size", queue_size);
+    private_handle.getParam("max_lidar_range", laser_range);
+    private_handle.getParam("free_inflation_radius", free_inflate_radius);
+    private_handle.getParam("ocu_inflation_radius", occu_inflate_radius);
+    private_handle.getParam("lidar_sources", lidar_sources_count);
+    private_handle.getParam("local_view_size", local_view_size);
 
     // control variables
     ros::Rate loop_hz(rate);

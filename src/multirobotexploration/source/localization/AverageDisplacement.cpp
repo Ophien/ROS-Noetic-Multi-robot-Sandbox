@@ -58,6 +58,7 @@ double ComputeAverageDisplacement(std::deque<double>& deltas) {
 int main(int argc, char* argv[]) {
     ros::init(argc, argv, "averagedisplacement");
     ros::NodeHandle node_handle;
+    ros::NodeHandle private_handle("~");
 
     std::string ns = node_handle.getNamespace();
     int id = -1;
@@ -65,10 +66,10 @@ int main(int argc, char* argv[]) {
     int queue_size = 1;
     int pos_to_consider = 2;
 
-    node_handle.getParam(ns+"/id", id);
-    node_handle.getParam(ns+"/rate_avgd", rate);
-    node_handle.getParam(ns+"/avgd_queue_size", queue_size);
-    node_handle.getParam(ns+"/avgd_count", pos_to_consider);
+    private_handle.getParam("id", id);
+    private_handle.getParam("rate", rate);
+    private_handle.getParam("queue_size", queue_size);
+    private_handle.getParam("count", pos_to_consider);
 
     bool received_position = false;
     tf::Vector3 last_pos;

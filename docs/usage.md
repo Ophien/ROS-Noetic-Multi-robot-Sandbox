@@ -64,28 +64,29 @@ The major data structure from this package is called ```rendezvous plan```. It i
 
 This structure is loaded by robots in this stack through the ```rendezvous_plan.yaml``` configuration file and it looks like the following.
 
-      ```bash
-      width: 3
-      K: [1,1,0,
-      0,1,1,
-      1,1,0,
-      0,1,1]
+```yaml
+width: 3
 
-      W: [30, 30, 0 ,
-      0 , 30, 60,
-      60, 30, 0 ,
-      0 , 30, 60 ]
+K: [1,1,0,
+    0,1,1,
+    1,1,0,
+    0,1,1]
 
-      first_rendezvous: {x: 4.0, y: 6.0}
-      ```
+W: [30, 30, 0 ,
+    0 , 30, 60,
+    60, 30, 0 ,
+    0 , 30, 60 ]
 
-To avoid traffic at rendezvous location, which is a major issue, I've had to make robots use the concept of a ```rendezvous footprint.yaml```, which tells them their position at the assigned zone. The rendezvous footprints are loaded through the ```rendezvous_footprint.yaml``` configuration file. It looks like the following.
+first_rendezvous: {x: 4.0, y: 6.0, z: 0.0}
+```
 
-      ```bash
-      footprint_robot_0: {x: 1, y: -1, z: 0, theta: 0}
-      footprint_robot_1: {x: -1, y: -1, z: 0, theta: 0}
-      footprint_robot_2: {x: -1, y: 1, z: 0, theta: 0}
-      ```
+To avoid traffic at rendezvous location, which is a major issue, I've had to make robots use the concept of a ```rendezvous footprint```, which tells them their position at the assigned zone. The rendezvous footprints are loaded through the ```rendezvous_footprint.yaml``` configuration file. It looks like the following.
+
+```yaml
+footprint_robot_0: {x:  1, y: -1, z: 0, theta: 0}
+footprint_robot_1: {x: -1, y: -1, z: 0, theta: 0}
+footprint_robot_2: {x: -1, y:  1, z: 0, theta: 0}
+```
 
 Nevertheless, known starting poses are passed through the ```gazebo_robots_start_pose.yaml``` configuration file.
 
@@ -129,7 +130,7 @@ To see the topics available to communicate with the robots through ROS, do the f
     rostopic list
     ```
 
-If everything was done correctly, you should see the following topics for each robot namespace in your terminal
+4. If everything was done correctly, you should see the following topics for each robot namespace in your terminal
 
     ```bash
     /clicked_point

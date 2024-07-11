@@ -1,6 +1,5 @@
 # [Table of Contents](#table-of-contents)
 
-- [Motivation](docs/motivation.md)
 - [Setup](docs/working_environment.md)
 - [Usage](docs/usage.md)
 - [Robots](docs/robots.md)
@@ -73,7 +72,7 @@ If this package is somehow useful to you, consider reading this [letter](docs/mo
 > A. R. da Silva, L. Chaimowicz, T. C. Silva, and A. Hsieh, Communication-Constrained Multi-Robot Exploration with Intermittent Rendezvous. 2024.
 
 ```text
-@misc{dasilva2023communicationconstrained,
+@misc{dasilva2024communicationconstrained,
       title={Communication-Constrained Multi-Robot Exploration with Intermittent Rendezvous}, 
       author={Alysson Ribeiro da Silva and Luiz Chaimowicz and Thales Costa Silva and Ani Hsieh},
       year={2024},
@@ -108,4 +107,4 @@ emails:
 
 ## [Bug & Feature Requests](#bug--feature-requests)
 
-Please report bugs and do your requests to add new features through the [Issue Tracker](https://github.com/multirobotplayground/Multi-robot-Intermittent-Rendezvous/issues).
+Please report bugs and do your requests to add new features through the [Issue Tracker](https://github.com/multirobotplayground/ROS-Noetic-Multi-robot-Sandbox/issues).

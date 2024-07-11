@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Alysson Ribeiro da Silva
+ * Copyright (c) 2023, Alysson Ribeiro da Silva
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -331,6 +331,7 @@ int main(int argc, char* argv[]) {
     srand (time(NULL));
     ros::init(argc, argv, "alysson2024");
     ros::NodeHandle node_handle;
+    ros::NodeHandle private_handle("~");
     std::string ns = ros::this_node::getNamespace();
     Initialize();
 
@@ -341,8 +342,8 @@ int main(int argc, char* argv[]) {
     /*
      * loop frequency to publish stuff
      */
-    int queue_size = 1;
-    int rate = 10;
+    int queue_size = -1;
+    int rate = -1;
     int robots = 1;
     int robot_id = -1;
     double delta_time = 0.0;
@@ -357,9 +358,9 @@ int main(int argc, char* argv[]) {
     std::vector<ros::Subscriber> subs;
 
     node_handle.getParam("/robots", robots);
-    node_handle.getParam(ns+"/id", robot_id);
-    node_handle.getParam(ns+"/rate_alysson2024", rate);
-    node_handle.getParam(ns+"/alysson2024_queue_size", queue_size);
+    private_handle.getParam("id", robot_id);
+    private_handle.getParam("rate", rate);
+    private_handle.getParam("queue_size", queue_size);
 
     ros::Rate loop_frequency(rate);
 
@@ -408,13 +409,15 @@ int main(int argc, char* argv[]) {
     node_handle.getParam("/first_rendezvous", pose);
     first_rendezvous.setX(pose["x"]);
     first_rendezvous.setY(pose["y"]);
-    ROS_INFO("[Explorer] First rendezvous location: %f %f", pose["x"], pose["y"]); 
+    first_rendezvous.setZ(pose["z"]);
+    ROS_INFO("[Explorer] First rendezvous location: %f %f %f", pose["x"], pose["y"], pose["z"]); 
 
     // load rendezvous footprint
     std::string key = "/footprint_robot_" + std::to_string(robot_id);
     node_handle.getParam(key, pose);
     rendezvous_footprint.setX(pose["x"]);
     rendezvous_footprint.setY(pose["y"]);
+    rendezvous_footprint.setZ(pose["z"]);
     ROS_INFO("[Explorer] Rendezvous footprint: %f %f %f", pose["x"], pose["y"], pose["z"]);
 
     // waiting at rendezvous message id should always be this robot's id
@@ -545,11 +548,6 @@ int main(int argc, char* argv[]) {
                     }
                     
                     if(CENTROIDS.centroids.poses.size() > 0) {
-                        // TODO::Integrate randomized utility here
-                        // 1 - get relative poses for all robots
-                        // 2 - compute their distances
-                        // 3 - check if their distance to this robot is less than the
-                        //     simulated communication threshold
                         if(CheckNear(robots_in_comm, robot_id)) {
                             RoulettFrontier(CENTROIDS, WORLD_POS, goal_frontier);
                             ROS_INFO("[Explorer] roulett frontier for randomized utility.");
@@ -678,7 +676,7 @@ int main(int argc, char* argv[]) {
                     // exploring again
                     rendezvous_new_pose_msg.pose.position.x = goal_frontier.getX();
                     rendezvous_new_pose_msg.pose.position.y = goal_frontier.getY();
-                    rendezvous_new_pose_msg.pose.position.z = WORLD_POS.getZ();
+                    rendezvous_new_pose_msg.pose.position.z = 0.0;
                     plan_location_updater.publish(rendezvous_new_pose_msg);
 
                     ChangeState(state_select_frontier);

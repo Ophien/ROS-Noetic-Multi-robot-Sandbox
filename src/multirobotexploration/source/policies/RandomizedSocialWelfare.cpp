@@ -261,6 +261,7 @@ int main(int argc, char* argv[]) {
     srand (time(NULL));
     ros::init(argc, argv, "randomizedsw");
     ros::NodeHandle node_handle;
+    ros::NodeHandle private_handle("~");
     std::string ns = ros::this_node::getNamespace();
     Initialize();
 
@@ -287,9 +288,9 @@ int main(int argc, char* argv[]) {
     std::vector<ros::Subscriber> subs;
 
     node_handle.getParam("/robots", robots);
-    node_handle.getParam(ns+"/id", robot_id);
-    node_handle.getParam(ns+"/rate_randomizedsw", rate);
-    node_handle.getParam(ns+"/randomizedsw_queue_size", queue_size);
+    private_handle.getParam("id", robot_id);
+    private_handle.getParam("rate", rate);
+    private_handle.getParam("queue_size", queue_size);
 
     ros::Rate loop_frequency(rate);
 
@@ -375,11 +376,6 @@ int main(int argc, char* argv[]) {
                     }
                     
                     if(CENTROIDS.centroids.poses.size() > 0) {
-                        // TODO::Integrate randomized utility here
-                        // 1 - get relative poses for all robots
-                        // 2 - compute their distances
-                        // 3 - check if their distance to this robot is less than the
-                        //     simulated communication threshold
                         if(CheckNear(robots_in_comm, robot_id)) {
                             RoulettFrontier(CENTROIDS, WORLD_POS, goal_frontier);
                             ROS_INFO("[%s Explorer] roulett frontier for randomized utility.", ns.c_str());

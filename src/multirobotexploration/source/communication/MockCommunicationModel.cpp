@@ -56,6 +56,7 @@
 int main(int argc, char* argv[]) {
     ros::init(argc, argv, "mockcommunicationmodel");
     ros::NodeHandle handle;
+    ros::NodeHandle private_handle("~");
 
     int robots = 1;
     int id = -1;
@@ -65,10 +66,10 @@ int main(int argc, char* argv[]) {
     std::string ns = handle.getNamespace();
 
     handle.getParam("/robots", robots);
-    handle.getParam(ns+"/id", id);
-    handle.getParam(ns+"/mock_comm_queue_size", queue_size);
-    handle.getParam(ns+"/mock_comm_dist", comm_dist);
-    handle.getParam(ns+"/rate_mock_comm", rate);
+    private_handle.getParam("id", id);
+    private_handle.getParam("queue_size", queue_size);
+    private_handle.getParam("comm_dist", comm_dist);
+    private_handle.getParam("rate", rate);
 
     if(robots <= 0) robots = 1;
 
