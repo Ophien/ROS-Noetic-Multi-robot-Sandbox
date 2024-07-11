@@ -1,3 +1,6 @@
 geometry_msgs/PoseArray centroids
 std_msgs/Float64MultiArray utilities
 std_msgs/Float64MultiArray costs
+std_msgs/Float64MultiArray gains
+uint8 highest_index
+uint8 lowest_index

@@ -164,16 +164,26 @@ int main(int argc, char* argv[]) {
     std::vector<Vec2i> filtered_centroids;
     std::vector<std::vector<Vec2i>> fclusters;
     std::vector<std::vector<Vec2i>> filtered_clusters;
-    nav_msgs::OccupancyGrid frontiers_map;
-    int cluster_detection_min = 15;
-    visualization_msgs::Marker cluster_marker_msg;
-    geometry_msgs::PoseArray pose_arr_msg;
     std::list<Vec2i> ppath;
     tf::Vector3 temp_world;
+    
+    visualization_msgs::Marker cluster_marker_msg;
+    geometry_msgs::PoseArray pose_arr_msg;
+    nav_msgs::OccupancyGrid frontiers_map;
+    
     multirobotsimulations::Frontiers frontiers_msg;
+
     STATE = FrontierState::IDLE;
+
     double vis_rad = max_lidar_range / 2.0;
+    double cost = -1;
     double utility_heuristic = 2.0 * M_PI * vis_rad * vis_rad;
+    double gain = -1;
+    int cluster_detection_min = 15;
+    int highest = -1;
+    int lowest = std::numeric_limits<int>::max();
+    int highest_index = -1;
+    int lowest_index = -1;
 
     while(ros::ok()) {
         if(RECEIVED_CS == true && HAS_POSE == true) {
@@ -199,21 +209,41 @@ int main(int argc, char* argv[]) {
                     frontiers_msg.centroids.poses.clear();
                     frontiers_msg.costs.data.clear();
                     frontiers_msg.utilities.data.clear();
+                    frontiers_msg.gains.data.clear();
+
                     for(size_t i = 0; i < centroids.size(); ++i) {
                         sa::ComputePathWavefront(OCC, POS, centroids[i], ppath);
 
                         // compute convex hull of the frontiers
                         if(ppath.size() > 0) {
+                            cost = (double)ppath.size();
+                            gain = utility_heuristic / cost;
+
                             filtered_centroids.push_back(centroids[i]);
-                            frontiers_msg.costs.data.push_back((double)ppath.size());
+                            frontiers_msg.costs.data.push_back(cost);
+                            frontiers_msg.utilities.data.push_back(utility_heuristic);
+                            frontiers_msg.gains.data.push_back(gain);
+
+                            if(gain > highest) {
+                                highest = gain;
+                                highest_index = i;
+                            }
+                            if(gain < lowest) {
+                                lowest = gain;
+                                lowest_index = i;
+                            }
                         }
                     }
 
                     // publish the found frontiers centroids into the network
                     if(filtered_centroids.size() > 0) {
-                        frontiers_msg.utilities.data.assign((int)filtered_centroids.size(), utility_heuristic);
+                        frontiers_msg.highest_index = highest_index;
+                        frontiers_msg.lowest_index = lowest_index;
+
                         SetPoseArr(pose_arr_msg, SEQ);
                         CreateMarker(cluster_marker_msg, ns.c_str(), id, SEQ);
+
+                        ROS_INFO("[FrontierDiscovery] %ld available frontiers.", filtered_centroids.size());
                         for(size_t i = 0; i < filtered_centroids.size(); ++i) {                            
                             MapToWorld(OCC, filtered_centroids[i], temp_world);
                             geometry_msgs::Point p;
@@ -225,6 +255,13 @@ int main(int argc, char* argv[]) {
                             po.position.y = temp_world.getY();
                             cluster_marker_msg.points.push_back(p);
                             pose_arr_msg.poses.push_back(po);
+
+                            ROS_INFO("\t[%.2f %.2f] - cost: %.2f utility: %.2f gain: %.2f", 
+                                temp_world.getX(),
+                                temp_world.getY(),
+                                frontiers_msg.costs.data[i], 
+                                frontiers_msg.utilities.data[i], 
+                                frontiers_msg.gains.data[i]);
                         }
                         frontiers_msg.centroids = pose_arr_msg;
                         cap.publish(cluster_marker_msg);
