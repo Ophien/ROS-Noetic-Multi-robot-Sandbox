@@ -57,7 +57,7 @@ I use a stop script to shutdown everything ```src/scripts/stop_forced.sh```, bec
 
 ## [Rendezvous Plan and Footprint](#data-structures)
 
-The major data structure from this package is called ```rendezvous plan```. It is compose by agreements that allow robots to decide where, with whom, and when to rendezvous. I encourage you to read our [paper](https://arxiv.org/abs/2309.13494) to better understand it.
+The major data structure from this package is called ```rendezvous plan```. It is composed by agreements that allow robots to decide where, with whom, and when to rendezvous. I encourage you to read our [paper](https://arxiv.org/abs/2309.13494) to better understand it.
 
 ![Agreements](images/agreements.png)
 
