@@ -36,7 +36,7 @@ This workspace is not based on the ```move_base``` and the ```nav``` stack for n
 
 - [Multi-robot Exploration](docs/multi-robot-exploration.md) - Contains the exploration stack for intermittent communication spread across several nodes.
   - **Policies**
-    - [Yamaychi1999 node](docs/nodes/yamauchi1999.md)
+    - [Yamauchi1999 node](docs/nodes/yamauchi1999.md)
     - [RandomizedSocialWelfare node](docs/nodes/randomized_social_welfare.md)
     - [Alysson2024 node](docs/nodes/alysson2024.md)
   - **Navigation**
