@@ -37,7 +37,7 @@ If everything worked correctly, gazebo and rviz will be opened and you should se
     ./src/scripts/launch_robots.sh
     ```
 
-If everything worked correctly, you should see the following in the rViz window.
+If everything worked correctly, you should see the following in the rviz window.
 
 ![Rviz](images/rviz.png)
 
@@ -107,13 +107,13 @@ To run them, do the following.
 
 1. Ensure that the simulation is running as [described](#usage).
 2. Open a new terminal or use ```tmux```.
-3. Open RViz with the following command in your new tmux partition.
+3. Open rviz with the following command in your new tmux partition.
 
     ```bash
     rviz
     ```
 
-4. Go to the top menu of RViz and load one of the configuration files provided.
+4. Go to the top menu of rviz and load one of the configuration files provided.
 
 **The system is fully decentralized and each robot has its own view of the environment !!!**
 

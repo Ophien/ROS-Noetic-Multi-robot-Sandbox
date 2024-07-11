@@ -1,6 +1,6 @@
 # Multi-robot Exploration
 
-It contains the exploration stack from this [research](https://arxiv.org/abs/2309.13494) fully opperational that allow you to start your development out-of-the-box. 
+It contains a multi-robot exploration stack and an implementation and integration of this [research](https://arxiv.org/abs/2309.13494) that allow you to start your development out-of-the-box.
 
 ## Nodes
 
