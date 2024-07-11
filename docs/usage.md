@@ -15,7 +15,7 @@ Before running the simulation, make sure you followed the steps I've described i
 
 1. Open a terminal.
 2. Enter the ```ROS-Noetic-Multi-robot-Sandbox``` folder in the terminal you have oppened.
-3. Source de project.
+3. Source the project.
 
     ```bash
     source devel/setup.bash
