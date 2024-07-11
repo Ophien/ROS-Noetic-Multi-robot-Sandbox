@@ -221,6 +221,15 @@ void ClustersCallback(const multirobotsimulations::Frontiers& rMsg) {
     CENTROIDS.centroids.header = rMsg.centroids.header;
     CENTROIDS.costs.data.assign(rMsg.costs.data.begin(), rMsg.costs.data.end());
     CENTROIDS.utilities.data.assign(rMsg.utilities.data.begin(), rMsg.utilities.data.end());
+    CENTROIDS.gains.data.assign(rMsg.gains.data.begin(), rMsg.gains.data.end());
+    
+    CENTROIDS.highest_cost_index = rMsg.highest_cost_index;
+    CENTROIDS.highest_heuristic_index = rMsg.highest_heuristic_index;
+    CENTROIDS.highest_gain_index = rMsg.highest_gain_index;
+
+    CENTROIDS.highest_cost_value = rMsg.highest_cost_value;
+    CENTROIDS.highest_heuristic_value = rMsg.highest_heuristic_value;
+    CENTROIDS.highest_gain_value = rMsg.highest_gain_value;
 
     if(CURRENT_STATE == state_waiting_centroids) 
         CURRENT_STATE = state_select_frontier;
@@ -262,9 +271,9 @@ void SetMotherbaseCallback(const std_msgs::String& rMsg) {
 
 int SelectFrontier(multirobotsimulations::Frontiers& rCentroids, 
                     tf::Vector3& rOutFrontierWorld) {
-    rOutFrontierWorld.setX(rCentroids.centroids.poses[rCentroids.highest_index].position.x);
-    rOutFrontierWorld.setY(rCentroids.centroids.poses[rCentroids.highest_index].position.y);
-    return rCentroids.highest_index;
+    rOutFrontierWorld.setX(rCentroids.centroids.poses[rCentroids.highest_gain_index].position.x);
+    rOutFrontierWorld.setY(rCentroids.centroids.poses[rCentroids.highest_gain_index].position.y);
+    return rCentroids.highest_gain_index;
 }
 
 int RoulettFrontier(multirobotsimulations::Frontiers& rCentroids, 
@@ -274,6 +283,13 @@ int RoulettFrontier(multirobotsimulations::Frontiers& rCentroids,
     rOutFrontierWorld.setX(rCentroids.centroids.poses[selected].position.x);
     rOutFrontierWorld.setY(rCentroids.centroids.poses[selected].position.y);
     return selected;  
+}
+
+int SelectSubteamNewRendezvous(multirobotsimulations::Frontiers& rCentroids, 
+                    tf::Vector3& rOutFrontierWorld) {
+    rOutFrontierWorld.setX(rCentroids.centroids.poses[rCentroids.highest_cost_index].position.x);
+    rOutFrontierWorld.setY(rCentroids.centroids.poses[rCentroids.highest_cost_index].position.y);
+    return rCentroids.highest_cost_index;
 }
 
 void SetGoal(tf::Vector3& rGoal, ros::Publisher& rPublisher) {
@@ -635,11 +651,10 @@ int main(int argc, char* argv[]) {
                break;
 
                case state_select_new_rendezvous:
-                    // randomize plan location update
-                    // to maximize utility spreading the rendezvous 
-                    // as rational agents
+                    // select the fartest cluster as a new rendezvous location
+                    // this forces the robots to explore more near unknown areas
                     if(CENTROIDS.centroids.poses.size() > 0)
-                        RoulettFrontier(CENTROIDS, goal_frontier);
+                        ROS_INFO("[Explorer] Selected rendezvous index: %d", SelectSubteamNewRendezvous(CENTROIDS, goal_frontier));
 
                     // aways send updated plan to unstuck 
                     // in situations where there are no more frontiers
