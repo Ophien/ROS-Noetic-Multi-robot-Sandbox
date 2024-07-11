@@ -25,10 +25,10 @@ I've configured the Pioneer robot with:
 
 ![Pioneer robot](images/pioneer3at.png "Pioneer")
 
-I've configured the transformation tree as follows.
+Its transformation tree should looks like the following.
 
 ![TF tree](images/tf.png "Robot TF tree.")
 
-I've provided a basic rviz file to visualize this robot, its transforms, and model.
+I've also provided a basic rviz file to visualize this robot, its transforms, and model.
 
 ![RViz](images/rviz_trajectory.png "Robot Rviz.")

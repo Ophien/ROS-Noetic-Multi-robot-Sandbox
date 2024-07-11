@@ -11,7 +11,7 @@
 
 ## [Usage](#usage)
 
-Before running the simulation, make sure you followed the steps I've described in the [working environment](working_environment.md) and that Ubuntu 20.04 and ROS 1 Noetic and follow these steps.
+Before running the simulation, make sure you followed the steps I've described in the [working environment](working_environment.md) and that Ubuntu 20.04 and ROS 1 Noetic are properly installed and follow these steps.
 
 1. Open a terminal.
 2. Enter the ```ROS-Noetic-Multi-robot-Sandbox``` folder in the terminal you have oppened.
