@@ -97,7 +97,7 @@ Author/Maintainer:
 
 - [Alysson Ribeiro da Silva](https://alysson.thegeneralsolution.com/)
 
-Colaborators:
+Collaborators:
 
 - [Ani Hsieh](https://mhsieh.seas.upenn.edu/)
 - [Luiz Chaimowicz](https://dcc.ufmg.br/professor/luiz-chaimowicz/)
