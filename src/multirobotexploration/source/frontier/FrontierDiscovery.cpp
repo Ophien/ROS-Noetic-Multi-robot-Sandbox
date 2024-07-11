@@ -125,6 +125,31 @@ void SetPoseArr(geometry_msgs::PoseArray& rArr, const int& rSeq) {
     rArr.header.stamp = ros::Time::now();
 }
 
+void ResetFrontierMsg(multirobotsimulations::Frontiers& rMgs) {
+    rMgs.centroids.poses.clear();
+    rMgs.costs.data.clear();
+    rMgs.utilities.data.clear();
+    rMgs.gains.data.clear();
+
+    // Use these control variables to get max and min values during single loop
+    // avoid calling search everytime until having something better
+    rMgs.lowest_gain_index = -1;
+    rMgs.lowest_cost_index = -1;
+    rMgs.lowest_heuristic_index = -1;
+
+    rMgs.highest_gain_index = -1;
+    rMgs.highest_cost_index = -1;
+    rMgs.highest_heuristic_index = -1;
+
+    rMgs.lowest_cost_value = std::numeric_limits<float>::max();
+    rMgs.lowest_gain_value = std::numeric_limits<float>::max();
+    rMgs.lowest_heuristic_value = std::numeric_limits<float>::max();
+    
+    rMgs.highest_cost_value = -1.0;
+    rMgs.highest_gain_value = -1.0;
+    rMgs.highest_heuristic_value = -1.0;
+}
+
 int main(int argc, char* argv[]) {
     std::string node_name = "frontier_discovery";
     ros::init(argc, argv, node_name);
@@ -180,10 +205,6 @@ int main(int argc, char* argv[]) {
     double utility_heuristic = 2.0 * M_PI * vis_rad * vis_rad;
     double gain = -1;
     int cluster_detection_min = 15;
-    int highest = -1;
-    int lowest = std::numeric_limits<int>::max();
-    int highest_index = -1;
-    int lowest_index = -1;
 
     while(ros::ok()) {
         if(RECEIVED_CS == true && HAS_POSE == true) {
@@ -206,10 +227,7 @@ int main(int argc, char* argv[]) {
 
                     // filter reachable
                     filtered_centroids.clear();
-                    frontiers_msg.centroids.poses.clear();
-                    frontiers_msg.costs.data.clear();
-                    frontiers_msg.utilities.data.clear();
-                    frontiers_msg.gains.data.clear();
+                    ResetFrontierMsg(frontiers_msg);
 
                     for(size_t i = 0; i < centroids.size(); ++i) {
                         sa::ComputePathWavefront(OCC, POS, centroids[i], ppath);
@@ -223,28 +241,46 @@ int main(int argc, char* argv[]) {
                             frontiers_msg.costs.data.push_back(cost);
                             frontiers_msg.utilities.data.push_back(utility_heuristic);
                             frontiers_msg.gains.data.push_back(gain);
-
-                            if(gain > highest) {
-                                highest = gain;
-                                highest_index = i;
-                            }
-                            if(gain < lowest) {
-                                lowest = gain;
-                                lowest_index = i;
-                            }
                         }
                     }
 
                     // publish the found frontiers centroids into the network
                     if(filtered_centroids.size() > 0) {
-                        frontiers_msg.highest_index = highest_index;
-                        frontiers_msg.lowest_index = lowest_index;
-
                         SetPoseArr(pose_arr_msg, SEQ);
                         CreateMarker(cluster_marker_msg, ns.c_str(), id, SEQ);
 
                         ROS_INFO("[FrontierDiscovery] %ld available frontiers.", filtered_centroids.size());
-                        for(size_t i = 0; i < filtered_centroids.size(); ++i) {                            
+                        for(size_t i = 0; i < filtered_centroids.size(); ++i) {
+                            // hook gain
+                            if(frontiers_msg.gains.data[i] > frontiers_msg.highest_gain_value) {
+                                frontiers_msg.highest_gain_value = frontiers_msg.gains.data[i];
+                                frontiers_msg.highest_gain_index = static_cast<uint8_t>(i);
+                            }
+                            if(frontiers_msg.gains.data[i] <= frontiers_msg.lowest_gain_value) {
+                                frontiers_msg.lowest_gain_value = frontiers_msg.gains.data[i];
+                                frontiers_msg.lowest_gain_index = static_cast<uint8_t>(i);
+                            }
+
+                            // hook cost
+                            if(frontiers_msg.costs.data[i] > frontiers_msg.highest_cost_value) {
+                                frontiers_msg.highest_cost_value = frontiers_msg.costs.data[i];
+                                frontiers_msg.highest_cost_index = static_cast<uint8_t>(i);
+                            }
+                            if(frontiers_msg.costs.data[i] <= frontiers_msg.lowest_cost_value) {
+                                frontiers_msg.lowest_cost_value = frontiers_msg.costs.data[i];
+                                frontiers_msg.lowest_cost_index = static_cast<uint8_t>(i);
+                            }
+
+                            // hook heuristic
+                            if(frontiers_msg.utilities.data[i] > frontiers_msg.highest_heuristic_value) {
+                                frontiers_msg.highest_heuristic_value = frontiers_msg.utilities.data[i];
+                                frontiers_msg.highest_heuristic_index = static_cast<uint8_t>(i);
+                            }
+                            if(frontiers_msg.utilities.data[i] <= frontiers_msg.lowest_heuristic_value) {
+                                frontiers_msg.lowest_heuristic_value = frontiers_msg.utilities.data[i];
+                                frontiers_msg.lowest_heuristic_index = static_cast<uint8_t>(i);
+                            }
+
                             MapToWorld(OCC, filtered_centroids[i], temp_world);
                             geometry_msgs::Point p;
                             geometry_msgs::Pose po;
