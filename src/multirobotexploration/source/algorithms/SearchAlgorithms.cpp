@@ -461,10 +461,7 @@ namespace sa {
 
         while(!finish) {
             Vec2i sample = Vec2i::Create(width_dist(*dev), height_dist(*dev));
-            
+            // TODO::FINISH REFACTORING THE RRT STAR ALGORITHM   
         }
-
-        // run the extra processing steps to ensure that the path will be refined
-
     }
 };

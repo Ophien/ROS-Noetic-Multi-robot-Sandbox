@@ -119,11 +119,13 @@ int main(int argc, char* argv[]) {
     ros::init(argc, argv, "laser_noiser");
     std::string ns = ros::this_node::getNamespace();
     ros::NodeHandle node_handle;
+    ros::NodeHandle private_handle("~");
     int queue_size = 1;
     int rate = 10;
 
-    node_handle.getParam(ns+"/lasernoiser_queue_size", queue_size);
-    node_handle.getParam(ns+"/rate_lasernoiser", rate);
+    private_handle.getParam("queue_size", queue_size);
+    private_handle.getParam("rate", rate);
+
     ros::Rate loop_rate(rate);
     LaserNoise* pNoiser = new LaserNoise();
     ros::Subscriber laser_sub = node_handle.subscribe(ns + "/scan", queue_size, &LaserNoise::LaserCapture, pNoiser);

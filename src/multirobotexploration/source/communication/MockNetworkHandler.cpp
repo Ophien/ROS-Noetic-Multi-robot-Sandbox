@@ -53,6 +53,7 @@
 int main(int argc, char* argv[]) {
     ros::init(argc, argv, "mocknetworkhandler");
     ros::NodeHandle node_handle;
+    ros::NodeHandle private_handle("~");
     std::string ns = node_handle.getNamespace();
     
     int id = -1;
@@ -62,10 +63,10 @@ int main(int argc, char* argv[]) {
     double rate = 1.0;
     ros::Rate hz(rate);
     
-    node_handle.getParam("robots", robot_count);
-    node_handle.getParam(ns+"/id",id);
-    node_handle.getParam(ns+"/rate_mocknethandler", rate);
-    node_handle.getParam(ns+"/mocknethandler_queue_size", queue_size);
+    node_handle.getParam("/robots", robot_count);
+    private_handle.getParam("id",id);
+    private_handle.getParam("rate", rate);
+    private_handle.getParam("queue_size", queue_size);
 
 
     // ------------------------------------------------------------
