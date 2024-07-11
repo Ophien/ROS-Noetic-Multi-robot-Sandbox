@@ -30,7 +30,7 @@ It is a deployment of the diagram's components highlighted in red that allows ro
 
 ## [Disclaimer](#disclaimer)
 
-### This package is not based on the ```move_base``` and the ```nav``` stack for navigation, because they had many drawbacks when I first tried to used them for multi-robot exploration research. Thus this workspace also contains its own ```sub-goal``` navigation module with ```global``` and ```local planners``` made to handle situations posed by ```multi-robot exploration``` applications when robots do ```SLAM``` individually, have to deal with traffic, and share maps.
+This workspace is not based on the ```move_base``` and the ```nav``` stack for navigation, because they had many drawbacks when I first tried to used them for multi-robot exploration research. Therefore, this project contains its own ```sub-goal``` navigation node with ```global``` and ```local planners``` to handle situations posed by ```multi-robot exploration``` applications when robots do ```SLAM``` individually, have to deal with traffic, and share maps.
 
 ## [Packages and their Nodes](#packages)
 
