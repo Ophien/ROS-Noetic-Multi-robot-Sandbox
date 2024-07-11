@@ -6,9 +6,9 @@ Source: [Alysson2024.cpp](../../src/multirobotexploration/source/policies/Alysso
 
 ## Parameters
 
-* ```robots```
+* ```/robots```
 
-Number of robots in the pack.
+Number of robots in the pack. This is a global parameter.
 
 * ```id```
 
@@ -68,8 +68,13 @@ This topic is used to check wether the sub goal navigation module reached a goal
 
 This topic receives an integer array from the communication handler, where each position i is 1 if this robot can communicate with i and 0 otherwise. The ```<namspace>``` specifies this robot's namespace.
 
+* ```/robot_<id>/realizing_plan``` ([multirobotsimulations::rendezvous](../../src/multirobotsimulations/msg/rendezvous.msg))
 
+This is a broadcast channel used to receive messages from others that are trying to realize rendezvous plan and that can communicate with this robot. In particullar, this robot creates a subscriber for each robot available during the exploration and identify each subscriber by the ```<id>``` in the topic's name.
 
+* ```/robot_<id>/plan_updater``` ([multirobotsimulations::CustomPose](../../src/multirobotsimulations/msg/CustomPose.msg))
+
+This is a broadcast channel used by any robot to receive rendezvous locations updates for its sub-team.
 
 ## Published Topics
 
@@ -85,6 +90,9 @@ Communication channel with the frontier discovery module. Used to ask for fronti
 
 This topic is used to tell other robots which rendezvous agreement this robot is realizing. It holds this robot's ```id``` and an unique identifier associated with a rendezvous agreement. The ```<namspace>``` specifies this robot's namespace.
 
+* ```<namespace>/plan_updater``` ([multirobotsimulations::CustomPose](../../src/multirobotsimulations/msg/CustomPose.msg))
+
+This robot uses this topic to send a new rendezvous location for the sub-team it is doing the rendezvous, if it is the consensus robot. The consensus robot is the robot if the lowest unique identifier from the sub-team that is doing the rendezvous. Rendezvous also have unique identifiers.
 
 
 <!-- ## Published Transforms

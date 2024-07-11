@@ -6,19 +6,19 @@ Source: [Yamauchi1999.cpp](../../src/multirobotexploration/source/policies/Yamau
 
 ## Parameters
 
-* ```robots```
+* ```/robots```
 
-Number of robots in the pack.
+Number of robots in the pack. This is a global parameter.
 
 * ```id```
 
 Id of this robot.
 
-* ```rate_yamauchi1999```
+* ```rate```
 
 Main loop rate in hertz.
 
-* ```yamauchi1999_queue_size```
+* ```queue_size```
 
 Queue size of publishers and subscribers.
 
