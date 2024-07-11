@@ -34,7 +34,7 @@ This workspace is not based on the ```move_base``` and the ```nav``` stack for n
 
 ## [Packages and their Nodes](#packages)
 
-- [Multi-robot Exploration](docs/multi-robot-exploration.md) - Contains the exploration stack for intermittent communication spread across several nodes.
+- [Multi-robot Exploration](docs/multi-robot-exploration.md) - Contains the exploration stack.
   - [Policies](docs/multi-robot-exploration.md)
     - [Yamauchi1999 node](docs/nodes/yamauchi1999.md)
     - [RandomizedSocialWelfare node](docs/nodes/randomized_social_welfare.md)
