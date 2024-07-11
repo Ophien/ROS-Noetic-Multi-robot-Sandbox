@@ -8,7 +8,6 @@
   - [Rviz Configuration Files](#rviz-configuration-files)
   - [Communicating with the Robots](#communicating-with-the-robots)
   - [Stack Overview](#stack-overview)
-    - [The stack is not perfect, but it serves for its purpose. I encourage you to explore the scene and have some fun! :)](#the-stack-is-not-perfect-but-it-serves-for-its-purpose-i-encourage-you-to-explore-the-scene-and-have-some-fun-)
 
 ## [Usage](#usage)
 
@@ -315,6 +314,6 @@ If everything was done correctly, you should see the following system for each r
 
 ![System](images/system.png)
 
-### The stack is not perfect, but it serves for its purpose. I encourage you to explore the scene and have some fun! :)
+**The stack is not perfect, but it serves for its purpose. I encourage you to explore the scene and have some fun! :)**
 
 
