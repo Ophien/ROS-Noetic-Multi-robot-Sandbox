@@ -128,26 +128,61 @@ void SetPoseArr(geometry_msgs::PoseArray& rArr, const int& rSeq) {
 void ResetFrontierMsg(multirobotsimulations::Frontiers& rMgs) {
     rMgs.centroids.poses.clear();
     rMgs.costs.data.clear();
+    rMgs.values.data.clear();
     rMgs.utilities.data.clear();
-    rMgs.gains.data.clear();
 
     // Use these control variables to get max and min values during single loop
     // avoid calling search everytime until having something better
-    rMgs.lowest_gain_index = -1;
+    rMgs.lowest_utility_index = -1;
     rMgs.lowest_cost_index = -1;
-    rMgs.lowest_heuristic_index = -1;
+    rMgs.lowest_value_index = -1;
 
-    rMgs.highest_gain_index = -1;
+    rMgs.highest_utility_index = -1;
     rMgs.highest_cost_index = -1;
-    rMgs.highest_heuristic_index = -1;
+    rMgs.highest_value_index = -1;
 
-    rMgs.lowest_cost_value = std::numeric_limits<float>::max();
-    rMgs.lowest_gain_value = std::numeric_limits<float>::max();
-    rMgs.lowest_heuristic_value = std::numeric_limits<float>::max();
+    rMgs.lowest_cost = std::numeric_limits<float>::max();
+    rMgs.lowest_value = std::numeric_limits<float>::max();
+    rMgs.lowest_utility = std::numeric_limits<float>::max();
     
-    rMgs.highest_cost_value = -1.0;
-    rMgs.highest_gain_value = -1.0;
-    rMgs.highest_heuristic_value = -1.0;
+    rMgs.highest_cost = -1.0;
+    rMgs.highest_value = -1.0;
+    rMgs.highest_utility = -1.0;
+}
+
+double ComputeCentroidValue(nav_msgs::OccupancyGrid& occ, Vec2i& centroid, const double& lidarRange, const int& unknownValue) {
+    double range_squared = lidarRange * lidarRange;
+    double total_area = M_PI * range_squared;
+    int total_area_in_cells = total_area / occ.info.resolution;
+    int range_in_cells = lidarRange / occ.info.resolution;
+
+    Vec2i min = Vec2i::Create(centroid.x-range_in_cells,centroid.y-range_in_cells);
+    Vec2i max = Vec2i::Create(centroid.x+range_in_cells,centroid.y+range_in_cells);
+
+    // clamp the ranges
+    if(min.x < 0) min.x = 0;
+    if(min.y < 0) min.y = 0;
+    if(min.x >= occ.info.width) min.x=occ.info.width-1;
+    if(min.y >= occ.info.height) min.y=occ.info.height-1;
+    
+    if(max.x < 0) max.x = 0;
+    if(max.y < 0) max.y = 0;
+    if(max.x >= occ.info.width) max.x=occ.info.width;
+    if(max.y >= occ.info.height) max.y=occ.info.height;
+
+    // count area in cells
+    double cell_area = occ.info.resolution * occ.info.resolution;
+    double total_area_value = 0.0;
+    for(int x = min.x; x < max.x; ++x) {
+        for(int y = min.y; y < max.y; ++y) {
+            int index = y * occ.info.width + x;
+            if(occ.data[index] == -1) {
+                total_area_value += cell_area;
+            }
+        }
+    }
+
+    return total_area_value;
 }
 
 int main(int argc, char* argv[]) {
@@ -160,6 +195,7 @@ int main(int argc, char* argv[]) {
     int queue_size = 1;
     int rate = 1;
     int id = -1;
+    int occupied_threshold = 70;
     double max_lidar_range = 10.0;
 
     private_handle.getParam("id", id);
@@ -200,10 +236,9 @@ int main(int argc, char* argv[]) {
 
     STATE = FrontierState::IDLE;
 
-    double vis_rad = max_lidar_range / 2.0;
     double cost = -1;
-    double utility_heuristic = 2.0 * M_PI * vis_rad * vis_rad;
-    double gain = -1;
+    double value = -1;
+    double utility = -1;
     int cluster_detection_min = 15;
 
     while(ros::ok()) {
@@ -230,17 +265,18 @@ int main(int argc, char* argv[]) {
                     ResetFrontierMsg(frontiers_msg);
 
                     for(size_t i = 0; i < centroids.size(); ++i) {
-                        sa::ComputePathWavefront(OCC, POS, centroids[i], ppath);
+                        sa::ComputePath(OCC, POS, centroids[i], ppath);
 
                         // compute convex hull of the frontiers
                         if(ppath.size() > 0) {
-                            cost = (double)ppath.size();
-                            gain = utility_heuristic / cost;
+                            cost = (double)(ppath.size() * OCC.info.resolution);
+                            value = ComputeCentroidValue(OCC, centroids[i], max_lidar_range, occupied_threshold);
+                            utility = value / cost;
 
                             filtered_centroids.push_back(centroids[i]);
                             frontiers_msg.costs.data.push_back(cost);
-                            frontiers_msg.utilities.data.push_back(utility_heuristic);
-                            frontiers_msg.gains.data.push_back(gain);
+                            frontiers_msg.values.data.push_back(value);
+                            frontiers_msg.utilities.data.push_back(utility);
                         }
                     }
 
@@ -251,34 +287,34 @@ int main(int argc, char* argv[]) {
 
                         ROS_INFO("[FrontierDiscovery] %ld available frontiers.", filtered_centroids.size());
                         for(size_t i = 0; i < filtered_centroids.size(); ++i) {
-                            // hook gain
-                            if(frontiers_msg.gains.data[i] > frontiers_msg.highest_gain_value) {
-                                frontiers_msg.highest_gain_value = frontiers_msg.gains.data[i];
-                                frontiers_msg.highest_gain_index = static_cast<uint8_t>(i);
+                            // hook utility
+                            if(frontiers_msg.utilities.data[i] > frontiers_msg.highest_utility) {
+                                frontiers_msg.highest_utility = frontiers_msg.utilities.data[i];
+                                frontiers_msg.highest_utility_index = static_cast<uint8_t>(i);
                             }
-                            if(frontiers_msg.gains.data[i] <= frontiers_msg.lowest_gain_value) {
-                                frontiers_msg.lowest_gain_value = frontiers_msg.gains.data[i];
-                                frontiers_msg.lowest_gain_index = static_cast<uint8_t>(i);
+                            if(frontiers_msg.utilities.data[i] <= frontiers_msg.lowest_utility) {
+                                frontiers_msg.lowest_utility = frontiers_msg.utilities.data[i];
+                                frontiers_msg.lowest_utility_index = static_cast<uint8_t>(i);
                             }
 
                             // hook cost
-                            if(frontiers_msg.costs.data[i] > frontiers_msg.highest_cost_value) {
-                                frontiers_msg.highest_cost_value = frontiers_msg.costs.data[i];
+                            if(frontiers_msg.costs.data[i] > frontiers_msg.highest_cost) {
+                                frontiers_msg.highest_cost = frontiers_msg.costs.data[i];
                                 frontiers_msg.highest_cost_index = static_cast<uint8_t>(i);
                             }
-                            if(frontiers_msg.costs.data[i] <= frontiers_msg.lowest_cost_value) {
-                                frontiers_msg.lowest_cost_value = frontiers_msg.costs.data[i];
+                            if(frontiers_msg.costs.data[i] <= frontiers_msg.lowest_cost) {
+                                frontiers_msg.lowest_cost = frontiers_msg.costs.data[i];
                                 frontiers_msg.lowest_cost_index = static_cast<uint8_t>(i);
                             }
 
-                            // hook heuristic
-                            if(frontiers_msg.utilities.data[i] > frontiers_msg.highest_heuristic_value) {
-                                frontiers_msg.highest_heuristic_value = frontiers_msg.utilities.data[i];
-                                frontiers_msg.highest_heuristic_index = static_cast<uint8_t>(i);
+                            // hook value
+                            if(frontiers_msg.values.data[i] > frontiers_msg.highest_value) {
+                                frontiers_msg.highest_value = frontiers_msg.values.data[i];
+                                frontiers_msg.highest_value_index = static_cast<uint8_t>(i);
                             }
-                            if(frontiers_msg.utilities.data[i] <= frontiers_msg.lowest_heuristic_value) {
-                                frontiers_msg.lowest_heuristic_value = frontiers_msg.utilities.data[i];
-                                frontiers_msg.lowest_heuristic_index = static_cast<uint8_t>(i);
+                            if(frontiers_msg.values.data[i] <= frontiers_msg.lowest_value) {
+                                frontiers_msg.lowest_value = frontiers_msg.values.data[i];
+                                frontiers_msg.lowest_value_index = static_cast<uint8_t>(i);
                             }
 
                             MapToWorld(OCC, filtered_centroids[i], temp_world);
@@ -292,12 +328,12 @@ int main(int argc, char* argv[]) {
                             cluster_marker_msg.points.push_back(p);
                             pose_arr_msg.poses.push_back(po);
 
-                            ROS_INFO("\t[%.2f %.2f] - cost: %.2f utility: %.2f gain: %.2f", 
+                            ROS_INFO("\t[%.2f %.2f] - cost: %.2f value: %.2f utility: %.2f", 
                                 temp_world.getX(),
                                 temp_world.getY(),
                                 frontiers_msg.costs.data[i], 
-                                frontiers_msg.utilities.data[i], 
-                                frontiers_msg.gains.data[i]);
+                                frontiers_msg.values.data[i], 
+                                frontiers_msg.utilities.data[i]);
                         }
                         frontiers_msg.centroids = pose_arr_msg;
                         cap.publish(cluster_marker_msg);

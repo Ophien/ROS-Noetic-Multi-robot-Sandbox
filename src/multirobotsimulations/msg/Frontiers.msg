@@ -1,22 +1,22 @@
 geometry_msgs/PoseArray centroids
-std_msgs/Float64MultiArray utilities
 std_msgs/Float64MultiArray costs
-std_msgs/Float64MultiArray gains
+std_msgs/Float64MultiArray values
+std_msgs/Float64MultiArray utilities
 
 uint8 highest_cost_index
-float32 highest_cost_value
+float32 highest_cost
 
 uint8 lowest_cost_index
-float32 lowest_cost_value
+float32 lowest_cost
 
-uint8 highest_heuristic_index
-float32 highest_heuristic_value
+uint8 highest_value_index
+float32 highest_value
 
-uint8 lowest_heuristic_index
-float32 lowest_heuristic_value
+uint8 lowest_value_index
+float32 lowest_value
 
-uint8 highest_gain_index
-float32 highest_gain_value
+uint8 highest_utility_index
+float32 highest_utility
 
-uint8 lowest_gain_index
-float32 lowest_gain_value
+uint8 lowest_utility_index
+float32 lowest_utility

@@ -221,15 +221,15 @@ void ClustersCallback(const multirobotsimulations::Frontiers& rMsg) {
     CENTROIDS.centroids.header = rMsg.centroids.header;
     CENTROIDS.costs.data.assign(rMsg.costs.data.begin(), rMsg.costs.data.end());
     CENTROIDS.utilities.data.assign(rMsg.utilities.data.begin(), rMsg.utilities.data.end());
-    CENTROIDS.gains.data.assign(rMsg.gains.data.begin(), rMsg.gains.data.end());
+    CENTROIDS.values.data.assign(rMsg.values.data.begin(), rMsg.values.data.end());
     
     CENTROIDS.highest_cost_index = rMsg.highest_cost_index;
-    CENTROIDS.highest_heuristic_index = rMsg.highest_heuristic_index;
-    CENTROIDS.highest_gain_index = rMsg.highest_gain_index;
+    CENTROIDS.highest_value_index = rMsg.highest_value_index;
+    CENTROIDS.highest_utility_index = rMsg.highest_utility_index;
 
-    CENTROIDS.highest_cost_value = rMsg.highest_cost_value;
-    CENTROIDS.highest_heuristic_value = rMsg.highest_heuristic_value;
-    CENTROIDS.highest_gain_value = rMsg.highest_gain_value;
+    CENTROIDS.highest_cost = rMsg.highest_cost;
+    CENTROIDS.highest_value = rMsg.highest_value;
+    CENTROIDS.highest_utility = rMsg.highest_utility;
 
     if(CURRENT_STATE == state_waiting_centroids) 
         CURRENT_STATE = state_select_frontier;
@@ -271,12 +271,12 @@ void SetMotherbaseCallback(const std_msgs::String& rMsg) {
 
 int SelectFrontier(multirobotsimulations::Frontiers& rCentroids, 
                     tf::Vector3& rOutFrontierWorld) {
-    rOutFrontierWorld.setX(rCentroids.centroids.poses[rCentroids.highest_gain_index].position.x);
-    rOutFrontierWorld.setY(rCentroids.centroids.poses[rCentroids.highest_gain_index].position.y);
-    return rCentroids.highest_gain_index;
+    rOutFrontierWorld.setX(rCentroids.centroids.poses[rCentroids.highest_utility_index].position.x);
+    rOutFrontierWorld.setY(rCentroids.centroids.poses[rCentroids.highest_utility_index].position.y);
+    return rCentroids.highest_utility_index;
 }
 
-int RoulettFrontier(multirobotsimulations::Frontiers& rCentroids, 
+int RouletteFrontier(multirobotsimulations::Frontiers& rCentroids, 
                     tf::Vector3& rOutFrontierWorld) {
     std::uniform_int_distribution<int> distr(0, rCentroids.centroids.poses.size()-1); // define the range
     int selected = distr(gen); 
@@ -544,7 +544,7 @@ int main(int argc, char* argv[]) {
                     
                     if(CENTROIDS.centroids.poses.size() > 0) {
                         if(CheckNear(robots_in_comm, robot_id)) {
-                            RoulettFrontier(CENTROIDS, goal_frontier);
+                            RouletteFrontier(CENTROIDS, goal_frontier);
                             ROS_INFO("[Explorer] roulett frontier for randomized utility.");
                         } else {
                             SelectFrontier(CENTROIDS, goal_frontier);

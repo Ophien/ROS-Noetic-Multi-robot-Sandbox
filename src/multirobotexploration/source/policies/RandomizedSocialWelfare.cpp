@@ -182,9 +182,9 @@ void SetMotherbaseCallback(const std_msgs::String& rMsg) {
 
 int SelectFrontier(multirobotsimulations::Frontiers& rCentroids, 
                     tf::Vector3& rOutFrontierWorld) {
-    rOutFrontierWorld.setX(rCentroids.centroids.poses[rCentroids.highest_gain_index].position.x);
-    rOutFrontierWorld.setY(rCentroids.centroids.poses[rCentroids.highest_gain_index].position.y);
-    return rCentroids.highest_gain_index;
+    rOutFrontierWorld.setX(rCentroids.centroids.poses[rCentroids.highest_utility_index].position.x);
+    rOutFrontierWorld.setY(rCentroids.centroids.poses[rCentroids.highest_utility_index].position.y);
+    return rCentroids.highest_utility_index;
 }
 
 int RoulettFrontier(multirobotsimulations::Frontiers& rCentroids, 
