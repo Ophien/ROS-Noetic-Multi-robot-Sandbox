@@ -277,7 +277,7 @@
             <param name="enable_homotopy_class_planning" value="True"/>
             <param name="allow_init_with_backwards_motion" value="False"/>
             <param name="exact_arc_length" value="False"/>
-            <param name="inflation_dist" value="0.0"/>
+            <param name="inflation_dist" value="0.2"/>
             <param name="min_obstacle_dist" value="0.1"/>
             <param name="weight_kinematics_forward_drive" value="1.0"/>
         </node>
