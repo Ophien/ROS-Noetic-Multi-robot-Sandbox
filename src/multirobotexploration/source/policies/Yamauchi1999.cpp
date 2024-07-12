@@ -180,28 +180,9 @@ void SetMotherbaseCallback(const std_msgs::String& rMsg) {
 int SelectFrontier(multirobotsimulations::Frontiers& rCentroids, 
                     tf::Vector3& rWorldPos, 
                     tf::Vector3& rOutFrontierWorld) {
-    if(rCentroids.centroids.poses.size() == 0) rCentroids.centroids.poses.end();
-    double max = std::numeric_limits<double>::min();
-    tf::Vector3 temp_c;
-    int selected = 0;
-    double i_gain_heuristic = 0.0;
-    ROS_INFO("[Explorer] %ld available frontiers.", rCentroids.centroids.poses.size());
-    for(size_t i = 0; i < rCentroids.centroids.poses.size(); ++i) {
-        temp_c.setX(rCentroids.centroids.poses[i].position.x);
-        temp_c.setY(rCentroids.centroids.poses[i].position.y);
-        i_gain_heuristic = rCentroids.utilities.data[i] - rCentroids.costs.data[i];
-
-        // compute cosine of the frontier here too!
-
-        ROS_INFO("\t[%.2f %.2f] information gain: %.2f", temp_c.getX(), temp_c.getY(), i_gain_heuristic);
-        if(i_gain_heuristic > max) {
-            max = i_gain_heuristic;
-            selected = i;
-        }
-    }
-    rOutFrontierWorld.setX(rCentroids.centroids.poses[selected].position.x);
-    rOutFrontierWorld.setY(rCentroids.centroids.poses[selected].position.y);
-    return selected;
+    rOutFrontierWorld.setX(rCentroids.centroids.poses[rCentroids.highest_utility_index].position.x);
+    rOutFrontierWorld.setY(rCentroids.centroids.poses[rCentroids.highest_utility_index].position.y);
+    return rCentroids.highest_utility_index;
 }
 
 void SetGoal(tf::Vector3& rGoal, ros::Publisher& rPublisher) {
