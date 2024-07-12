@@ -188,7 +188,7 @@ void DepthFirstSearchFreePath(
     while(q.size() > 0) {
         current = q.front();
         q.pop();
-        sa::ComputePathWavefront(rCSpace, rAgentPos, current, rOutPath);
+        sa::ComputePath(rCSpace, rAgentPos, current, rOutPath);
         if(rOutPath.size() != 0) {
             rClosest = current;
             break;
