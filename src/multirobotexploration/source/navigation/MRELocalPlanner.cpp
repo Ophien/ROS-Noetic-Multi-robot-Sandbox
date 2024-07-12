@@ -70,7 +70,7 @@ void CreateMarker(visualization_msgs::Marker& rInput, const char* pNs, const int
     rInput.color.a = 1.0;
     rInput.color.r = 0.3;
     rInput.color.g = 0.3;
-    rInput.color.b = 1.3;
+    rInput.color.b = 1.0;
     rInput.lifetime = ros::Duration(60);
 }
 
