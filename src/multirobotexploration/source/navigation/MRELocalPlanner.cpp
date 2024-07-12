@@ -64,12 +64,12 @@ void CreateMarker(visualization_msgs::Marker& rInput, const char* pNs, const int
     rInput.pose.orientation.y = 0.0;
     rInput.pose.orientation.z = 0.0;
     rInput.pose.orientation.w = 1.0;
-    rInput.scale.x = 0.1;
-    rInput.scale.y = 0.1;
-    rInput.scale.z = 0.1;
+    rInput.scale.x = 0.05;
+    rInput.scale.y = 0.05;
+    rInput.scale.z = 0.05;
     rInput.color.a = 1.0;
-    rInput.color.r = 0.0;
-    rInput.color.g = 0.2;
+    rInput.color.r = 0.3;
+    rInput.color.g = 0.3;
     rInput.color.b = 1.0;
     rInput.lifetime = ros::Duration(60);
 }
@@ -90,6 +90,32 @@ bool CheckNearPriority(std::vector<double>& avg_displacement,
     return false;
 }
 
+void AssembleSparsePath(nav_msgs::Path& currentPath, nav_msgs::Path& filteredPath, const int& viaIncrement, visualization_msgs::Marker& globalPath) {
+    filteredPath.poses.clear();
+    globalPath.points.clear();
+    int size = currentPath.poses.size();
+    int increment = viaIncrement;
+    size_t i = 0;
+    filteredPath.poses.push_back(currentPath.poses[i]);
+    geometry_msgs::Point p;
+    p.x = currentPath.poses[i].pose.position.x;
+    p.y = currentPath.poses[i].pose.position.y;
+    globalPath.points.push_back(p);
+    if(size > increment) i = increment;
+    while(i < size) {
+        filteredPath.poses.push_back(currentPath.poses[i]);
+        geometry_msgs::Point p;
+        p.x = currentPath.poses[i].pose.position.x;
+        p.y = currentPath.poses[i].pose.position.y;
+        globalPath.points.push_back(p);
+        if(i + increment >= size && i != size - 1) {
+            i = size-2;
+            increment = 1;
+        }
+        i += increment;
+    }
+}
+
 int main(int argc, char* argv[]) {
     ros::init(argc, argv, "node_mre_local_planner");
     TebConfig config;
@@ -101,6 +127,9 @@ int main(int argc, char* argv[]) {
     int seq = 0;
     int id = 0;
     int robots = 0;
+    int max_waypoints = 5;
+    int via_increment = 16;
+    int increment = 0;
     double comm_dist = 1.0;
     double min_displacement = 0.1;
 
@@ -108,6 +137,8 @@ int main(int argc, char* argv[]) {
     private_handle.getParam("id", id);
     private_handle.getParam("min_dist", comm_dist);
     private_handle.getParam("min_displacement", min_displacement);
+    private_handle.getParam("waypoints_to_use", max_waypoints);
+    private_handle.getParam("via_points_increment", via_increment);
 
     // load ros parameters from node handle
     config.loadRosParamFromNodeHandle(private_handle);
@@ -143,6 +174,7 @@ int main(int argc, char* argv[]) {
         }));
     
     nav_msgs::Path current_path;
+    nav_msgs::Path filtered_path;
     nav_msgs::Path* currentPathPtr = &current_path;
     subs.push_back(node_handle.subscribe<nav_msgs::Path>(ns + "/sub_goal_nav/current_path", queue_size,
         [currentPathPtr](nav_msgs::PathConstPtr rMsg){
@@ -152,8 +184,8 @@ int main(int argc, char* argv[]) {
 
     ros::Publisher cmd_vel = node_handle.advertise<geometry_msgs::Twist>(ns + "/node_rosaria/cmd_vel", queue_size);
     geometry_msgs::Twist twist_vel;
-    geometry_msgs::Pose prev_pose;
-    geometry_msgs::Pose last_pose;
+    geometry_msgs::PoseStamped prev_pose;
+    geometry_msgs::PoseStamped last_pose;
 
     visualization_msgs::Marker global_path;
     ros::Publisher via_points_path = node_handle.advertise<visualization_msgs::Marker>(ns + "/mre_local_planner/global_via_points", queue_size);
@@ -207,56 +239,51 @@ int main(int argc, char* argv[]) {
                              id, 
                              comm_dist,
                              min_displacement) == false) {
-            
+            /*
+             * Global path markers
+             */
+            CreateMarker(global_path, ns.c_str(), id, seq);
+            AssembleSparsePath(current_path, filtered_path, via_increment, global_path);
+
+            /*
+             * Compute sparse via poses
+             */
+            via_points.clear();
+            int i = 0;
+            while(via_points.size() < max_waypoints && via_points.size() < filtered_path.poses.size()) {
+                via_points.push_back(Eigen::Vector2d(filtered_path.poses[i].pose.position.x, filtered_path.poses[i].pose.position.y));
+                i++;
+            }
+
+            /*
+             * Compute final pose
+            */
             // get the two last poses to compute the final yaw configuration
-            prev_pose = current_path.poses[current_path.poses.size()-2].pose;
-            last_pose = current_path.poses[current_path.poses.size()-1].pose;
+            prev_pose = filtered_path.poses[via_points.size()-2];
+            last_pose = filtered_path.poses[via_points.size()-1];
 
             // get the yaw from the first to the last point
             double cur_angle = tf::getYaw(robotPose.pose.orientation);
-            double end_pose_yaw = atan2(last_pose.position.y - prev_pose.position.y, last_pose.position.x - prev_pose.position.x);
+            double end_pose_yaw = atan2(last_pose.pose.position.y - prev_pose.pose.position.y, last_pose.pose.position.x - prev_pose.pose.position.x);
 
-            // set via points before running the solver
-            CreateMarker(global_path, ns.c_str(), id, seq);
-            via_points.clear();
-
-            size_t i = 0;
-            geometry_msgs::Point p;
-            p.x = current_path.poses[i].pose.position.x;
-            p.y = current_path.poses[i].pose.position.y;
-            global_path.points.push_back(p);
-            int increment = 16;
-            int size = current_path.poses.size();
-            if(size > increment) i = increment;
-            while(i < size) {
-                via_points.push_back(Eigen::Vector2d(current_path.poses[i].pose.position.x, current_path.poses[i].pose.position.y));
-
-                geometry_msgs::Point p;
-                p.x = current_path.poses[i].pose.position.x;
-                p.y = current_path.poses[i].pose.position.y;
-                global_path.points.push_back(p);
-
-                if(i + increment >= size && i != size - 1) {
-                    i = size-2;
-                    increment = 1;
-                }
-                
-                i += increment;
-            }
-
-            planner->plan(PoseSE2(robotPose.pose.position.x,robotPose.pose.position.y,cur_angle), 
-                          PoseSE2(last_pose.position.x, last_pose.position.y,end_pose_yaw));
-            planner->visualize();
+            /*
+             * Publish visuals and path
+             */      
             visual->publishObstacles(obst_vector);
             visual->publishViaPoints(via_points);
-            
+            via_points_path.publish(global_path);
+            planner->plan(PoseSE2(robotPose.pose.position.x,robotPose.pose.position.y,cur_angle), 
+                          PoseSE2(last_pose.pose.position.x, last_pose.pose.position.y,end_pose_yaw));
+            planner->visualize();
+
+            /*
+             * Publish velocity commands
+             */       
             double vx, vy, omega;
             planner->getVelocityCommand(vx, vy, omega, 3);
             twist_vel.linear.x = vx;
             twist_vel.angular.z = omega;
 
-            via_points_path.publish(global_path);
-            
             seq += 1;
         }
         

@@ -251,7 +251,7 @@
 
         <node name="node_subgoalnav" pkg="multirobotexploration" type="subgoalnav" output="screen">
             <param name="id" type="int" value="$(arg robot_id)"/>
-            <param name="rate" type="double" value="10.0" />
+            <param name="rate" type="double" value="2.0" />
             <param name="reach_threshold" type="double" value="0.3"/>
             <param name="queue_size" type="int" value="2" />
             <param name="delta_threshold" type="double" value="60.0"/>
@@ -261,6 +261,8 @@
             <param name="id" value="$(arg robot_id)"/>
             <param name="min_displacement" type="double" value="0.005"/>
             <param name="min_dist" type="double" value="2.0"/>
+            <param name="waypoints_to_use" type="int" value="10"/>
+            <param name="via_points_increment" type="int" value="3"/>
             <param name="odom_topic" value="/robot_$(arg robot_id)/odom"/>
             <param name="map_frame" value="robot_$(arg robot_id)/map"/>
             <param name="max_vel_x" value="0.5"/>
@@ -273,8 +275,8 @@
             <param name="free_goal_vel" value="True"/>
             <param name="wheelbase" value="0.55"/>
             <param name="enable_homotopy_class_planning" value="True"/>
-            <param name="allow_init_with_backwards_motion" value="True"/>
-            <param name="exact_arc_length" value="True"/>
+            <param name="allow_init_with_backwards_motion" value="False"/>
+            <param name="exact_arc_length" value="False"/>
             <param name="inflation_dist" value="0.0"/>
             <param name="min_obstacle_dist" value="0.1"/>
             <param name="weight_kinematics_forward_drive" value="1.0"/>

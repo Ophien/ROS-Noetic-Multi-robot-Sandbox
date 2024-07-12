@@ -14,6 +14,10 @@ Source: [MRELocalPlanner.cpp](../../src/multirobotexploration/source/navigation/
 
 * ```min_displacement```
 
+* ```waypoints_to_use```
+
+* ```via_points_increment```
+
 ## Subscribed Topics
 
 * ```<namespace>/obstacle_array``` ([costmap_converter::ObstacleArrayMsg])
