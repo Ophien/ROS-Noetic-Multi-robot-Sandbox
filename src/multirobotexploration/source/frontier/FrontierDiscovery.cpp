@@ -150,7 +150,7 @@ void ResetFrontierMsg(multirobotsimulations::Frontiers& rMgs) {
     rMgs.highest_utility = -1.0;
 }
 
-double ComputeCentroidValue(nav_msgs::OccupancyGrid& occ, Vec2i& centroid, const double& lidarRange, const int& unknownValue) {
+double ComputeCentroidValue(nav_msgs::OccupancyGrid& occ, Vec2i& centroid, const double& lidarRange) {
     double range_squared = lidarRange * lidarRange;
     double total_area = M_PI * range_squared;
     int total_area_in_cells = total_area / occ.info.resolution;
@@ -195,7 +195,6 @@ int main(int argc, char* argv[]) {
     int queue_size = 1;
     int rate = 1;
     int id = -1;
-    int occupied_threshold = 70;
     double max_lidar_range = 10.0;
 
     private_handle.getParam("id", id);
@@ -270,7 +269,7 @@ int main(int argc, char* argv[]) {
                         // compute convex hull of the frontiers
                         if(ppath.size() > 0) {
                             cost = (double)(ppath.size() * OCC.info.resolution);
-                            value = ComputeCentroidValue(OCC, centroids[i], max_lidar_range, occupied_threshold);
+                            value = ComputeCentroidValue(OCC, centroids[i], max_lidar_range);
                             utility = value / cost;
 
                             filtered_centroids.push_back(centroids[i]);
