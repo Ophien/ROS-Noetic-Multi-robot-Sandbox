@@ -691,7 +691,20 @@ int main(int argc, char* argv[]) {
                         planPtr->PrintCurrent();
                         ChangeState(state_compute_centroids);
                         received_new_rendezvous_location = false;
+                        time_waiting = 0.0;
+                    } else {
+                        ROS_INFO("[Explorer] Waiting for new rendezvous location for %fs", time_waiting);
+
+                        if(time_waiting > waiting_threshold) {
+                            planPtr->ResetPlanRealization();
+                            planPtr->SetNextAgreement();
+                            ChangeState(state_compute_centroids);
+                            ROS_INFO("[Explorer] Consensus seems to have died, reseting to next plan.");
+                            time_waiting = 0.0;
+                        }
                     }
+
+                    time_waiting += delta_time;
                break;
             }
 

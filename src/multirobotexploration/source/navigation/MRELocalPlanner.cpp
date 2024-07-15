@@ -49,6 +49,7 @@
 #include "std_msgs/Float32.h"
 #include "multirobotsimulations/MockPackage.h"
 #include "std_msgs/Float64MultiArray.h"
+#include "geometry_msgs/PoseArray.h"
 
 using namespace teb_local_planner; // it is ok here to import everything for testing purposes
 
@@ -83,9 +84,7 @@ bool CheckNearPriority(std::vector<double>& avg_displacement,
     for(size_t i = 0; i < robots_in_comm.size(); ++i) {
         if(i == rRobotId) continue;
         if(robots_in_comm[i] == 1 && 
-           avg_displacement[i] > min_displacement &&
-           i < rRobotId &&
-           distances[i] < rCommDist) return true;
+           i > rRobotId) return true;
     }
     return false;
 }
@@ -130,6 +129,7 @@ int main(int argc, char* argv[]) {
     int max_waypoints = 5;
     int via_increment = 16;
     int increment = 0;
+    bool use_priority_stop_behavior = false;
     double comm_dist = 1.0;
     double min_displacement = 0.1;
 
@@ -139,6 +139,7 @@ int main(int argc, char* argv[]) {
     private_handle.getParam("min_displacement", min_displacement);
     private_handle.getParam("waypoints_to_use", max_waypoints);
     private_handle.getParam("via_points_increment", via_increment);
+    private_handle.getParam("use_priority_stop_behavior", use_priority_stop_behavior);
 
     // load ros parameters from node handle
     config.loadRosParamFromNodeHandle(private_handle);
@@ -146,7 +147,7 @@ int main(int argc, char* argv[]) {
     ViaPointContainer via_points;
     RobotFootprintModelPtr robot_footprint(new PointRobotFootprint());
     TebVisualizationPtr visual = TebVisualizationPtr(new TebVisualization(private_handle, config));
-    PlannerInterfacePtr planner = PlannerInterfacePtr(new HomotopyClassPlanner(config, &obst_vector, robot_footprint, visual, &via_points));
+    std::shared_ptr<HomotopyClassPlanner> planner = std::make_shared<HomotopyClassPlanner>(config, &obst_vector, robot_footprint, visual, &via_points);
     std::vector<ros::Subscriber> subs;
 
     std::vector<ObstaclePtr>* obst_vector_ptr = &obst_vector;
@@ -186,6 +187,9 @@ int main(int argc, char* argv[]) {
     geometry_msgs::Twist twist_vel;
     geometry_msgs::PoseStamped prev_pose;
     geometry_msgs::PoseStamped last_pose;
+    
+    geometry_msgs::PoseArray teb_poses;
+    ros::Publisher teb_poses_adv = node_handle.advertise<geometry_msgs::PoseArray>(ns + "/mre_local_planner/optimal_poses", queue_size);
 
     visualization_msgs::Marker global_path;
     ros::Publisher via_points_path = node_handle.advertise<visualization_msgs::Marker>(ns + "/mre_local_planner/global_via_points", queue_size);
@@ -231,14 +235,7 @@ int main(int argc, char* argv[]) {
         twist_vel.angular.z = 0.0;
         
         // not optimal mechanism to avoid traffic
-        if(received_comm && 
-           current_path.poses.size() > 1 && 
-           CheckNearPriority(average_displacements, 
-                             distances, 
-                             robots_in_comm, 
-                             id, 
-                             comm_dist,
-                             min_displacement) == false) {
+        if(current_path.poses.size() > 1) {
             /*
              * Global path markers
              */
@@ -277,14 +274,45 @@ int main(int argc, char* argv[]) {
             planner->visualize();
 
             /*
+             * Share expected trajectory with nearby robots to create
+             * an enhanced c-space and avoid traffic
+             */
+            teb_poses.poses.clear();
+            TebOptimalPlannerPtr best_teb = planner->bestTeb();
+            if(best_teb != nullptr) {
+                for (int i=0; i < best_teb->teb().sizePoses(); ++i) {
+                    geometry_msgs::Pose to_publish;
+                    to_publish.position.x = best_teb->teb().Pose(i).x();
+                    to_publish.position.y = best_teb->teb().Pose(i).y();
+                    teb_poses.poses.push_back(to_publish);
+                }
+                teb_poses_adv.publish(teb_poses);
+            }
+
+            /*
              * Publish velocity commands
              */       
             double vx, vy, omega;
-            planner->getVelocityCommand(vx, vy, omega, 3);
+            planner->getVelocityCommand(vx, vy, omega, 1);
             twist_vel.linear.x = vx;
             twist_vel.angular.z = omega;
 
             seq += 1;
+        }
+
+        /*
+         * Check priority behavior
+         */
+        if(received_comm &&
+           CheckNearPriority(average_displacements, 
+                    distances, 
+                    robots_in_comm, 
+                    id, 
+                    comm_dist,
+                    min_displacement) == false && 
+            use_priority_stop_behavior == true) {
+            twist_vel.linear.x = twist_vel.linear.x / 2.0;
+            twist_vel.angular.z = twist_vel.angular.z / 2.0;
         }
         
         cmd_vel.publish(twist_vel);
