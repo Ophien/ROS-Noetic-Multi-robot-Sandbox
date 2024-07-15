@@ -152,36 +152,45 @@ void ResetFrontierMsg(multirobotsimulations::Frontiers& rMgs) {
 
 double ComputeCentroidValue(nav_msgs::OccupancyGrid& occ, Vec2i& centroid, const double& lidarRange) {
     double range_squared = lidarRange * lidarRange;
-    double total_area = M_PI * range_squared;
-    int total_area_in_cells = total_area / occ.info.resolution;
-    int range_in_cells = lidarRange / occ.info.resolution;
+    int range_in_cells = static_cast<int>(lidarRange / occ.info.resolution);
 
     Vec2i min = Vec2i::Create(centroid.x-range_in_cells,centroid.y-range_in_cells);
     Vec2i max = Vec2i::Create(centroid.x+range_in_cells,centroid.y+range_in_cells);
 
     // clamp the ranges
-    if(min.x < 0) min.x = 0;
-    if(min.y < 0) min.y = 0;
-    if(min.x >= occ.info.width) min.x=occ.info.width-1;
-    if(min.y >= occ.info.height) min.y=occ.info.height-1;
-    
-    if(max.x < 0) max.x = 0;
-    if(max.y < 0) max.y = 0;
-    if(max.x >= occ.info.width) max.x=occ.info.width;
-    if(max.y >= occ.info.height) max.y=occ.info.height;
+    min.x = std::max(0, min.x);
+    min.y = std::max(0, min.y);
+    max.x = std::min(max.x, static_cast<int>(occ.info.width));
+    max.y = std::min(max.y, static_cast<int>(occ.info.height));
 
     // count area in cells
-    double cell_area = occ.info.resolution * occ.info.resolution;
-    double total_area_value = 0.0;
+    int count = 0;
     for(int x = min.x; x < max.x; ++x) {
         for(int y = min.y; y < max.y; ++y) {
-            int index = y * occ.info.width + x;
-            if(occ.data[index] == -1) {
-                total_area_value += cell_area;
+            /*
+             * Check circle model
+             * (x−x1)^2+(y−y1)^2=r^2
+             */
+
+            // ensure that the dx and dy are in meters and not in
+            // pixels...
+            double dx = (centroid.x - x) * occ.info.resolution;
+            double dy = (centroid.y - y) * occ.info.resolution;
+            double circle_test = dx * dx + dy * dy;
+
+            if(circle_test <= range_squared) {
+                int index = y * occ.info.width + x;
+                if(occ.data[index] == -1) {
+                    count++;
+                }
+                
             }
         }
     }
 
+    double cell_area = occ.info.resolution * occ.info.resolution;
+    double total_area_value = static_cast<double>(count) * cell_area;
+    ROS_INFO("[FrontierDiscovery] Cells in range: %d area in meters: %f", count, total_area_value);
     return total_area_value;
 }
 

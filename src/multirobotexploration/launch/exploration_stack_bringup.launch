@@ -232,12 +232,6 @@
             <remap from="/robot_$(arg robot_id)/map" to="/robot_$(arg robot_id)/fusion"/>
         </node>
 
-        <node name="node_fbmapfusion" pkg="multirobotexploration" type="fbmapfusionrelative" output="screen">
-            <param name="id" type="int" value="$(arg robot_id)"/>
-            <param name="rate" type="int" value="1"/>
-            <param name="queue_size" type="int" value="2" />
-        </node>
-
         <node name="node_localdynamicmap" pkg="multirobotexploration" type="localdynamicmap" output="screen">
             <param name="id" type="int" value="$(arg robot_id)"/>
             <param name="rate" type="int" value="5"/>
@@ -247,6 +241,12 @@
             <param name="ocu_inflation_radius" type="double" value="0.5"/>
             <param name="lidar_sources" type="int" value="4"/>
             <param name="local_view_size"  type="double" value="5.0"/>
+        </node>
+
+        <node name="node_fbmapfusion" pkg="multirobotexploration" type="fbmapfusionrelative" output="screen">
+            <param name="id" type="int" value="$(arg robot_id)"/>
+            <param name="rate" type="int" value="1"/>
+            <param name="queue_size" type="int" value="2" />
         </node>
 
         <node name="node_subgoalnav" pkg="multirobotexploration" type="subgoalnav" output="screen">
@@ -268,18 +268,19 @@
             <param name="max_vel_x" value="0.5"/>
             <param name="max_vel_x_backwards" value="0.5"/>
             <param name="footprint_model" value="point"/>
-            <param name="max_vel_theta" value="0.5"/>
+            <param name="max_vel_theta" value="1.0"/>
             <param name="acc_lim_x" value="0.5"/>
-            <param name="acc_lim_theta" value="0.5"/>
+            <param name="acc_lim_theta" value="1.0"/>
             <param name="min_turning_radius" value="0.0"/>
             <param name="free_goal_vel" value="True"/>
             <param name="wheelbase" value="0.55"/>
             <param name="enable_homotopy_class_planning" value="True"/>
-            <param name="allow_init_with_backwards_motion" value="False"/>
+            <param name="allow_init_with_backwards_motion" value="True"/>
             <param name="exact_arc_length" value="False"/>
-            <param name="inflation_dist" value="0.2"/>
+            <param name="inflation_dist" value="1.0"/>
             <param name="min_obstacle_dist" value="0.1"/>
             <param name="weight_kinematics_forward_drive" value="1.0"/>
+            <param name="use_priority_stop_behavior" value="False"/>
         </node>
 
         <node name="node_costmapconverter" pkg="costmap_converter" type="standalone_converter" output="screen">

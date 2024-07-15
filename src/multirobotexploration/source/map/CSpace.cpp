@@ -48,6 +48,7 @@
 #include "geometry_msgs/PoseArray.h"
 #include "geometry_msgs/Pose.h"
 #include "costmap_converter/ObstacleArrayMsg.h"
+#include "std_msgs/Int8MultiArray.h"
 #include "multirobotsimulations/CustomPose.h"
 #include "tf/tf.h"
 #include "string.h"
@@ -151,6 +152,45 @@ void InflatePoseForPlanner(nav_msgs::OccupancyGrid& cspace,
     ApplyMask(x,y,irp_free,cspace.data,freeVal,cspace.info.width,cspace.info.height,occupancyThreshold,false);
 }
 
+void ApplyDynamicData(nav_msgs::OccupancyGrid& occ,
+                                         nav_msgs::OccupancyGrid& dynamicOcc,
+                                         std::vector<geometry_msgs::PoseArray>& lidarSources,
+                                         std::vector<geometry_msgs::PoseArray>& otherSources,
+                                         const double& maxLidarRange = 10.0,
+                                         const int8_t& occupiedValue = 100) {
+    dynamicOcc.data.assign(occ.data.begin(), occ.data.end());
+    dynamicOcc.header = occ.header;
+    dynamicOcc.info = occ.info;
+    double range;
+    int width = occ.info.width;
+    Vec2i pos;
+
+    // enhance with peripheral lidars
+    for(size_t source = 0; source < lidarSources.size(); ++source) {
+        for(size_t i = 0; i < lidarSources[source].poses.size(); ++i) {
+            pos.x = (int)(lidarSources[source].poses[i].position.x);
+            pos.y = (int)(lidarSources[source].poses[i].position.y);
+            range = lidarSources[source].poses[i].position.z;
+            if(range <= maxLidarRange & range >= 0.01) { 
+                dynamicOcc.data[pos.y*width+pos.x] = occupiedValue;
+            }
+        }
+    }
+
+    for(size_t source = 0; source < otherSources.size(); ++source) {
+        for(size_t i = 0; i < otherSources[source].poses.size(); ++i) {
+            WorldToMap(occ, otherSources[source].poses[i], pos);
+            dynamicOcc.data[pos.y*width+pos.x] = occupiedValue;
+        }
+    }
+}
+
+void ClearLocalTrajectories(std::vector<geometry_msgs::PoseArray>& local, std_msgs::Int8MultiArray& comm) {
+    for(size_t robot = 0; robot < local.size(); ++robot) {
+        if(comm.data[robot] == 0) local[robot].poses.clear();
+    }
+}
+
 int main(int argc, char* argv[]) {
     ros::init(argc, argv, "cspace");
     ros::NodeHandle node_handle;
@@ -161,11 +201,13 @@ int main(int argc, char* argv[]) {
     int rate = 10;
     int id = -1;
     int lidar_sources_count = 1;
+    int robots = -1;
 
     double laser_range = 10.0;
     double free_inflate_radius = 0.3;
     double occu_inflate_radius = 0.5;
 
+    node_handle.getParam("/robots", robots);
     private_handle.getParam("id", id);
     private_handle.getParam("rate", rate);
     private_handle.getParam("queue_size", queue_size);
@@ -217,12 +259,11 @@ int main(int argc, char* argv[]) {
     ros::Publisher cspace_pub = node_handle.advertise<nav_msgs::OccupancyGrid>(ns + "/c_space", queue_size);
 
     // subscribe to all lidar sources
-    std::vector<ros::Subscriber> lidar_subs;
-    std::vector<geometry_msgs::PoseArray> lidar_sources;
+    std::vector<ros::Subscriber> subs;
+    std::vector<geometry_msgs::PoseArray> lidar_sources(lidar_sources_count, geometry_msgs::PoseArray());
     std::vector<geometry_msgs::PoseArray>* lidar_sources_ptr = &lidar_sources;
-    for(int i = 0; i < lidar_sources_count; ++i) lidar_sources.push_back(geometry_msgs::PoseArray());
     for(int i = 0; i < lidar_sources_count; ++i) {
-        lidar_subs.push_back(node_handle.subscribe<geometry_msgs::PoseArray>(ns + "/laser_to_world/lidar_occ_" + std::to_string(i), queue_size,
+        subs.push_back(node_handle.subscribe<geometry_msgs::PoseArray>(ns + "/laser_to_world/lidar_occ_" + std::to_string(i), queue_size,
             [lidar_sources_ptr,i](geometry_msgs::PoseArray::ConstPtr msg){
                 lidar_sources_ptr->at(i).header = msg->header;
                 lidar_sources_ptr->at(i).poses.assign(msg->poses.begin(), msg->poses.end());
@@ -230,9 +271,35 @@ int main(int argc, char* argv[]) {
         ));
     }
 
+    std::vector<geometry_msgs::PoseArray> pose_arrays(robots, geometry_msgs::PoseArray());
+    std::vector<geometry_msgs::PoseArray>* pose_arrays_ptr = &pose_arrays;
+        for(int i = 0; i < robots; ++i) {
+            if(i <= id) continue;
+            subs.push_back(node_handle.subscribe<geometry_msgs::PoseArray>("/robot_" + std::to_string(i) + "/mre_local_planner/optimal_poses", queue_size,
+                [pose_arrays_ptr,i](geometry_msgs::PoseArray::ConstPtr msg){
+                    pose_arrays_ptr->at(i).poses.assign(msg->poses.begin(), msg->poses.end());
+                }
+        ));
+    }
+
+    std_msgs::Int8MultiArray robots_in_comm;
+    robots_in_comm.data.assign(robots,0);
+    std_msgs::Int8MultiArray* robots_in_comm_ptr = &robots_in_comm;
+    subs.push_back(node_handle.subscribe<std_msgs::Int8MultiArray>(
+                ns + "/mock_communication_model/robots_in_comm", 
+                queue_size,
+                [robots_in_comm_ptr](std_msgs::Int8MultiArray::ConstPtr rMsg) {
+                    robots_in_comm_ptr->data.assign(rMsg->data.begin(), rMsg->data.end());
+                }));
+
     while(ros::ok()) {
         if(has_occ && has_pose) {
-            ApplyDynamicData(occ, with_dynamic_data, lidar_sources);
+            /*
+             * Clear dynamic trajectories in local map
+             */
+            ClearLocalTrajectories(pose_arrays, robots_in_comm);
+
+            ApplyDynamicData(occ, with_dynamic_data, lidar_sources, pose_arrays);
 
             // create c_space at the secified rate
             Inflate(with_dynamic_data, free, occupied, free_inflate_radius, occu_inflate_radius);
