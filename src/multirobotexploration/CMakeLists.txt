@@ -40,7 +40,7 @@ catkin_package(
 ###########
 
 include_directories(
-  include/lib
+  include/common
   include/nodes
   ${catkin_INCLUDE_DIRS}
   ${GAZEBO_INCLUDE_DIRS}
