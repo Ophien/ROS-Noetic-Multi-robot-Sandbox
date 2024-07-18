@@ -40,9 +40,74 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "MockCommunicationModel.h"
+/*
+ * System and ROS
+ */
+#include <stdio.h>
+#include <vector>
+#include "ros/ros.h"
+#include "tf/tf.h"
 
-int main(int argc, char* argv[]) {
-    ros::init(argc, argv, "mockcommunicationmodel");
-    
-}
+/*
+ * Messages
+ */
+#include "std_msgs/Float64MultiArray.h"
+#include "geometry_msgs/Pose.h"
+#include "geometry_msgs/PoseArray.h"
+#include "std_msgs/Int8MultiArray.h"
+#include "visualization_msgs/Marker.h"
+#include "visualization_msgs/MarkerArray.h"
+#include "multirobotsimulations/CustomPose.h"
+
+/*
+ * Helpers
+ */
+#include "Common.h"
+
+class MockCommunicationModel {
+    public:
+        MockCommunicationModel();
+        ~MockCommunicationModel();
+
+    private:
+        void LoadRelativePoses();
+        void Update();
+
+        /*
+         * Control variables
+         */
+        int aRobots;
+        int aId;
+        int aRate;
+        int aQueueSize;
+        double aCommDist;
+        std::string aNamespace;
+
+        /*
+         * Routines
+         */
+        std::vector<ros::Timer> aTimers;
+
+        /*
+         * Subscribers
+         */
+        std::vector<ros::Subscriber> aSubscribers;
+        
+        /*
+         * Advertisers
+         */   
+        ros::Publisher aCommunicationModelBroadcaster;
+
+        /*
+         * Messages
+         */
+        std_msgs::Int8MultiArray aRobotsInComm;
+        std::shared_ptr<geometry_msgs::Pose> aRobotsWorldPoses;
+
+        /*
+         * Helpers
+         */
+        std::vector<tf::Vector3> aRelativePoses;
+        std::shared_ptr<std::vector<bool>> aReceivedPoses;
+        
+};
