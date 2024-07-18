@@ -101,9 +101,6 @@ target_link_libraries(mrelocalplanner multirobotexploration ${catkin_LIBRARIES})
 ###############
 ## frontiers ##
 ###############
-add_executable(frontierdiscovery source/frontier/FrontierDiscovery.cpp)
-target_link_libraries(frontierdiscovery multirobotexploration ${catkin_LIBRARIES})
-
 add_executable(frontierdiscoverynode source/frontier/FrontierDiscoveryNode.cpp)
 target_link_libraries(frontierdiscoverynode multirobotexploration ${catkin_LIBRARIES})
 

@@ -3,43 +3,44 @@
 /*
  * Node implementation
  */
-FrontierDiscoveryNode::FrontierDiscoveryNode(ros::NodeHandle& nodeHandle) {
+FrontierDiscoveryNode::FrontierDiscoveryNode() {
     aState = FrontierState::IDLE;
 
     // load all parameters
-    if(!nodeHandle.getParam("id", aId)) throw std::runtime_error("Could not retrieve robot id.");
-    if(!nodeHandle.getParam("rate", aRate)) throw std::runtime_error("Could not retrived update rate.");
-    if(!nodeHandle.getParam("queue_size", aQueueSize)) throw std::runtime_error("Could not retrieve queue_size.");
-    if(!nodeHandle.getParam("max_lidar_range", aMaxLidarRange)) throw std::runtime_error("Could not retrieve max_lidar_range.");
+    ros::NodeHandle node_handle("~");
+    if(!node_handle.getParam("id", aId)) throw std::runtime_error("Could not retrieve robot id.");
+    if(!node_handle.getParam("rate", aRate)) throw std::runtime_error("Could not retrived update rate.");
+    if(!node_handle.getParam("queue_size", aQueueSize)) throw std::runtime_error("Could not retrieve queue_size.");
+    if(!node_handle.getParam("max_lidar_range", aMaxLidarRange)) throw std::runtime_error("Could not retrieve max_lidar_range.");
     aNamespace = ros::NodeHandle().getNamespace();
 
     // subscriptions
     aSubscribers.push_back(
-        nodeHandle.subscribe<nav_msgs::OccupancyGrid>(
+        node_handle.subscribe<nav_msgs::OccupancyGrid>(
             aNamespace + "/c_space", 
             aQueueSize, 
             std::bind(&FrontierDiscoveryNode::CSpaceCallback, this, std::placeholders::_1)));
 
     aSubscribers.push_back(
-        nodeHandle.subscribe<multirobotsimulations::CustomPose>(
+        node_handle.subscribe<multirobotsimulations::CustomPose>(
             aNamespace + "/gmapping_pose/world_pose", 
             aQueueSize, 
             std::bind(&FrontierDiscoveryNode::EstimatePoseCallback, this, std::placeholders::_1)));
 
     aSubscribers.push_back(
-        nodeHandle.subscribe<std_msgs::String>(
+        node_handle.subscribe<std_msgs::String>(
             aNamespace + "/frontier_discovery/compute", 
             aQueueSize, 
             std::bind(&FrontierDiscoveryNode::ComputeCallback, this, std::placeholders::_1)));
 
     // advertisers
-    aClusterMarkerPub     = nodeHandle.advertise<visualization_msgs::Marker>(aNamespace + "/frontier_discovery/frontiers_clusters_markers", aQueueSize);
-    aFrontiersMapPub      = nodeHandle.advertise<nav_msgs::OccupancyGrid>(aNamespace + "/frontier_discovery/frontiers", aQueueSize);
-    aFrontiersClustersPub = nodeHandle.advertise<multirobotsimulations::Frontiers>(aNamespace + "/frontier_discovery/frontiers_clusters", aQueueSize);
+    aClusterMarkerPub     = node_handle.advertise<visualization_msgs::Marker>(aNamespace + "/frontier_discovery/frontiers_clusters_markers", aQueueSize);
+    aFrontiersMapPub      = node_handle.advertise<nav_msgs::OccupancyGrid>(aNamespace + "/frontier_discovery/frontiers", aQueueSize);
+    aFrontiersClustersPub = node_handle.advertise<multirobotsimulations::Frontiers>(aNamespace + "/frontier_discovery/frontiers_clusters", aQueueSize);
 
     // node's routines
     double update_period = PeriodToFreqAndFreqToPeriod(aRate);
-    aTimers.push_back(nodeHandle.createTimer(ros::Duration(update_period), std::bind(&FrontierDiscoveryNode::Update, this)));
+    aTimers.push_back(node_handle.createTimer(ros::Duration(update_period), std::bind(&FrontierDiscoveryNode::Update, this)));
 }
 
 FrontierDiscoveryNode::~FrontierDiscoveryNode() {
@@ -281,7 +282,6 @@ void FrontierDiscoveryNode::Update() {
  */
 int main(int argc, char* argv[]) {
     ros::init(argc, argv, "frontierdiscoverynode");
-    ros::NodeHandle node_handle("~");
-    std::unique_ptr<FrontierDiscoveryNode> frontier_discovery = std::make_unique<FrontierDiscoveryNode>(node_handle);
+    std::unique_ptr<FrontierDiscoveryNode> frontier_discovery = std::make_unique<FrontierDiscoveryNode>();
     ros::spin();
 }
