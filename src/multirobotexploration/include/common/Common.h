@@ -452,6 +452,10 @@ inline void MapToWorld(nav_msgs::OccupancyGrid& rOcc, Vec2i& rMap, tf::Vector3& 
     rWorld.setY(rOcc.info.origin.position.y + (d_y * res) + (res / 2.0));
 }
 
+inline double PeriodToFreqAndFreqToPeriod(const double& val) {
+	return 1.0 / val;
+}
+
 inline void ApplyMask(const int& rX, 
                 const int& rY, 
                 const int& rRadius,
