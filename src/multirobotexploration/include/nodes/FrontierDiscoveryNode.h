@@ -79,7 +79,7 @@ typedef enum{
  */
 class FrontierDiscoveryNode {
     public:
-        FrontierDiscoveryNode(ros::NodeHandle& nodeHandle);
+        FrontierDiscoveryNode();
         ~FrontierDiscoveryNode();
 
     private:
