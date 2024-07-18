@@ -1,6 +1,6 @@
 # FrontierDiscovery
 
-Source: [FrontierDiscovery.cpp](../../src/multirobotexploration/source/frontier/FrontierDiscovery.cpp)
+Source: [FrontierDiscoveryNode.cpp](../../src/multirobotexploration/source/frontier/FrontierDiscoveryNode.cpp)
 
 ## Parameters
 
