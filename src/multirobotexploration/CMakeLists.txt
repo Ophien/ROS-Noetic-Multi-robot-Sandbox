@@ -110,8 +110,8 @@ target_link_libraries(fbmapfusionrelative multirobotexploration ${OpenCV_LIBS} $
 #############
 ## sensors ##
 #############
-add_executable(lasertoworld source/laser/LaserToWorld.cpp)
-target_link_libraries(lasertoworld multirobotexploration ${catkin_LIBRARIES})
+add_executable(lasertoworldnode source/laser/LaserToWorldNode.cpp)
+target_link_libraries(lasertoworldnode multirobotexploration ${catkin_LIBRARIES})
 
 ##############
 ## policies ##

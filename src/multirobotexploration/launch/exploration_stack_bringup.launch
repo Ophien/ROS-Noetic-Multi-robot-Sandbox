@@ -134,7 +134,7 @@
             </rosparam>
         </node>
 
-        <node name="node_lidar_to_occ_0" pkg="multirobotexploration" type="lasertoworld">
+        <node name="node_lidar_to_occ_0" pkg="multirobotexploration" type="lasertoworldnode">
             <remap from="/robot_$(arg robot_id)/scan" to="/robot_$(arg robot_id)/ultrasonic"/>
             <remap from="/robot_$(arg robot_id)/laser_to_world/laser_world" to="/robot_$(arg robot_id)/laser_to_world/lidar_world_0"/>
             <remap from="/robot_$(arg robot_id)/laser_to_world/laser_occ" to="/robot_$(arg robot_id)/laser_to_world/lidar_occ_0"/>
@@ -146,7 +146,7 @@
             <param name="y" value="3.14"/>
         </node>
 
-        <node name="node_lidar_to_occ_1" pkg="multirobotexploration" type="lasertoworld">
+        <node name="node_lidar_to_occ_1" pkg="multirobotexploration" type="lasertoworldnode">
             <remap from="/robot_$(arg robot_id)/scan" to="/robot_$(arg robot_id)/ultrasonic_front"/>
             <remap from="/robot_$(arg robot_id)/laser_to_world/laser_world" to="/robot_$(arg robot_id)/laser_to_world/lidar_world_1"/>
             <remap from="/robot_$(arg robot_id)/laser_to_world/laser_occ" to="/robot_$(arg robot_id)/laser_to_world/lidar_occ_1"/>
@@ -158,7 +158,7 @@
             <param name="y" value="0"/>
         </node>
 
-        <node name="node_lidar_to_occ_2" pkg="multirobotexploration" type="lasertoworld">
+        <node name="node_lidar_to_occ_2" pkg="multirobotexploration" type="lasertoworldnode">
             <remap from="/robot_$(arg robot_id)/scan" to="/robot_$(arg robot_id)/ultrasonic_left"/>
             <remap from="/robot_$(arg robot_id)/laser_to_world/laser_world" to="/robot_$(arg robot_id)/laser_to_world/lidar_world_2"/>
             <remap from="/robot_$(arg robot_id)/laser_to_world/laser_occ" to="/robot_$(arg robot_id)/laser_to_world/lidar_occ_2"/>
@@ -170,7 +170,7 @@
             <param name="y" value="1.57"/>
         </node>
 
-        <node name="node_lidar_to_occ_3" pkg="multirobotexploration" type="lasertoworld">
+        <node name="node_lidar_to_occ_3" pkg="multirobotexploration" type="lasertoworldnode">
             <remap from="/robot_$(arg robot_id)/scan" to="/robot_$(arg robot_id)/ultrasonic_right"/>
             <remap from="/robot_$(arg robot_id)/laser_to_world/laser_world" to="/robot_$(arg robot_id)/laser_to_world/lidar_world_3"/>
             <remap from="/robot_$(arg robot_id)/laser_to_world/laser_occ" to="/robot_$(arg robot_id)/laser_to_world/lidar_occ_3"/>
@@ -182,17 +182,17 @@
             <param name="y" value="-1.57"/>
         </node>
 
+        <node name="node_lasertoworld" pkg="multirobotexploration" type="lasertoworldnode">
+            <param name="rate" type="int" value="2"/>
+            <param name="queue_size" type="int" value="2" />
+        </node>
+
         <node name="MOCK_COMM_MODEL" pkg="multirobotexploration" type="mockcommunicationmodelnode" output="screen">
             <param name="id" type="int" value="$(arg robot_id)"/>
             <param name="rate" type="double" value="5.0"/>
             <param name="dist" type="double" value="3.0"/>
             <param name="queue_size" type="int" value="2"/>
             <param name="comm_dist" type="double" value="3"/>
-        </node>
-
-        <node name="node_lasertoworld" pkg="multirobotexploration" type="lasertoworld">
-            <param name="rate" type="int" value="2"/>
-            <param name="queue_size" type="int" value="2" />
         </node>
 
         <node name="node_frontierdiscovery_node" pkg="multirobotexploration" type="frontierdiscoverynode" output="screen">
