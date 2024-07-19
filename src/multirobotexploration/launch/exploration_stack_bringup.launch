@@ -182,7 +182,7 @@
             <param name="y" value="-1.57"/>
         </node>
 
-        <node name="MOCK_COMM_MODEL" pkg="multirobotexploration" type="mockcommunicationmodel" output="screen">
+        <node name="MOCK_COMM_MODEL" pkg="multirobotexploration" type="mockcommunicationmodelnode" output="screen">
             <param name="id" type="int" value="$(arg robot_id)"/>
             <param name="rate" type="double" value="5.0"/>
             <param name="dist" type="double" value="3.0"/>

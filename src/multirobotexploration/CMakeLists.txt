@@ -64,11 +64,8 @@ set(DENABLE_PRECOMPILED_HEADERS OFF)
 ## communication ##
 ###################
 
-add_executable(mockcommunicationmodel source/communication/MockCommunicationModel.cpp)
-target_link_libraries(mockcommunicationmodel multirobotexploration ${catkin_LIBRARIES})
-
-add_executable(mocknetworkhandler source/communication/MockNetworkHandler.cpp)
-target_link_libraries(mocknetworkhandler multirobotexploration ${catkin_LIBRARIES})
+add_executable(mockcommunicationmodelnode source/communication/MockCommunicationModelNode.cpp)
+target_link_libraries(mockcommunicationmodelnode multirobotexploration ${catkin_LIBRARIES})
 
 ##################
 ## localization ##
@@ -76,8 +73,8 @@ target_link_libraries(mocknetworkhandler multirobotexploration ${catkin_LIBRARIE
 add_executable(gmappingpose source/localization/GmappingPose.cpp)
 target_link_libraries(gmappingpose ${catkin_LIBRARIES})
 
-add_executable(averagedisplacement source/localization/AverageDisplacement.cpp)
-target_link_libraries(averagedisplacement multirobotexploration ${catkin_LIBRARIES})
+add_executable(averagespeedestimator source/localization/AverageSpeedEstimator.cpp)
+target_link_libraries(averagespeedestimator multirobotexploration ${catkin_LIBRARIES})
 
 add_executable(relativeposeestimator source/localization/RelativePoseEstimator.cpp)
 target_link_libraries(relativeposeestimator multirobotexploration ${catkin_LIBRARIES})
@@ -86,12 +83,6 @@ target_link_libraries(relativeposeestimator multirobotexploration ${catkin_LIBRA
 ################
 ## navigation ##
 ################
-add_executable(potentialfieldlocalplanner source/navigation/PotentialFieldLocalPlanner.cpp)
-target_link_libraries(potentialfieldlocalplanner multirobotexploration ${OpenCV_LIBS} ${catkin_LIBRARIES})
-
-add_executable(desaicontroller source/navigation/DesaiController.cpp)
-target_link_libraries(desaicontroller multirobotexploration ${catkin_LIBRARIES})
-
 add_executable(subgoalnav source/navigation/SubGoalNav.cpp)
 target_link_libraries(subgoalnav multirobotexploration ${catkin_LIBRARIES})
 
@@ -121,9 +112,6 @@ target_link_libraries(fbmapfusionrelative multirobotexploration ${OpenCV_LIBS} $
 #############
 add_executable(lasertoworld source/laser/LaserToWorld.cpp)
 target_link_libraries(lasertoworld multirobotexploration ${catkin_LIBRARIES})
-
-add_executable(lasernoiser source/laser/LaserNoiser.cpp)
-target_link_libraries(lasernoiser multirobotexploration ${catkin_LIBRARIES})
 
 ##############
 ## policies ##
