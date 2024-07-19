@@ -51,9 +51,9 @@ MockCommunicationModelNode::MockCommunicationModelNode() {
     // load all parameters
     if(!node_handle.getParam("/robots", aRobots)) throw std::runtime_error("Could not retrieve /robots.");
     if(!node_handle.getParam("id", aId)) throw std::runtime_error("Could not retrieve id.");
-    if(!node_handle.getParam("queue_size", aQueueSize)) throw std::runtime_error("Could not retrieve queue_size.");
+    if(!node_handle.getParam("queue_size", aQueueSize)) aQueueSize = 2;
     if(!node_handle.getParam("comm_dist", aCommDist)) throw std::runtime_error("Could not retrieve comm_dist.");
-    if(!node_handle.getParam("rate", aRate)) throw std::runtime_error("Could not retrieve rate.");
+    if(!node_handle.getParam("rate", aRate)) aRate = 2.0;
     aNamespace = ros::NodeHandle().getNamespace();
 
     // initialize communication containers

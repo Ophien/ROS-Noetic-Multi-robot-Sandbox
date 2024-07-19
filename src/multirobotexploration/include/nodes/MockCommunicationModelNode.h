@@ -78,8 +78,8 @@ class MockCommunicationModelNode {
          */
         int aRobots;
         int aId;
-        int aRate;
         int aQueueSize;
+        double aRate;
         double aCommDist;
         std::string aNamespace;
 

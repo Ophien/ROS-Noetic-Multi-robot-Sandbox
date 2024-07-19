@@ -96,12 +96,12 @@ class FrontierDiscoveryNode {
          * Control variables
          */
         int aQueueSize;
-        int aRate;
         int aId;
         int aSeq;
         int aClusterDetectionMin;
         bool aReceivedCSpace;
         bool aHasPose;
+        double aRate;
         double aYaw;
         double aMaxLidarRange;
         Vec2i aPos;
