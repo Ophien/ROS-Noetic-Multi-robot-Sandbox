@@ -202,7 +202,7 @@
             <param name="queue_size" type="int" value="2" />
         </node>
 
-        <node name="node_averagedisplacement" pkg="multirobotexploration" type="averagedisplacement" output="screen">
+        <node name="node_averagevelocityestimator" pkg="multirobotexploration" type="averagevelocityestimatornode" output="screen">
             <param name="id" type="int" value="$(arg robot_id)"/>
             <param name="rate" type="double" value="5.0"/>
             <param name="queue_size" type="int" value="2"/>

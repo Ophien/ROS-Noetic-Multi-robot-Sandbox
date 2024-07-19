@@ -40,70 +40,73 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "ros/ros.h"
+/*
+ * Ros and system
+ */
+#include <deque>
 #include <string.h>
+#include "ros/ros.h"
+#include "tf/tf.h"
+
+/*
+ * Messages
+ */
 #include "std_msgs/Float32.h"
 #include "geometry_msgs/Pose.h"
 #include "multirobotsimulations/CustomPose.h"
-#include "tf/tf.h"
-#include <deque>
 
-double ComputeAverageDisplacement(std::deque<double>& deltas) {
-    double average_delta = 0.0;
-    for(std::deque<double>::iterator i = deltas.begin(); i != deltas.end(); ++i) average_delta += (*i);
-    if(deltas.size() > 0) average_delta /= deltas.size();
-    return average_delta;
-}
+/*
+ * Helpers
+ */
+#include "Common.h"
 
-int main(int argc, char* argv[]) {
-    ros::init(argc, argv, "averagedisplacement");
-    ros::NodeHandle node_handle;
-    ros::NodeHandle private_handle("~");
+/*
+ * Frontier discovery node class
+ */
+class AverageVelocityEstimatorNode {
+    public:
+        AverageVelocityEstimatorNode();
+        ~AverageVelocityEstimatorNode();
 
-    std::string ns = node_handle.getNamespace();
-    int id = -1;
-    double rate = 1.0;
-    int queue_size = 1;
-    int pos_to_consider = 2;
+    private:
+        double ComputeAverageVelocity(std::deque<double>& speedArray);
+        void WorldPoseCallback(multirobotsimulations::CustomPose::ConstPtr msg);
+        void Update();
 
-    private_handle.getParam("id", id);
-    private_handle.getParam("rate", rate);
-    private_handle.getParam("queue_size", queue_size);
-    private_handle.getParam("count", pos_to_consider);
+        /*
+         * Control variables
+         */
+        int aId;
+        int aQueueSize;
+        int aCount;
+        bool aReceivedPosition;
+        double aRate;
+        std::string aNamespace;
+        tf::Vector3 aLastWorldPos;
+        tf::Vector3 aWorldPos;
 
-    bool received_position = false;
-    tf::Vector3 last_pos;
-    tf::Vector3 world_pos;
-    tf::Vector3* robotlastPosePtr = &last_pos;
-    tf::Vector3* robotPosePtr = &world_pos;
-    std_msgs::Float32 displacement;
-    bool* received_position_ptr = &received_position;
-    ros::Subscriber ep = node_handle.subscribe<multirobotsimulations::CustomPose>(ns + "/gmapping_pose/world_pose", queue_size, 
-        [robotPosePtr,received_position_ptr,robotlastPosePtr](multirobotsimulations::CustomPoseConstPtr rMsg) {
-            robotPosePtr->setX(rMsg->pose.position.x);
-            robotPosePtr->setY(rMsg->pose.position.y);
-            if(!(*received_position_ptr)) { 
-                (*robotlastPosePtr) = (*robotPosePtr);
-                (*received_position_ptr) = true;
-            }
-        });
+        /*
+         * Routines
+         */
+        std::vector<ros::Timer> aTimers;
 
-    ros::Rate hz(rate);
-    std::deque<double> delta_distances;
-    ros::Publisher displace_pub = node_handle.advertise<std_msgs::Float32>(ns + "/avgd_average_displacement", queue_size);
+        /*
+         * Subscribers
+         */
+        std::vector<ros::Subscriber> aSubscribers;
+        
+        /*
+         * Advertisers
+         */   
+        ros::Publisher aAverageVelocityPublisher;
 
-    while(ros::ok()) {
-        if(received_position) {
-            double average_displace = ComputeAverageDisplacement(delta_distances);
-            displacement.data = average_displace;
-            displace_pub.publish(displacement);
-        }
+        /*
+         * Messages
+         */
+        std_msgs::Float32 aAverageVelocityMsg;
 
-        delta_distances.push_back(world_pos.distance(last_pos));
-        if(delta_distances.size() > pos_to_consider) delta_distances.pop_front();
-        last_pos = world_pos;
-
-        ros::spinOnce();
-        hz.sleep();
-    }
-}
+        /*
+         * Helpers
+         */
+         std::deque<double> aVelocityArray;
+};

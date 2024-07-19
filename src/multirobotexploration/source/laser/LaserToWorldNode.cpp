@@ -82,11 +82,11 @@ LaserToWorldNode::LaserToWorldNode() {
             aQueueSize, 
             std::bind(&LaserToWorldNode::OccupancyGridCallback, this, std::placeholders::_1)));
 
-    // Advertisers
+    // advertisers
     aLidarPublisher = node_handle.advertise<geometry_msgs::PoseArray>(aNamespace + "/laser_to_world/laser_world", aQueueSize);
     aOccLidarPublisher = node_handle.advertise<geometry_msgs::PoseArray>(aNamespace + "/laser_to_world/laser_occ", aQueueSize);
 
-    // Node's routines
+    // node's routines
     double update_period = PeriodToFreqAndFreqToPeriod(aRate);
     aTimers.push_back(node_handle.createTimer(ros::Duration(update_period), std::bind(&LaserToWorldNode::Update, this)));
 }
