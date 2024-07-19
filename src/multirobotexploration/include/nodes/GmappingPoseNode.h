@@ -43,34 +43,38 @@
 /*
  * Ros and system
  */
-#include <deque>
+#include <iostream>
+#include <stdio.h>
 #include <string.h>
 #include "ros/ros.h"
+#include "tf2_ros/transform_listener.h"
+#include "tf/LinearMath/Matrix3x3.h"
 #include "tf/tf.h"
 
 /*
  * Messages
  */
-#include "std_msgs/Float32.h"
+#include "geometry_msgs/TransformStamped.h"
 #include "geometry_msgs/Pose.h"
+#include "geometry_msgs/Point.h"
+#include "nav_msgs/MapMetaData.h"
+#include "nav_msgs/OccupancyGrid.h"
 #include "multirobotsimulations/CustomPose.h"
+#include "geometry_msgs/PoseStamped.h"
+#include "nav_msgs/Path.h"
 
 /*
  * Helpers
  */
 #include "Common.h"
 
-/*
- * AverageVelocityEstimatorNode class
- */
-class AverageVelocityEstimatorNode {
+class GmappingPoseNode {
     public:
-        AverageVelocityEstimatorNode();
-        ~AverageVelocityEstimatorNode();
+        GmappingPoseNode();
+        ~GmappingPoseNode();
 
     private:
-        double ComputeAverageVelocity(std::deque<double>& speedArray);
-        void WorldPoseCallback(multirobotsimulations::CustomPose::ConstPtr msg);
+        void OccCallback(nav_msgs::OccupancyGrid::ConstPtr msg);
         void Update();
 
         /*
@@ -78,12 +82,11 @@ class AverageVelocityEstimatorNode {
          */
         int aId;
         int aQueueSize;
-        int aCount;
-        bool aReceivedPosition;
+        bool aHasOcc;
         double aRate;
         std::string aNamespace;
-        tf::Vector3 aLastWorldPos;
-        tf::Vector3 aWorldPos;
+        std::string aTFBaseLink;
+        std::string aTFMap;
 
         /*
          * Routines
@@ -98,15 +101,22 @@ class AverageVelocityEstimatorNode {
         /*
          * Advertisers
          */   
-        ros::Publisher aAverageVelocityPublisher;
+        ros::Publisher aPosePublisher;
+        ros::Publisher aPoseStampedPublisher;
+        ros::Publisher aPathPublisher;
 
         /*
          * Messages
          */
-        std_msgs::Float32 aAverageVelocityMsg;
+        nav_msgs::OccupancyGrid aOcc;
+        multirobotsimulations::CustomPose aPose;
+        geometry_msgs::PoseStamped aPoseStamped;
+        nav_msgs::Path aPath;
 
         /*
          * Helpers
          */
-         std::deque<double> aVelocityArray;
+        std::shared_ptr<tf2_ros::Buffer> aTFBuffer;
+        std::shared_ptr<tf2_ros::TransformListener> aTFListener;
+
 };

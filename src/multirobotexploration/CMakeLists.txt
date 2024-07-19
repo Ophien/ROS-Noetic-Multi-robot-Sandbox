@@ -70,8 +70,8 @@ target_link_libraries(mockcommunicationmodelnode multirobotexploration ${catkin_
 ##################
 ## localization ##
 ##################
-add_executable(gmappingpose source/localization/GmappingPose.cpp)
-target_link_libraries(gmappingpose ${catkin_LIBRARIES})
+add_executable(gmappingposenode source/localization/GmappingPoseNode.cpp)
+target_link_libraries(gmappingposenode ${catkin_LIBRARIES})
 
 add_executable(averagevelocityestimatornode source/localization/AverageVelocityEstimatorNode.cpp)
 target_link_libraries(averagevelocityestimatornode multirobotexploration ${catkin_LIBRARIES})

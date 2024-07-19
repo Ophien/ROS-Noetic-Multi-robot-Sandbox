@@ -209,7 +209,7 @@
             <param name="count" type="int" value="10"/>
         </node>
 
-        <node name="node_gmappingpose" pkg="multirobotexploration" type="gmappingpose">
+        <node name="node_gmappingpose" pkg="multirobotexploration" type="gmappingposenode">
             <param name="id" type="int" value="$(arg robot_id)"/>
             <param name="rate" type="int" value="10"/>
             <param name="queue_size" type="int" value="2" />
