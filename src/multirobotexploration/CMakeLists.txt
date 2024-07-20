@@ -76,8 +76,8 @@ target_link_libraries(gmappingposenode ${catkin_LIBRARIES})
 add_executable(averagevelocityestimatornode source/localization/AverageVelocityEstimatorNode.cpp)
 target_link_libraries(averagevelocityestimatornode multirobotexploration ${catkin_LIBRARIES})
 
-add_executable(relativeposeestimator source/localization/RelativePoseEstimator.cpp)
-target_link_libraries(relativeposeestimator multirobotexploration ${catkin_LIBRARIES})
+add_executable(relativeposeestimatornode source/localization/RelativePoseEstimatorNode.cpp)
+target_link_libraries(relativeposeestimatornode multirobotexploration ${catkin_LIBRARIES})
 
 
 ################

@@ -215,7 +215,7 @@
             <param name="queue_size" type="int" value="2" />
         </node>
 
-        <node name="node_relativeposes" pkg="multirobotexploration" type="relativeposeestimator" output="screen">
+        <node name="node_relativeposes" pkg="multirobotexploration" type="relativeposeestimatornode" output="screen">
             <param name="id" type="int" value="$(arg robot_id)"/>
             <param name="rate" type="int" value="5" />
             <param name="queue_size" type="int" value="2" />
