@@ -280,7 +280,9 @@ int main(int argc, char* argv[]) {
             teb_poses.poses.clear();
             TebOptimalPlannerPtr best_teb = planner->bestTeb();
             if(best_teb != nullptr) {
-                for (int i=0; i < best_teb->teb().sizePoses(); ++i) {
+                int to_share = 10;
+                if(to_share > best_teb->teb().sizePoses()) to_share = best_teb->teb().sizePoses();
+                for (int i=0; i < to_share; ++i) {
                     geometry_msgs::Pose to_publish;
                     to_publish.position.x = best_teb->teb().Pose(i).x();
                     to_publish.position.y = best_teb->teb().Pose(i).y();

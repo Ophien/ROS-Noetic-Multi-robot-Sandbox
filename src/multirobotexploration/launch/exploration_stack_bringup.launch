@@ -183,7 +183,7 @@
         </node>
 
         <node name="node_lasertoworld" pkg="multirobotexploration" type="lasertoworldnode">
-            <param name="rate" type="int" value="2"/>
+            <param name="rate" type="double" value="2"/>
             <param name="queue_size" type="int" value="2" />
         </node>
 
@@ -197,7 +197,7 @@
 
         <node name="node_frontierdiscovery_node" pkg="multirobotexploration" type="frontierdiscoverynode" output="screen">
             <param name="id" type="int" value="$(arg robot_id)"/>
-            <param name="rate" type="int" value="1"/> 
+            <param name="rate" type="double" value="1"/> 
             <param name="max_lidar_range" type="double" value="10.0"/>
             <param name="queue_size" type="int" value="2" />
         </node>
@@ -211,20 +211,20 @@
 
         <node name="node_gmappingpose" pkg="multirobotexploration" type="gmappingposenode">
             <param name="id" type="int" value="$(arg robot_id)"/>
-            <param name="rate" type="int" value="10"/>
+            <param name="rate" type="double" value="10"/>
             <param name="queue_size" type="int" value="2" />
         </node>
 
         <node name="node_relativeposes" pkg="multirobotexploration" type="relativeposeestimatornode" output="screen">
             <param name="id" type="int" value="$(arg robot_id)"/>
-            <param name="rate" type="int" value="5" />
+            <param name="rate" type="double" value="5" />
             <param name="queue_size" type="int" value="2" />
         </node>
         
-        <node name="node_cspace" pkg="multirobotexploration" type="cspace" output="screen">
+        <node name="node_cspace" pkg="multirobotexploration" type="cspacenode" output="screen">
             <param name="id" type="int" value="$(arg robot_id)"/>
-            <param name="rate" type="int" value="1"/>
             <param name="queue_size" type="int" value="2"/>
+            <param name="rate" type="double" value="1"/>
             <param name="max_lidar_range" type="double" value="10.0"/>
             <param name="free_inflation_radius" type="double" value="0.3"/>
             <param name="ocu_inflation_radius" type="double" value="0.5"/>
@@ -234,7 +234,7 @@
 
         <node name="node_localdynamicmap" pkg="multirobotexploration" type="localdynamicmap" output="screen">
             <param name="id" type="int" value="$(arg robot_id)"/>
-            <param name="rate" type="int" value="5"/>
+            <param name="rate" type="double" value="5"/>
             <param name="queue_size" type="int" value="1"/>
             <param name="max_lidar_range" type="double" value="10.0"/>
             <param name="free_inflation_radius" type="double" value="5.0"/>
@@ -245,7 +245,7 @@
 
         <node name="node_fbmapfusion" pkg="multirobotexploration" type="fbmapfusionrelative" output="screen">
             <param name="id" type="int" value="$(arg robot_id)"/>
-            <param name="rate" type="int" value="1"/>
+            <param name="rate" type="double" value="1"/>
             <param name="queue_size" type="int" value="2" />
         </node>
 
@@ -311,6 +311,8 @@
             <param name="rate" value="1"/>
             <param name="queue_size" value="2"/>
         </node>-->
+
+        <node name="rviz" pkg="rviz" type="rviz"  args="-d $(find multirobotexploration)/rviz/robot_$(arg robot_id).rviz"/>
     </group>
 
 </launch>
