@@ -243,7 +243,7 @@
             <param name="local_view_size"  type="double" value="5.0"/>
         </node>
 
-        <node name="node_fbmapfusion" pkg="multirobotexploration" type="fbmapfusionrelative" output="screen">
+        <node name="node_mapsticthing" pkg="multirobotexploration" type="mapstitchingnode" output="screen">
             <param name="id" type="int" value="$(arg robot_id)"/>
             <param name="rate" type="double" value="1"/>
             <param name="queue_size" type="int" value="2" />

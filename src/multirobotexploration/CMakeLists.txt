@@ -104,8 +104,8 @@ target_link_libraries(cspacenode multirobotexploration ${catkin_LIBRARIES})
 add_executable(localcspacenode source/map/LocalCSpaceNode.cpp)
 target_link_libraries(localcspacenode multirobotexploration ${catkin_LIBRARIES})
 
-add_executable(fbmapfusionrelative source/map/FBMapFusionRelative.cpp)
-target_link_libraries(fbmapfusionrelative multirobotexploration ${OpenCV_LIBS} ${catkin_LIBRARIES})
+add_executable(mapstitchingnode source/map/MapStitchingNode.cpp)
+target_link_libraries(mapstitchingnode multirobotexploration ${OpenCV_LIBS} ${catkin_LIBRARIES})
 
 #############
 ## sensors ##
