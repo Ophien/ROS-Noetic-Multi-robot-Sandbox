@@ -40,15 +40,16 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "CSpaceNode.h"
+#include "LocalCSpaceNode.h"
 
-CSpaceNode::CSpaceNode() {
+LocalCSpaceNode::LocalCSpaceNode() {
     ros::NodeHandle node_handle("~");
 
     // load all parameters
     if(!node_handle.getParam("/robots", aRobots)) throw std::runtime_error("Could not retrieve /robots");
     if(!node_handle.getParam("id", aId)) throw std::runtime_error("Could not retrieve id.");
     if(!node_handle.getParam("lidar_sources", aLidarSources)) throw std::runtime_error("Could not retrieve lidar_sources.");
+    if(!node_handle.getParam("local_view_size", aLocalViewSize)) aLocalViewSize = 5.0;
     if(!node_handle.getParam("rate", aRate)) aRate = 2.0;
     if(!node_handle.getParam("queue_size", aQueueSize)) aQueueSize = 2;
     if(!node_handle.getParam("max_lidar_range", aLidarRange)) aLidarRange = 10.0;
@@ -87,146 +88,165 @@ CSpaceNode::CSpaceNode() {
     aSubscribers.push_back(node_handle.subscribe<std_msgs::Int8MultiArray>(
                             aNamespace + "/mock_communication_model/robots_in_comm", 
                             aQueueSize,
-                            std::bind(&CSpaceNode::RobotsInCommCallback, this, std::placeholders::_1)));
+                            std::bind(&LocalCSpaceNode::RobotsInCommCallback, this, std::placeholders::_1)));
 
     aSubscribers.push_back(node_handle.subscribe<multirobotsimulations::CustomPose>(
                                 aNamespace + "/gmapping_pose/world_pose", 
                                 aQueueSize,
-                                std::bind(&CSpaceNode::WorldPoseCallback, this, std::placeholders::_1)));
+                                std::bind(&LocalCSpaceNode::WorldPoseCallback, this, std::placeholders::_1)));
 
     aSubscribers.push_back(node_handle.subscribe<nav_msgs::OccupancyGrid>(
                             aNamespace + "/map", 
                             aQueueSize, 
-                            std::bind(&CSpaceNode::OccCallback, this, std::placeholders::_1)));
+                            std::bind(&LocalCSpaceNode::OccCallback, this, std::placeholders::_1)));
 
     // Advertisers
-    aCspacePublisher = node_handle.advertise<nav_msgs::OccupancyGrid>(aNamespace + "/c_space", aQueueSize);
+    aObstaclesPublisher = node_handle.advertise<costmap_converter::ObstacleArrayMsg>(aNamespace + "/obstacle_cells", aQueueSize);
+    aLocalCSpacePublisher = node_handle.advertise<nav_msgs::OccupancyGrid>(aNamespace + "/c_space_local", aQueueSize);
+    aOccupiedPositionsPublisher = node_handle.advertise<geometry_msgs::PoseArray>(aNamespace + "/local_occupied_poses", aQueueSize);
+    aFreePositionsPublisher = node_handle.advertise<geometry_msgs::PoseArray>(aNamespace + "/local_free_poses", aQueueSize);
 
     // Node's routines
     double update_period = PeriodToFreqAndFreqToPeriod(aRate);
-    aTimers.push_back(node_handle.createTimer(ros::Duration(update_period), std::bind(&CSpaceNode::Update, this)));
+    aTimers.push_back(node_handle.createTimer(ros::Duration(update_period), std::bind(&LocalCSpaceNode::Update, this)));
 }
 
-CSpaceNode::~CSpaceNode() {
+LocalCSpaceNode::~LocalCSpaceNode() {
 
 }
 
-void CSpaceNode::RobotsInCommCallback(std_msgs::Int8MultiArray::ConstPtr msg) {
+void LocalCSpaceNode::RobotsInCommCallback(std_msgs::Int8MultiArray::ConstPtr msg) {
     aRobotsInCommMsg.data.assign(msg->data.begin(), msg->data.end());
 }
 
-void CSpaceNode::WorldPoseCallback(multirobotsimulations::CustomPose::ConstPtr msg) {
+void LocalCSpaceNode::WorldPoseCallback(multirobotsimulations::CustomPose::ConstPtr msg) {
     if(!aHasPose) aHasPose = true;
     aWorldPoseMsg.robot_id = msg->robot_id;
     aWorldPoseMsg.pose.position = msg->pose.position;
     aWorldPoseMsg.pose.orientation = msg->pose.orientation;
 }
 
-void CSpaceNode::OccCallback(nav_msgs::OccupancyGrid::ConstPtr msg) {
+void LocalCSpaceNode::OccCallback(nav_msgs::OccupancyGrid::ConstPtr msg) {
     if(!aHasOcc) aHasOcc = true;
     aOccMsg.data.assign(msg->data.begin(), msg->data.end());
     aOccMsg.info = msg->info;
     aOccMsg.header = msg->header;
 }
 
-void CSpaceNode::Inflate(nav_msgs::OccupancyGrid& occ,
-            nav_msgs::OccupancyGrid& free,
-            nav_msgs::OccupancyGrid& occupied, 
-            const double& freeInflationRadius,
-            const double& occupiedInflationRadius, 
-            const int8_t& occupancyThreshold,
-            const int8_t& freeThreshold,
-            const int8_t& occupiedValue,
-            const int8_t& freeVal) {
-    free.data.assign(occ.data.begin(), occ.data.end());
-    free.header = occ.header;
-    free.info = occ.info;
-
-    occupied.data.assign(occ.data.begin(), occ.data.end());
-    occupied.header = occ.header;
-    occupied.info = occ.info;
-
-    int index;
-    int8_t val;
-    int8_t raw_val;
-    int width = occ.info.width;
-    int height = occ.info.height;
-    int irp_occu = static_cast<int>(occupiedInflationRadius / occ.info.resolution);
-    int irp_free = static_cast<int>(freeInflationRadius / occ.info.resolution);
-    for(int y = 0; y < occ.info.height; ++y) {
-        for(int x = 0; x < occ.info.width; ++x) {
-            index = y * width + x;
-            val = occ.data[index];
-            if(val > occupancyThreshold)
-                ApplyMask(x, y, irp_occu, occupied.data, occupiedValue, width, height);
-            else if(val >= 0 && val < freeThreshold)
-                ApplyMask(x, y, irp_free, free.data, freeVal, width, height);
-        }
+void LocalCSpaceNode::ClearLocalTrajectories(std::vector<geometry_msgs::PoseArray>& local, std_msgs::Int8MultiArray& comm) {
+    for(size_t robot = 0; robot < local.size(); ++robot) {
+        if(comm.data[robot] == 0) local[robot].poses.clear();
     }
 }
 
-void CSpaceNode::ApplyDynamicData(nav_msgs::OccupancyGrid& occ,
-                                         nav_msgs::OccupancyGrid& dynamicOcc,
-                                         std::vector<geometry_msgs::PoseArray>& lidarSources,
-                                         const double& maxLidarRange,
-                                         const int8_t& occupiedValue) {
-    dynamicOcc.data.assign(occ.data.begin(), occ.data.end());
-    dynamicOcc.header = occ.header;
-    dynamicOcc.info = occ.info;
-    double range;
-    int width = occ.info.width;
-    Vec2i pos;
+void LocalCSpaceNode::CreateLocal(nav_msgs::OccupancyGrid& dynamicOcc, 
+                nav_msgs::OccupancyGrid& localMap,
+                costmap_converter::ObstacleArrayMsg& obsarraymsg,
+                geometry_msgs::PoseArray& occupiedPoses,
+                geometry_msgs::PoseArray& freePoses,
+                tf::Vector3& worldPose,
+                tf::Vector3& occPose,
+                const double& freeInflationRadius,
+                const double& occupiedInflationRadius, 
+                const int& windws_size_meters,
+                const int8_t& occupancyThreshold,
+                const int8_t& freeThreshold,
+                const int8_t& occupiedValue,
+                const int8_t& freeVal,
+                const int8_t& unknownVal) {
+    // this should be received as parameter
+    obsarraymsg.obstacles.clear();
 
-    // enhance with peripheral lidars
-    for(size_t source = 0; source < lidarSources.size(); ++source) {
-        for(size_t pose = 0; pose < lidarSources[source].poses.size(); ++pose) {
-            pos.x = static_cast<int>(lidarSources[source].poses[pose].position.x);
-            pos.y = static_cast<int>(lidarSources[source].poses[pose].position.y);
-            range = lidarSources[source].poses[pose].position.z;
-            if(range <= maxLidarRange & range >= 0.01) { 
-                dynamicOcc.data[pos.y*width+pos.x] = occupiedValue;
+    // convert local view size here and compute the size 
+    // of the local view
+    int size_in_pixels = (int)(windws_size_meters / dynamicOcc.info.resolution) + 1;
+    int length = size_in_pixels + 1;
+    int half_length = (int)(length/2.0);
+    Vec2i start = Vec2i::Create(occPose.getX() - half_length, occPose.getY() - half_length);
+    Vec2i end   = Vec2i::Create(occPose.getX() + half_length, occPose.getY() + half_length);
+    int ix, iy, index;
+    int irp_occu = (int)(occupiedInflationRadius / dynamicOcc.info.resolution);
+    int irp_free = (int)(freeInflationRadius / dynamicOcc.info.resolution);
+
+    // allocate data for the local map
+    localMap.data.assign(length*length, -1);
+    localMap.header = dynamicOcc.header;
+    localMap.info = dynamicOcc.info;
+    localMap.info.width = length;
+    localMap.info.height = length;
+    localMap.info.origin.position.x = worldPose.getX() - (localMap.info.width * dynamicOcc.info.resolution) / 2.0;
+    localMap.info.origin.position.y = worldPose.getY() - (localMap.info.height * dynamicOcc.info.resolution) / 2.0;
+
+    nav_msgs::OccupancyGrid free;
+    nav_msgs::OccupancyGrid occu;
+    free.data.assign(length*length, -1);
+    occu.data.assign(length*length, -1);
+    obsarraymsg.header = dynamicOcc.header;
+
+    // copy local
+    int id = 0;
+    for(int y = 0; y < length; ++y) {
+        iy = y + start.y;
+        for(int x = 0; x < length; ++x) {
+            ix = x + start.x;
+            index = iy * dynamicOcc.info.width + ix;
+
+            // free
+            if(dynamicOcc.data[index] >= 0 && dynamicOcc.data[index] <= 50)
+                ApplyMask(x,y,irp_free, free.data, freeVal, length, length);
+            if(dynamicOcc.data[index] > occupancyThreshold) {
+                ApplyMask(x,y,irp_occu, occu.data, occupiedValue, length, length);
+                id += 1;
+            }
+        }
+    }
+
+    // inflate and check obstacles polygons' positions
+    // get valid obstacles and free pos
+    occupiedPoses.poses.clear();
+    freePoses.poses.clear();
+    ApplyMask(half_length,half_length, 3, free.data, freeVal, length, length);
+    localMap.data.assign(free.data.begin(), free.data.end());
+
+    for(int y = 0; y < length; ++y) {
+        iy = y + start.y;
+        for(int x = 0; x < length; ++x) {
+            ix = x + start.x;
+            int index = y*length+x;
+            if(occu.data[index] > occupancyThreshold) {
+                localMap.data[index] = occupiedValue;
+                
+                // set and obstacle in the obstacle msg
+                costmap_converter::ObstacleMsg obs_msg;
+                obs_msg.header = dynamicOcc.header;
+                obs_msg.id = id;
+
+                Vec2i cur = Vec2i::Create(ix,iy);
+                tf::Vector3 world;
+                MapToWorld(dynamicOcc, cur, world);
+                
+                geometry_msgs::Point32 pmsg;
+                pmsg.x = world.getX();
+                pmsg.y = world.getY();
+                pmsg.z = 0.0;
+                
+                // set pose array message wih the obstacle's position
+                obs_msg.radius = 0.0;
+                obs_msg.velocities = geometry_msgs::TwistWithCovariance();
+                geometry_msgs::Pose p; p.position.x = x; p.position.y = y;
+
+                obs_msg.polygon.points.push_back(pmsg);
+                obsarraymsg.obstacles.push_back(obs_msg);
+                occupiedPoses.poses.push_back(p);
+            } else if (localMap.data[index] >= 0 && localMap.data[index] < occupiedValue) {
+                geometry_msgs::Pose p; p.position.x = x; p.position.y = y;
+                freePoses.poses.push_back(p);
             }
         }
     }
 }
 
-void CSpaceNode::GenerateCSpace(nav_msgs::OccupancyGrid& free,
-                    nav_msgs::OccupancyGrid& occupied,
-                    nav_msgs::OccupancyGrid& cspace,
-                    tf::Vector3& occ_pose,
-                    const int8_t& unknownVal) {
-    // copy data for local grids
-    cspace.data.assign(occupied.data.begin(), occupied.data.end());
-    cspace.header = occupied.header;
-    cspace.info = occupied.info;
-
-    int occ_val;
-    int fre_val;
-    int x = occ_pose.getX();
-    int y = occ_pose.getY();
-    
-    for(size_t index = 0; index < cspace.data.size(); ++index) {
-        occ_val = occupied.data[index];
-        fre_val = free.data[index];
-
-        // should cpy the filtered free values and then the occupied ones
-        // this creates a map without noise
-        if(fre_val != unknownVal) cspace.data[index] = fre_val;
-        if(occ_val != unknownVal) cspace.data[index] = occ_val;
-    }
-}
-
-void CSpaceNode::InflatePoseForPlanner(nav_msgs::OccupancyGrid& cspace,
-                           const double& freeInflationRadius,
-                           const int& x, 
-                           const int& y,
-                           const int8_t& occupancyThreshold,
-                           const int8_t& freeVal) {
-    int irp_free = static_cast<int>(freeInflationRadius / cspace.info.resolution);
-    ApplyMask(x,y,irp_free,cspace.data,freeVal,cspace.info.width,cspace.info.height,occupancyThreshold,false);
-}
-
-void CSpaceNode::ApplyDynamicData(nav_msgs::OccupancyGrid& occ,
+void LocalCSpaceNode::ApplyDynamicData(nav_msgs::OccupancyGrid& occ,
                                          nav_msgs::OccupancyGrid& dynamicOcc,
                                          std::vector<geometry_msgs::PoseArray>& lidarSources,
                                          std::vector<geometry_msgs::PoseArray>& otherSources,
@@ -235,8 +255,8 @@ void CSpaceNode::ApplyDynamicData(nav_msgs::OccupancyGrid& occ,
     dynamicOcc.data.assign(occ.data.begin(), occ.data.end());
     dynamicOcc.header = occ.header;
     dynamicOcc.info = occ.info;
-    double range;
     int width = occ.info.width;
+    double range;
     Vec2i pos;
 
     // enhance with peripheral lidars
@@ -259,13 +279,7 @@ void CSpaceNode::ApplyDynamicData(nav_msgs::OccupancyGrid& occ,
     }
 }
 
-void CSpaceNode::ClearLocalTrajectories(std::vector<geometry_msgs::PoseArray>& local, std_msgs::Int8MultiArray& comm) {
-    for(size_t robot = 0; robot < local.size(); ++robot) {
-        if(comm.data[robot] == 0) local[robot].poses.clear();
-    }
-}
-
-void CSpaceNode::Update() {
+void LocalCSpaceNode::Update() {
     if(!aHasOcc || !aHasPose) return;
 
     /*
@@ -274,20 +288,32 @@ void CSpaceNode::Update() {
     ClearLocalTrajectories(aTrajectoriesArray, aRobotsInCommMsg);
 
     ApplyDynamicData(aOccMsg, aOccWithDynamicDataMsg, aLidarsArray, aTrajectoriesArray);
-
-    // create c_space at the secified rate
-    Inflate(aOccWithDynamicDataMsg, aFreeCellsMsg, aOccupiedCellsMsg, aFreeInflateRadius, aOccuInflateRadius);
-    
     WorldToMap(aOccMsg, aWorldPoseMsg.pose, aOccPose);
-    GenerateCSpace(aFreeCellsMsg, aOccupiedCellsMsg, aCspaceMsg, aOccPose);
-    InflatePoseForPlanner(aCspaceMsg, aFreeInflateRadius, aOccPose.getX(), aOccPose.getY());
 
-    // publish the occ
-    aCspacePublisher.publish(aCspaceMsg);
+    tf::Vector3 world_pose;
+    world_pose.setX(aWorldPoseMsg.pose.position.x);
+    world_pose.setY(aWorldPoseMsg.pose.position.y);
+    world_pose.setZ(aWorldPoseMsg.pose.position.z);
+    
+    CreateLocal(aOccWithDynamicDataMsg, 
+                aLocalCspaceMsg, 
+                aObsarrayMsg, 
+                aOccupiedPosesMsg, 
+                aFreePosesMsg, 
+                world_pose,
+                aOccPose,
+                aFreeInflateRadius, 
+                aOccuInflateRadius, 
+                aLocalViewSize);
+
+    aObstaclesPublisher.publish(aObsarrayMsg);
+    aLocalCSpacePublisher.publish(aLocalCspaceMsg);
+    aOccupiedPositionsPublisher.publish(aOccupiedPosesMsg);
+    aFreePositionsPublisher.publish(aFreePosesMsg);
 }
 
 int main(int argc, char* argv[]) {
     ros::init(argc, argv, "cspacenode");
-    std::unique_ptr<CSpaceNode> relativePoseEstimatorNode = std::make_unique<CSpaceNode>();
+    std::unique_ptr<LocalCSpaceNode> relativePoseEstimatorNode = std::make_unique<LocalCSpaceNode>();
     ros::spin();
 }

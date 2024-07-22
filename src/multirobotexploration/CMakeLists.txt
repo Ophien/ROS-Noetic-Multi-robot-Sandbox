@@ -101,8 +101,8 @@ target_link_libraries(frontierdiscoverynode multirobotexploration ${catkin_LIBRA
 add_executable(cspacenode source/map/CSpaceNode.cpp)
 target_link_libraries(cspacenode multirobotexploration ${catkin_LIBRARIES})
 
-add_executable(localdynamicmap source/map/LocalDynamicMap.cpp)
-target_link_libraries(localdynamicmap multirobotexploration ${catkin_LIBRARIES})
+add_executable(localcspacenode source/map/LocalCSpaceNode.cpp)
+target_link_libraries(localcspacenode multirobotexploration ${catkin_LIBRARIES})
 
 add_executable(fbmapfusionrelative source/map/FBMapFusionRelative.cpp)
 target_link_libraries(fbmapfusionrelative multirobotexploration ${OpenCV_LIBS} ${catkin_LIBRARIES})

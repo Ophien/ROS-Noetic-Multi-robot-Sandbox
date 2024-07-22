@@ -66,29 +66,29 @@
 #include "Common.h"
 
 /*
- * CSpaceNode class
+ * LocalCSpaceNode class
  */
-class CSpaceNode {
+class LocalCSpaceNode {
     public:
-        CSpaceNode();
-        ~CSpaceNode();
+        LocalCSpaceNode();
+        ~LocalCSpaceNode();
 
     private:
-        void Inflate(nav_msgs::OccupancyGrid& occ,
-                        nav_msgs::OccupancyGrid& free,
-                        nav_msgs::OccupancyGrid& occupied, 
-                        const double& freeInflationRadius,
-                        const double& occupiedInflationRadius, 
-                        const int8_t& occupancyThreshold = 90,
-                        const int8_t& freeThreshold = 50,
-                        const int8_t& occupiedValue = 100,
-                        const int8_t& freeVal = 1);
-
-        void ApplyDynamicData(nav_msgs::OccupancyGrid& occ,
-                                nav_msgs::OccupancyGrid& dynamicOcc,
-                                std::vector<geometry_msgs::PoseArray>& lidarSources,
-                                const double& maxLidarRange = 10.0,
-                                const int8_t& occupiedValue = 100);
+        void CreateLocal(nav_msgs::OccupancyGrid& dynamicOcc, 
+                            nav_msgs::OccupancyGrid& localMap,
+                            costmap_converter::ObstacleArrayMsg& obsarraymsg,
+                            geometry_msgs::PoseArray& occupiedPoses,
+                            geometry_msgs::PoseArray& freePoses,
+                            tf::Vector3& worldPose,
+                            tf::Vector3& occPose,
+                            const double& freeInflationRadius,
+                            const double& occupiedInflationRadius, 
+                            const int& windws_size_meters,
+                            const int8_t& occupancyThreshold = 90,
+                            const int8_t& freeThreshold = 50,
+                            const int8_t& occupiedValue = 100,
+                            const int8_t& freeVal = 1,
+                            const int8_t& unknownVal = -1);
 
         void ApplyDynamicData(nav_msgs::OccupancyGrid& occ,
                                 nav_msgs::OccupancyGrid& dynamicOcc,
@@ -96,20 +96,6 @@ class CSpaceNode {
                                 std::vector<geometry_msgs::PoseArray>& otherSources,
                                 const double& maxLidarRange = 10.0,
                                 const int8_t& occupiedValue = 100);
-
-        void GenerateCSpace(nav_msgs::OccupancyGrid& free,
-                                nav_msgs::OccupancyGrid& occupied,
-                                nav_msgs::OccupancyGrid& cspace,
-                                tf::Vector3& occ_pose,
-                                const int8_t& unknownVal = -1);
-
-        void InflatePoseForPlanner(nav_msgs::OccupancyGrid& cspace,
-                                    const double& freeInflationRadius,
-                                    const int& x, 
-                                    const int& y,
-                                    const int8_t& occupancyThreshold = 90,
-                                    const int8_t& freeVal = 1);
-
         void ClearLocalTrajectories(std::vector<geometry_msgs::PoseArray>& local, 
                                     std_msgs::Int8MultiArray& comm);
 
@@ -127,6 +113,7 @@ class CSpaceNode {
         int aId;
         int aLidarSources;
         int aRobots;
+        int aLocalViewSize;
         bool aHasOcc;
         bool aHasPose;
         double aRate;
@@ -135,6 +122,7 @@ class CSpaceNode {
         double aOccuInflateRadius;
         tf::Vector3 aOccPose;
         std::string aNamespace;
+
 
         /*
          * Routines
@@ -149,19 +137,23 @@ class CSpaceNode {
         /*
          * Advertisers
          */   
-        ros::Publisher aCspacePublisher;
+        ros::Publisher aObstaclesPublisher;
+        ros::Publisher aLocalCSpacePublisher;
+        ros::Publisher aOccupiedPositionsPublisher;
+        ros::Publisher aFreePositionsPublisher;
 
         /*
          * Messages
          */
         nav_msgs::OccupancyGrid aOccMsg;
-        nav_msgs::OccupancyGrid aFreeCellsMsg;
-        nav_msgs::OccupancyGrid aOccupiedCellsMsg;
         nav_msgs::OccupancyGrid aOccWithDynamicDataMsg;
-        nav_msgs::OccupancyGrid aCspaceMsg;
+        nav_msgs::OccupancyGrid aLocalCspaceMsg;
+        std_msgs::Int8MultiArray aRobotsInCommMsg;    
         multirobotsimulations::CustomPose aWorldPoseMsg;
-        std_msgs::Int8MultiArray aRobotsInCommMsg;
-
+        costmap_converter::ObstacleArrayMsg aObsarrayMsg;
+        geometry_msgs::PoseArray aOccupiedPosesMsg;
+        geometry_msgs::PoseArray aFreePosesMsg;
+        
         /*
          * Helpers
          */

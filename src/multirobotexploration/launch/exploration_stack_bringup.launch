@@ -232,7 +232,7 @@
             <remap from="/robot_$(arg robot_id)/map" to="/robot_$(arg robot_id)/fusion"/>
         </node>
 
-        <node name="node_localdynamicmap" pkg="multirobotexploration" type="localdynamicmap" output="screen">
+        <node name="node_localcspace" pkg="multirobotexploration" type="localcspacenode" output="screen">
             <param name="id" type="int" value="$(arg robot_id)"/>
             <param name="rate" type="double" value="5"/>
             <param name="queue_size" type="int" value="1"/>
