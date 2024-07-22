@@ -234,7 +234,7 @@
 
         <node name="node_localcspace" pkg="multirobotexploration" type="localcspacenode" output="screen">
             <param name="id" type="int" value="$(arg robot_id)"/>
-            <param name="rate" type="double" value="5"/>
+            <param name="rate" type="double" value="15"/>
             <param name="queue_size" type="int" value="1"/>
             <param name="max_lidar_range" type="double" value="10.0"/>
             <param name="free_inflation_radius" type="double" value="5.0"/>
@@ -251,14 +251,15 @@
 
         <node name="node_subgoalnav" pkg="multirobotexploration" type="subgoalnav" output="screen">
             <param name="id" type="int" value="$(arg robot_id)"/>
-            <param name="rate" type="double" value="2.0" />
+            <param name="rate" type="double" value="2" />
             <param name="reach_threshold" type="double" value="0.3"/>
             <param name="queue_size" type="int" value="2" />
             <param name="delta_threshold" type="double" value="60.0"/>
         </node>
 
-        <node name="node_mrelocalplanner" pkg="multirobotexploration" type="mrelocalplanner" output="screen">
+        <node name="node_localplanner" pkg="multirobotexploration" type="localplannernode" output="screen">
             <param name="id" value="$(arg robot_id)"/>
+            <param name="rate" value="15"/>
             <param name="min_displacement" type="double" value="0.005"/>
             <param name="min_dist" type="double" value="2.0"/>
             <param name="waypoints_to_use" type="int" value="10"/>

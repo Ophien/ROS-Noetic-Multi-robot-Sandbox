@@ -50,9 +50,9 @@ include_directories(
 
 add_library(
   ${PROJECT_NAME}
-  source/algorithms/SearchAlgorithms.cpp
-  source/algorithms/RRTRoot.cpp
-  source/algorithms/RendezvousPlan.cpp
+  source/common/SearchAlgorithms.cpp
+  source/common/RRTRoot.cpp
+  source/common/RendezvousPlan.cpp
 )
 
 set(CMAKE_CXX_STANDARD 17)
@@ -86,8 +86,8 @@ target_link_libraries(relativeposeestimatornode multirobotexploration ${catkin_L
 add_executable(subgoalnav source/navigation/SubGoalNav.cpp)
 target_link_libraries(subgoalnav multirobotexploration ${catkin_LIBRARIES})
 
-add_executable(mrelocalplanner source/navigation/MRELocalPlanner.cpp)
-target_link_libraries(mrelocalplanner multirobotexploration ${catkin_LIBRARIES})
+add_executable(localplannernode source/navigation/LocalPlannerNode.cpp)
+target_link_libraries(localplannernode multirobotexploration ${catkin_LIBRARIES})
 
 ###############
 ## frontiers ##
