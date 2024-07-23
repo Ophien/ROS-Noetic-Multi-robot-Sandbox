@@ -1,4 +1,4 @@
-# LocalDynamicMap
+# LocalCSpaceNode
 
 Source: [LocalCSpaceNode.cpp](../../src/multirobotexploration/source/map/LocalCSpaceNode.cpp)
 

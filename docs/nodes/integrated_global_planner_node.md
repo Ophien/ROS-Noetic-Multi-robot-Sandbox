@@ -1,6 +1,4 @@
-# SubGoalNav
-
-This node implements a simple sub goal following controller.
+# IntegratedGlobalPlannerNode
 
 Source: [IntegratedGlobalPlannerNode.cpp](../../src/multirobotexploration/source/navigation/IntegratedGlobalPlannerNode.cpp)
 

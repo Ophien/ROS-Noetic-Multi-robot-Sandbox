@@ -1,4 +1,4 @@
-# RandomizedSocialWelfare
+# RandomizedSocialWelfareNode
 
 This node implements a basic ```Utility Theory``` concept of randomizing the Social Welfare into Yamauchi's method for simple coordination. It relies in a configuration space, frontier discovery services, and a sub goal navigation module. Some of its functionality should be coded as services.
 

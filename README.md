@@ -57,9 +57,9 @@ This workspace is not based on the ```move_base``` and the ```nav``` stack for n
   - [Communication](docs/multi-robot-exploration.md)
     - [MockCommunicationModelNode](docs/nodes/mock_communication_model_node.md)
   - [Objects and Algorithms](docs/multi-robot-exploration.md)
-    - [RendezvosPlan](docs/nodes/rendezvous_plan.md)
-    - [SearchAlgorithms](docs/nodes/search_algorithms.md)
-    - [Common](docs/nodes/common.md)
+    - [RendezvosPlan](src/multirobotexploration/source/common/RendezvousPlan.cpp)
+    - [SearchAlgorithms](src/multirobotexploration/source/common/SearchAlgorithms.cpp)
+    - [Common](src/multirobotexploration/include/common/Common.h)
 - [Multi-robot Simulations](docs/docs/multi-robot-simulations.md) - Contains the simulations and robots used by the algorithms.
 
 ## [Publications](#publications)

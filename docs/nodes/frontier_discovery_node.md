@@ -1,4 +1,4 @@
-# FrontierDiscovery
+# FrontierDiscoveryNode
 
 Source: [FrontierDiscoveryNode.cpp](../../src/multirobotexploration/source/frontier/FrontierDiscoveryNode.cpp)
 

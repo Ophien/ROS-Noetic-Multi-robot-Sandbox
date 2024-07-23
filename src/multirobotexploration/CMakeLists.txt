@@ -51,7 +51,6 @@ include_directories(
 add_library(
   ${PROJECT_NAME}
   source/common/SearchAlgorithms.cpp
-  source/common/RRTRoot.cpp
   source/common/RendezvousPlan.cpp
 )
 

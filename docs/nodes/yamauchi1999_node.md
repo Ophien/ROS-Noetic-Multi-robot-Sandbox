@@ -2,7 +2,7 @@
 
 This node implements Yamauchi's method from 1999. It relies in a configuration space, frontier discovery services, and a sub goal navigation module. Some of its functionality should be coded as services.
 
-Source: [Yamauchi1999.cpp](../../src/multirobotexploration/source/policies/Yamauchi1999.cpp)
+Source: [Yamauchi1999Node.cpp](../../src/multirobotexploration/source/policies/Yamauchi1999Node.cpp)
 
 ## Parameters
 

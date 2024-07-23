@@ -1,4 +1,4 @@
-# CSpace
+# CSpaceNode
 
 Source: [CSpaceNode.cpp](../../src/multirobotexploration/source/map/CSpaceNode.cpp)
 

@@ -1,4 +1,4 @@
-# Alysson2024
+# Alysson2024Node
 
 This node uses the ```Randomized Social Welfare``` and implements the Intermittent Communication policy from this [research](https://arxiv.org/abs/2309.13494).
 

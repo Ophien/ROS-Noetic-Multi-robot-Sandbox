@@ -1,6 +1,4 @@
-# MRELocalPlanner
-
-This node implements Yamauchi's method from 1999. It relies in a configuration space, frontier discovery services, and a sub goal navigation module. Some of its functionality should be coded as services.
+# LocalPlannerNode
 
 Source: [LocalPlannerNode.cpp](../../src/multirobotexploration/source/navigation/LocalPlannerNode.cpp)
 
