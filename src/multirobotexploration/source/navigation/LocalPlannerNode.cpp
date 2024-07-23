@@ -198,6 +198,7 @@ void LocalPlannerNode::Update() {
         // optimize trejectory
         aPlanner->plan(teb_local_planner::PoseSE2(aPose.pose.position.x, aPose.pose.position.y, cur_angle), 
                         teb_local_planner::PoseSE2(aLastPoseMsg.pose.position.x, aLastPoseMsg.pose.position.y, end_pose_yaw));
+        aPlanner->getVelocityCommand(aTwistVelMsg.linear.x, aTwistVelMsg.linear.y, aTwistVelMsg.angular.z, 1);
 
         /*
          * Publishers
@@ -245,7 +246,6 @@ void LocalPlannerNode::Update() {
     }
 
     // ways send velocity to robot
-    aPlanner->getVelocityCommand(aTwistVelMsg.linear.x, aTwistVelMsg.linear.y, aTwistVelMsg.angular.z, 1);
     aVelocityPublisher.publish(aTwistVelMsg);
 }
 
