@@ -53,6 +53,9 @@
 
 std::mt19937* randomglobal();
 
+/*
+ * For grid opperations
+ */
 struct Vec2i {
 	union {
 		int array[2];
@@ -167,6 +170,9 @@ class Matrix_Proxy {
 };
 #endif
 
+/*
+ * For grid opperations
+ */
 template <typename T> class Matrix {
 	public:
 		T* array;
@@ -389,6 +395,9 @@ inline void PrintIntPath(Matrix<int>& rInput,
 	PrintCharMap(path_map);
 }
 
+/*
+ * Occupancy grid helpers
+ */
 inline void PoseToVector3(const geometry_msgs::Pose& rInput, tf::Vector3& rOut) {
 	rOut.setX(rInput.position.x);
 	rOut.setY(rInput.position.y);

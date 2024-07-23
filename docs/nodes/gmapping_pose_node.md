@@ -1,4 +1,4 @@
-# GmappingPose
+# GmappingPoseNode
 
 Source: [GmappingPoseNode.cpp](../../src/multirobotexploration/source/localization/GmappingPoseNode.cpp)
 

@@ -1,4 +1,4 @@
-# MockCommunicationModel
+# MockCommunicationModelNode
 
 Source: [MockCommunicationModelNode.cpp](../../src/multirobotexploration/source/communication/MockCommunicationModelNode.cpp)
 

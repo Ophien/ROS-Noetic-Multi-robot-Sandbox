@@ -1,4 +1,4 @@
-# LaserToWorld
+# LaserToWorldNode
 
 Source: [LaserToWorldNode.cpp](../../src/multirobotexploration/source/laser/LaserToWorldNode.cpp)
 

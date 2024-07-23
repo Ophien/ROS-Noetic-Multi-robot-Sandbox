@@ -81,10 +81,5 @@ namespace sa {
     void ComputeAverageCentroids(const Vec2i& rPos, 
                         std::vector<std::vector<Vec2i>>& rClusters, 
                         std::vector<Vec2i>& rOutCentroids);
-    void RRTStar(nav_msgs::OccupancyGrid& rOcc, 
-                 const Vec2i& rStart, 
-                 const Vec2i& rEnd, 
-                 std::list<Vec2i>& rOutPath,
-                 const int& rSamples);
 };
 #endif
