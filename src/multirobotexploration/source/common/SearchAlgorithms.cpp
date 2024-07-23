@@ -42,7 +42,6 @@
 
 #include "SearchAlgorithms.h"
 #include "ros/ros.h"
-#include "RRTRoot.h"
 #include <queue>
 #include <set>
 
@@ -409,59 +408,6 @@ namespace sa {
         rOutCentroids.clear();
         for(size_t i = 0; i < rClusters.size(); ++i) {
             rOutCentroids.push_back(MedianFrontierCluster(rPos, rClusters[i]));
-        }
-    }
-
-    RRTNode* GetClosest(std::vector<RRTNode*>& tree, const Vec2i& pos) {
-        if(tree.size() == 0) return nullptr;
-        double min = std::numeric_limits<double>::max();
-        double d = 0.0;
-        RRTNode* node = tree[0];
-        for(auto& n : tree) {
-            d = Distance(n->pos, pos);
-            if(d < min) {
-                min = d;
-                node = n;
-            }
-        }
-        return node;
-    }
-
-    void GetKNNClosests(std::vector<RRTNode*>& tree, std::vector<RRTNode*>& closests, const Vec2i& pos, const int& radius) {
-        if(tree.size() == 0) return;
-        double d = 0.0;
-        RRTNode* node = tree[0];
-        for(auto& n : tree) {
-            d = Distance(n->pos, pos);
-            if(d < radius) closests.push_back(n);
-        }
-    }
-
-    void RRTStar(nav_msgs::OccupancyGrid& rOcc, 
-                 const Vec2i& rStart, 
-                 const Vec2i& rEnd, 
-                 std::list<Vec2i>& rOutPath,
-                 const int& rStep,
-                 const int& rExtraSamples,
-                 std::vector<RRTNode*>& outputNodes) {
-        // run normal rrt star algorithm until reaching near the goal position
-
-        // have a distribution, preferencing an uniform one, to
-        // ensure that it is uniformly distributed
-        std::mt19937* dev = randomglobal();
-        std::uniform_int_distribution<int> width_dist(0, rOcc.info.width-1);
-        std::uniform_int_distribution<int> height_dist(0, rOcc.info.height-1);
-
-        // create a tree structure
-        RRTNode* root = new RRTNode(rStart, nullptr);
-        outputNodes.push_back(root);
-
-        // generate tree until finding the goal
-        bool finish = false;
-
-        while(!finish) {
-            Vec2i sample = Vec2i::Create(width_dist(*dev), height_dist(*dev));
-            // TODO::FINISH REFACTORING THE RRT STAR ALGORITHM   
         }
     }
 };
