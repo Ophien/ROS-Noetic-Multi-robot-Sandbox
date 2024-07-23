@@ -53,9 +53,9 @@ LaserToWorldNode::LaserToWorldNode() {
     if(!node_handle.getParam("x", x)) x = 0.0;
     if(!node_handle.getParam("y", y)) y = 0.0;
     if(!node_handle.getParam("z", z)) z = 0.0;
-    if(!node_handle.getParam("r", roll)) roll = 0.0;
-    if(!node_handle.getParam("p", pitch)) pitch = 0.0;
-    if(!node_handle.getParam("y", yaw)) yaw = 0.0;
+    if(!node_handle.getParam("roll", roll)) roll = 0.0;
+    if(!node_handle.getParam("pitch", pitch)) pitch = 0.0;
+    if(!node_handle.getParam("yaw", yaw)) yaw = 0.0;
     if(!node_handle.getParam("rate", aRate)) aRate = 5;
     if(!node_handle.getParam("queue_size", aQueueSize)) aQueueSize = 2;
     aNamespace = ros::this_node::getNamespace();
