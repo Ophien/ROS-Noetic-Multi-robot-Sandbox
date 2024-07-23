@@ -599,7 +599,7 @@
       <robotBaseFrame>base_link</robotBaseFrame>
       <MaxForce>5.0</MaxForce>
       <torque>5</torque>
-      <commandTopic>node_rosaria/cmd_vel</commandTopic>
+      <commandTopic>cmd_vel</commandTopic>
       <odometryTopic>odom</odometryTopic>
       <odometryFrame>odom</odometryFrame>
       <broadcastTF>1</broadcastTF>

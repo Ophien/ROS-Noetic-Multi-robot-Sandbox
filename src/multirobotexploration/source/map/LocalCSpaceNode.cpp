@@ -78,7 +78,7 @@ LocalCSpaceNode::LocalCSpaceNode() {
     std::vector<geometry_msgs::PoseArray>* poseArraysPtr = &aTrajectoriesArray;
     for(int robot = 0; robot < aRobots; ++robot) {
         if(robot <= aId) continue;
-        aSubscribers.push_back(node_handle.subscribe<geometry_msgs::PoseArray>("/robot_" + std::to_string(robot) + "/mre_local_planner/optimal_poses", aQueueSize,
+        aSubscribers.push_back(node_handle.subscribe<geometry_msgs::PoseArray>("/robot_" + std::to_string(robot) + "/local_planner/optimal_poses", aQueueSize,
             [poseArraysPtr, robot](geometry_msgs::PoseArray::ConstPtr msg){
                 poseArraysPtr->at(robot).poses.assign(msg->poses.begin(), msg->poses.end());
             }
@@ -101,7 +101,6 @@ LocalCSpaceNode::LocalCSpaceNode() {
                             std::bind(&LocalCSpaceNode::OccCallback, this, std::placeholders::_1)));
 
     // Advertisers
-    aObstaclesPublisher = node_handle.advertise<costmap_converter::ObstacleArrayMsg>(aNamespace + "/obstacle_cells", aQueueSize);
     aLocalCSpacePublisher = node_handle.advertise<nav_msgs::OccupancyGrid>(aNamespace + "/c_space_local", aQueueSize);
     aOccupiedPositionsPublisher = node_handle.advertise<geometry_msgs::PoseArray>(aNamespace + "/local_occupied_poses", aQueueSize);
     aFreePositionsPublisher = node_handle.advertise<geometry_msgs::PoseArray>(aNamespace + "/local_free_poses", aQueueSize);
@@ -141,7 +140,6 @@ void LocalCSpaceNode::ClearLocalTrajectories(std::vector<geometry_msgs::PoseArra
 
 void LocalCSpaceNode::CreateLocal(nav_msgs::OccupancyGrid& dynamicOcc, 
                 nav_msgs::OccupancyGrid& localMap,
-                costmap_converter::ObstacleArrayMsg& obsarraymsg,
                 geometry_msgs::PoseArray& occupiedPoses,
                 geometry_msgs::PoseArray& freePoses,
                 tf::Vector3& worldPose,
@@ -154,19 +152,18 @@ void LocalCSpaceNode::CreateLocal(nav_msgs::OccupancyGrid& dynamicOcc,
                 const int8_t& occupiedValue,
                 const int8_t& freeVal,
                 const int8_t& unknownVal) {
-    // this should be received as parameter
-    obsarraymsg.obstacles.clear();
-
     // convert local view size here and compute the size 
     // of the local view
-    int size_in_pixels = (int)(windws_size_meters / dynamicOcc.info.resolution) + 1;
+    int size_in_pixels = static_cast<int>(static_cast<float>(windws_size_meters) / dynamicOcc.info.resolution) + 1;
     int length = size_in_pixels + 1;
-    int half_length = (int)(length/2.0);
+    int half_length = static_cast<int>(static_cast<float>(length)/2.0);
+
     Vec2i start = Vec2i::Create(occPose.getX() - half_length, occPose.getY() - half_length);
     Vec2i end   = Vec2i::Create(occPose.getX() + half_length, occPose.getY() + half_length);
+
     int ix, iy, index;
-    int irp_occu = (int)(occupiedInflationRadius / dynamicOcc.info.resolution);
-    int irp_free = (int)(freeInflationRadius / dynamicOcc.info.resolution);
+    int irp_occu = static_cast<int>(occupiedInflationRadius / dynamicOcc.info.resolution);
+    int irp_free = static_cast<int>(freeInflationRadius / dynamicOcc.info.resolution);
 
     // allocate data for the local map
     localMap.data.assign(length*length, -1);
@@ -181,7 +178,6 @@ void LocalCSpaceNode::CreateLocal(nav_msgs::OccupancyGrid& dynamicOcc,
     nav_msgs::OccupancyGrid occu;
     free.data.assign(length*length, -1);
     occu.data.assign(length*length, -1);
-    obsarraymsg.header = dynamicOcc.header;
 
     // copy local
     int id = 0;
@@ -214,29 +210,9 @@ void LocalCSpaceNode::CreateLocal(nav_msgs::OccupancyGrid& dynamicOcc,
             ix = x + start.x;
             int index = y*length+x;
             if(occu.data[index] > occupancyThreshold) {
-                localMap.data[index] = occupiedValue;
-                
-                // set and obstacle in the obstacle msg
-                costmap_converter::ObstacleMsg obs_msg;
-                obs_msg.header = dynamicOcc.header;
-                obs_msg.id = id;
-
-                Vec2i cur = Vec2i::Create(ix,iy);
-                tf::Vector3 world;
-                MapToWorld(dynamicOcc, cur, world);
-                
-                geometry_msgs::Point32 pmsg;
-                pmsg.x = world.getX();
-                pmsg.y = world.getY();
-                pmsg.z = 0.0;
-                
+                localMap.data[index] = occupiedValue;                
                 // set pose array message wih the obstacle's position
-                obs_msg.radius = 0.0;
-                obs_msg.velocities = geometry_msgs::TwistWithCovariance();
                 geometry_msgs::Pose p; p.position.x = x; p.position.y = y;
-
-                obs_msg.polygon.points.push_back(pmsg);
-                obsarraymsg.obstacles.push_back(obs_msg);
                 occupiedPoses.poses.push_back(p);
             } else if (localMap.data[index] >= 0 && localMap.data[index] < occupiedValue) {
                 geometry_msgs::Pose p; p.position.x = x; p.position.y = y;
@@ -297,7 +273,6 @@ void LocalCSpaceNode::Update() {
     
     CreateLocal(aOccWithDynamicDataMsg, 
                 aLocalCspaceMsg, 
-                aObsarrayMsg, 
                 aOccupiedPosesMsg, 
                 aFreePosesMsg, 
                 world_pose,
@@ -306,7 +281,6 @@ void LocalCSpaceNode::Update() {
                 aOccuInflateRadius, 
                 aLocalViewSize);
 
-    aObstaclesPublisher.publish(aObsarrayMsg);
     aLocalCSpacePublisher.publish(aLocalCspaceMsg);
     aOccupiedPositionsPublisher.publish(aOccupiedPosesMsg);
     aFreePositionsPublisher.publish(aFreePosesMsg);

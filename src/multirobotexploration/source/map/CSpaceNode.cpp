@@ -77,7 +77,7 @@ CSpaceNode::CSpaceNode() {
     std::vector<geometry_msgs::PoseArray>* poseArraysPtr = &aTrajectoriesArray;
     for(int robot = 0; robot < aRobots; ++robot) {
         if(robot <= aId) continue;
-        aSubscribers.push_back(node_handle.subscribe<geometry_msgs::PoseArray>("/robot_" + std::to_string(robot) + "/mre_local_planner/optimal_poses", aQueueSize,
+        aSubscribers.push_back(node_handle.subscribe<geometry_msgs::PoseArray>("/robot_" + std::to_string(robot) + "/local_planner/optimal_poses", aQueueSize,
             [poseArraysPtr, robot](geometry_msgs::PoseArray::ConstPtr msg){
                 poseArraysPtr->at(robot).poses.assign(msg->poses.begin(), msg->poses.end());
             }

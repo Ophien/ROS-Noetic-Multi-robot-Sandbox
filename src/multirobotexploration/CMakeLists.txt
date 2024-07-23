@@ -79,7 +79,6 @@ target_link_libraries(averagevelocityestimatornode multirobotexploration ${catki
 add_executable(relativeposeestimatornode source/localization/RelativePoseEstimatorNode.cpp)
 target_link_libraries(relativeposeestimatornode multirobotexploration ${catkin_LIBRARIES})
 
-
 ################
 ## navigation ##
 ################

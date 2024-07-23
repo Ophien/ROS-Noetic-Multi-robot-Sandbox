@@ -76,7 +76,6 @@ class LocalCSpaceNode {
     private:
         void CreateLocal(nav_msgs::OccupancyGrid& dynamicOcc, 
                             nav_msgs::OccupancyGrid& localMap,
-                            costmap_converter::ObstacleArrayMsg& obsarraymsg,
                             geometry_msgs::PoseArray& occupiedPoses,
                             geometry_msgs::PoseArray& freePoses,
                             tf::Vector3& worldPose,
@@ -150,7 +149,6 @@ class LocalCSpaceNode {
         nav_msgs::OccupancyGrid aLocalCspaceMsg;
         std_msgs::Int8MultiArray aRobotsInCommMsg;    
         multirobotsimulations::CustomPose aWorldPoseMsg;
-        costmap_converter::ObstacleArrayMsg aObsarrayMsg;
         geometry_msgs::PoseArray aOccupiedPosesMsg;
         geometry_msgs::PoseArray aFreePosesMsg;
         
