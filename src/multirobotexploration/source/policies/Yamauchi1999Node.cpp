@@ -54,6 +54,7 @@ Yamauchi1999Node::Yamauchi1999Node() {
 
     aHasOcc = false;
     aHasPose = false;
+    aCurrentState = state_idle;
 
     // Subscriptions
     aSubscribers.push_back(
@@ -121,6 +122,15 @@ void Yamauchi1999Node::ClustersCallback(multirobotsimulations::Frontiers::ConstP
     aFrontierCentroidsMsg.centroids.header = msg->centroids.header;
     aFrontierCentroidsMsg.costs.data.assign(msg->costs.data.begin(), msg->costs.data.end());
     aFrontierCentroidsMsg.utilities.data.assign(msg->utilities.data.begin(), msg->utilities.data.end());
+
+    aFrontierCentroidsMsg.highest_cost_index = msg->highest_cost_index;
+    aFrontierCentroidsMsg.highest_value_index = msg->highest_value_index;
+    aFrontierCentroidsMsg.highest_utility_index = msg->highest_utility_index;
+
+    aFrontierCentroidsMsg.highest_cost = msg->highest_cost;
+    aFrontierCentroidsMsg.highest_value = msg->highest_value;
+    aFrontierCentroidsMsg.highest_utility = msg->highest_utility;
+
     ChangeState(state_select_frontier);
 }
 

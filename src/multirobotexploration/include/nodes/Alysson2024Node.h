@@ -55,11 +55,13 @@
 #include "std_msgs/Int8MultiArray.h"
 #include "multirobotsimulations/CustomPose.h"
 #include "multirobotsimulations/Frontiers.h"
+#include "multirobotsimulations/rendezvous.h"
 #include "visualization_msgs/Marker.h"
 
 /*
  * Helpers
  */
+#include "RendezvousPlan.h"
 #include "Common.h"
 
 typedef enum {
@@ -73,12 +75,23 @@ typedef enum {
     state_waiting_centroids = 28,
     state_set_back_to_base = 30,
     state_planning = 31,
+    
+    /*
+     * Extended state space
+     */ 
+    state_set_rendezvous_location = 55,
+    state_navigating_to_rendezvous = 56,
+    state_at_rendezvous = 57,
+    state_updating_plan = 58,
+    state_waiting_consensus = 59,
+    state_waiting_centroids_for_plan = 60,
+    state_select_new_rendezvous = 61
 } ExplorerState;
 
-class RandomizedSocialWelfareNode {
+class Alysson2024Node {
     public:
-        RandomizedSocialWelfareNode();
-        ~RandomizedSocialWelfareNode();
+        Alysson2024Node();
+        ~Alysson2024Node();
 
     private:
         void EstimatePoseCallback(multirobotsimulations::CustomPose::ConstPtr msg);
@@ -137,19 +150,36 @@ class RandomizedSocialWelfareNode {
         nav_msgs::OccupancyGrid aCSpaceMsg;
 
         /*
-         * Extension from Yamauchi-based policy
+         * Extension from Randomized-Social-Welfare policy
          */
         bool CheckNear();
+        bool CanCommunicate(const int& id);
+        bool FinishedMission();
         int RandomizedFrontierSelection(multirobotsimulations::Frontiers& centroids, tf::Vector3& selectFrontierWorld);
+        int SelectSubteamNewRendezvous(multirobotsimulations::Frontiers& centroids, tf::Vector3& selectFrontierWorld);
         void CommCallback(std_msgs::Int8MultiArray::ConstPtr msg);
-        
+
         // extension control
         bool aHasComm;
+        bool aReceivedNewRendezvousLocation;
+        double aWaitingThreshold;
+        double aTimeWaiting;
+        std::shared_ptr<RendezvousPlan> aPlan;
 
         // extension messages
         std_msgs::Int8MultiArray aCommMsg;      
+        multirobotsimulations::rendezvous aRendezvousMsg;
+        multirobotsimulations::CustomPose aRendezvousNewPoseMsg;
 
         // extension helpers
+        tf::Vector3 aRendezvousFootprint;
+        tf::Vector3 aFirstRendezvous;
+        tf::Vector3 aGoalRendezvous;
+        tf::Vector3 aNewRendezvousLocation;
         std::unique_ptr<std::mt19937> aRandomNumberGenerator;
         std::random_device aRandomNumberDevice;
+
+        // extension advertisers
+        ros::Publisher aPlanRealizationPublisher;
+        ros::Publisher aPlanLocationPublisher;
 };

@@ -55,6 +55,7 @@ RandomizedSocialWelfareNode::RandomizedSocialWelfareNode() {
     aHasOcc = false;
     aHasPose = false;
     aHasComm = false;
+    aCurrentState = state_idle;
 
     // initialize containers
     aRandomNumberGenerator = std::make_unique<std::mt19937>(aRandomNumberDevice());
@@ -131,6 +132,15 @@ void RandomizedSocialWelfareNode::ClustersCallback(multirobotsimulations::Fronti
     aFrontierCentroidsMsg.centroids.header = msg->centroids.header;
     aFrontierCentroidsMsg.costs.data.assign(msg->costs.data.begin(), msg->costs.data.end());
     aFrontierCentroidsMsg.utilities.data.assign(msg->utilities.data.begin(), msg->utilities.data.end());
+
+    aFrontierCentroidsMsg.highest_cost_index = msg->highest_cost_index;
+    aFrontierCentroidsMsg.highest_value_index = msg->highest_value_index;
+    aFrontierCentroidsMsg.highest_utility_index = msg->highest_utility_index;
+
+    aFrontierCentroidsMsg.highest_cost = msg->highest_cost;
+    aFrontierCentroidsMsg.highest_value = msg->highest_value;
+    aFrontierCentroidsMsg.highest_utility = msg->highest_utility;
+
     ChangeState(state_select_frontier);
 }
 
