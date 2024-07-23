@@ -3,9 +3,7 @@ Panels:
     Help Height: 0
     Name: Displays
     Property Tree Widget:
-      Expanded:
-        - /Marker1
-        - /Marker2
+      Expanded: ~
       Splitter Ratio: 0.5
     Tree Height: 898
   - Class: rviz/Selection
@@ -580,7 +578,7 @@ Visualization Manager:
       Shaft Length: 0.23000000417232513
       Shaft Radius: 0.009999999776482582
       Shape: Arrow (Flat)
-      Topic: /robot_0/node_mrelocalplanner/teb_poses
+      Topic: /robot_0/local_planner/teb_poses
       Unreliable: false
       Value: true
     - Alpha: 1

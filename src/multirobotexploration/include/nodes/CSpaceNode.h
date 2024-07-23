@@ -129,6 +129,7 @@ class CSpaceNode {
         int aRobots;
         bool aHasOcc;
         bool aHasPose;
+        bool aReceivedComm;
         double aRate;
         double aLidarRange;
         double aFreeInflateRadius;

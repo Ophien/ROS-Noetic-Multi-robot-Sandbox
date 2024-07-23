@@ -58,6 +58,7 @@ CSpaceNode::CSpaceNode() {
 
     aHasPose = false;
     aHasOcc = false;
+    aReceivedComm = false;
 
     // initialize communication containers
     aLidarsArray.assign(aLidarSources, geometry_msgs::PoseArray());
@@ -112,6 +113,7 @@ CSpaceNode::~CSpaceNode() {
 }
 
 void CSpaceNode::RobotsInCommCallback(std_msgs::Int8MultiArray::ConstPtr msg) {
+    if(!aReceivedComm) aReceivedComm = true;
     aRobotsInCommMsg.data.assign(msg->data.begin(), msg->data.end());
 }
 
@@ -266,7 +268,7 @@ void CSpaceNode::ClearLocalTrajectories(std::vector<geometry_msgs::PoseArray>& l
 }
 
 void CSpaceNode::Update() {
-    if(!aHasOcc || !aHasPose) return;
+    if(!aHasOcc || !aHasPose || !aReceivedComm) return;
 
     /*
      * Clear dynamic trajectories in local map

@@ -59,6 +59,7 @@ LocalCSpaceNode::LocalCSpaceNode() {
 
     aHasPose = false;
     aHasOcc = false;
+    aReceivedComm = false;
 
     // initialize communication containers
     aLidarsArray.assign(aLidarSources, geometry_msgs::PoseArray());
@@ -115,6 +116,7 @@ LocalCSpaceNode::~LocalCSpaceNode() {
 }
 
 void LocalCSpaceNode::RobotsInCommCallback(std_msgs::Int8MultiArray::ConstPtr msg) {
+    if(!aReceivedComm) aReceivedComm = true;
     aRobotsInCommMsg.data.assign(msg->data.begin(), msg->data.end());
 }
 
@@ -256,7 +258,7 @@ void LocalCSpaceNode::ApplyDynamicData(nav_msgs::OccupancyGrid& occ,
 }
 
 void LocalCSpaceNode::Update() {
-    if(!aHasOcc || !aHasPose) return;
+    if(!aHasOcc || !aHasPose || !aReceivedComm) return;
 
     /*
      * Clear dynamic trajectories in local map
