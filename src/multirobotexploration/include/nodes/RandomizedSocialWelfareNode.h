@@ -44,6 +44,7 @@
  * Ros and system
  */
 #include <vector>
+#include <random>
 #include "ros/ros.h"
 
 /*
@@ -51,6 +52,7 @@
  */
 #include "nav_msgs/OccupancyGrid.h"
 #include "std_msgs/String.h"
+#include "std_msgs/Int8MultiArray.h"
 #include "multirobotsimulations/CustomPose.h"
 #include "multirobotsimulations/Frontiers.h"
 #include "visualization_msgs/Marker.h"
@@ -73,10 +75,10 @@ typedef enum {
     state_planning = 31,
 } ExplorerState;
 
-class Yamauchi1999Node {
+class RandomizedSocialWelfareNode {
     public:
-        Yamauchi1999Node();
-        ~Yamauchi1999Node();
+        RandomizedSocialWelfareNode();
+        ~RandomizedSocialWelfareNode();
 
     private:
         void EstimatePoseCallback(multirobotsimulations::CustomPose::ConstPtr msg);
@@ -132,5 +134,18 @@ class Yamauchi1999Node {
          * Messages
          */
         multirobotsimulations::Frontiers aFrontierCentroidsMsg;
-        nav_msgs::OccupancyGrid aCSpaceMsg;  
+        nav_msgs::OccupancyGrid aCSpaceMsg;
+
+        /*
+         * Extension from Yamauchi-based policy
+         */
+        bool CheckNear();
+        int RandomizedFrontierSelection(multirobotsimulations::Frontiers& centroids, tf::Vector3& selectFrontierWorld);
+        void CommCallback(std_msgs::Int8MultiArray::ConstPtr msg);
+        
+        bool aHasComm;
+        std_msgs::Int8MultiArray aCommMsg;      
+
+        std::unique_ptr<std::mt19937> aRandomNumberGenerator;
+        std::random_device aRandomNumberDevice;
 };

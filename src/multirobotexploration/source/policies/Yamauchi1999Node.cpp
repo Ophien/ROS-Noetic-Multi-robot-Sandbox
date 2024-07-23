@@ -117,10 +117,10 @@ Yamauchi1999Node::~Yamauchi1999Node() {
 }
 
 void Yamauchi1999Node::ClustersCallback(multirobotsimulations::Frontiers::ConstPtr msg) {
-    aFrontierCentroids.centroids.poses.assign(msg->centroids.poses.begin(), msg->centroids.poses.end());
-    aFrontierCentroids.centroids.header = msg->centroids.header;
-    aFrontierCentroids.costs.data.assign(msg->costs.data.begin(), msg->costs.data.end());
-    aFrontierCentroids.utilities.data.assign(msg->utilities.data.begin(), msg->utilities.data.end());
+    aFrontierCentroidsMsg.centroids.poses.assign(msg->centroids.poses.begin(), msg->centroids.poses.end());
+    aFrontierCentroidsMsg.centroids.header = msg->centroids.header;
+    aFrontierCentroidsMsg.costs.data.assign(msg->costs.data.begin(), msg->costs.data.end());
+    aFrontierCentroidsMsg.utilities.data.assign(msg->utilities.data.begin(), msg->utilities.data.end());
     ChangeState(state_select_frontier);
 }
 
@@ -137,8 +137,8 @@ void Yamauchi1999Node::SubGoalFinishCallback(std_msgs::String::ConstPtr msg) {
 
 void Yamauchi1999Node::CSpaceCallback(nav_msgs::OccupancyGrid::ConstPtr msg) {
     if(!aHasOcc) aHasOcc = true;
-    aCSpace.info = msg->info;
-    aCSpace.header = msg->header;
+    aCSpaceMsg.info = msg->info;
+    aCSpaceMsg.header = msg->header;
 }
 
 void Yamauchi1999Node::SetIdleCallback(std_msgs::String::ConstPtr msg) {
@@ -196,7 +196,7 @@ void Yamauchi1999Node::ChangeState(const ExplorerState& newState) {
 void Yamauchi1999Node::Update() {
     if(!aHasPose || !aHasOcc) return;
 
-    WorldToMap(aCSpace, aWorldPos, aOccPos);
+    WorldToMap(aCSpaceMsg, aWorldPos, aOccPos);
 
     if(aDirty) {
         aGoalBasestation.setX(aWorldPos.getX());
@@ -221,7 +221,7 @@ void Yamauchi1999Node::Update() {
         break;
 
         case state_select_frontier:
-            if(aFrontierCentroids.centroids.poses.size() == 0) {
+            if(aFrontierCentroidsMsg.centroids.poses.size() == 0) {
                 SetGoal(aGoalBasestation);
                 ChangeState(state_set_back_to_base);
                 ROS_INFO("[Yamauchi1999Node] Not more clusters to explore [%.2f %.2f]", 
@@ -230,9 +230,9 @@ void Yamauchi1999Node::Update() {
                 break;
             }
             
-            if(aFrontierCentroids.centroids.poses.size() > 0) {
+            if(aFrontierCentroidsMsg.centroids.poses.size() > 0) {
                 ROS_INFO("[Yamauchi1999Node] maximizing utility.");
-                SelectFrontier(aFrontierCentroids, aGoalFrontier);
+                SelectFrontier(aFrontierCentroidsMsg, aGoalFrontier);
                 ROS_INFO("[Yamauchi1999Node] selected frontier [%.2f %.2f]", 
                             aGoalFrontier.getX(),
                             aGoalFrontier.getY());
