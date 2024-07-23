@@ -54,7 +54,7 @@ MockCommunicationModelNode::MockCommunicationModelNode() {
     if(!node_handle.getParam("queue_size", aQueueSize)) aQueueSize = 2;
     if(!node_handle.getParam("comm_dist", aCommDist)) throw std::runtime_error("Could not retrieve comm_dist.");
     if(!node_handle.getParam("rate", aRate)) aRate = 2.0;
-    aNamespace = ros::NodeHandle().getNamespace();
+    aNamespace = ros::this_node::getNamespace();
 
     // initialize communication containers
     aReceivedPoses.assign(aRobots, false);

@@ -50,7 +50,7 @@ RelativePoseEstimatorNode::RelativePoseEstimatorNode() {
     if(!node_handle.getParam("id", aId)) throw std::runtime_error("Coult not retrieve id.");
     if(!node_handle.getParam("queue_size", aQueueSize)) aQueueSize = 2;
     if(!node_handle.getParam("rate", aRate)) aRate = 2.0;
-    aNamespace = ros::NodeHandle().getNamespace();
+    aNamespace = ros::this_node::getNamespace();
 
     // variables initialization
     aSeq = 0;

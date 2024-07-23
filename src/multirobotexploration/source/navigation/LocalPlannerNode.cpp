@@ -53,7 +53,7 @@ LocalPlannerNode::LocalPlannerNode() {
     if(!node_handle.getParam("waypoints_to_use", aMaxWaypoints)) aMaxWaypoints = 30;
     if(!node_handle.getParam("via_points_increment", aViaIncrement)) aViaIncrement = 3;
     if(!node_handle.getParam("use_priority_stop_behavior", aUsePriorityBehavior)) aUsePriorityBehavior = false;
-    aNamespace = ros::NodeHandle().getNamespace();
+    aNamespace = ros::this_node::getNamespace();
 
     aReceivedComm = false;
     aSeq = 0;

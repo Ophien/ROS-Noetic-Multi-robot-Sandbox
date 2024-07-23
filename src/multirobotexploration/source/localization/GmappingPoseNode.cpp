@@ -49,7 +49,7 @@ GmappingPoseNode::GmappingPoseNode() {
     if(!node_handle.getParam("id", aId)) throw std::runtime_error("Could not retrieve id.");
     if(!node_handle.getParam("rate", aRate)) aRate = 2.0;
     if(!node_handle.getParam("queue_size", aQueueSize)) aQueueSize = 2;
-    aNamespace = ros::NodeHandle().getNamespace();
+    aNamespace = ros::this_node::getNamespace();
 
     // transform listener
     aTFBuffer = std::make_shared<tf2_ros::Buffer>();

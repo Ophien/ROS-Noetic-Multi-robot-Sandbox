@@ -50,7 +50,7 @@ AverageVelocityEstimatorNode::AverageVelocityEstimatorNode() {
     if(!node_handle.getParam("rate", aRate)) aRate = 2.0;;
     if(!node_handle.getParam("queue_size", aQueueSize)) aQueueSize = 2;
     if(!node_handle.getParam("count", aCount)) aCount = 10;
-    aNamespace = ros::NodeHandle().getNamespace();
+    aNamespace = ros::this_node::getNamespace();
 
     // subscriptions
     aSubscribers.push_back(node_handle.subscribe<multirobotsimulations::CustomPose>(

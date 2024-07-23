@@ -58,7 +58,7 @@ LaserToWorldNode::LaserToWorldNode() {
     if(!node_handle.getParam("y", yaw)) yaw = 0.0;
     if(!node_handle.getParam("rate", aRate)) aRate = 5;
     if(!node_handle.getParam("queue_size", aQueueSize)) aQueueSize = 2;
-    aNamespace = ros::NodeHandle().getNamespace();
+    aNamespace = ros::this_node::getNamespace();
 
     aLidarPosition = tf::Vector3(x,y,0.0);
     aLidarOrientation = tf::createQuaternionFromRPY(roll,pitch,yaw);

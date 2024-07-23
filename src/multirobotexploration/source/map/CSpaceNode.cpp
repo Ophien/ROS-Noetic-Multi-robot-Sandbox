@@ -54,7 +54,7 @@ CSpaceNode::CSpaceNode() {
     if(!node_handle.getParam("max_lidar_range", aLidarRange)) aLidarRange = 10.0;
     if(!node_handle.getParam("free_inflation_radius", aFreeInflateRadius)) aFreeInflateRadius = 0.7;
     if(!node_handle.getParam("ocu_inflation_radius", aOccuInflateRadius)) aOccuInflateRadius = 0.5;
-    aNamespace = ros::NodeHandle().getNamespace();
+    aNamespace = ros::this_node::getNamespace();
 
     aHasPose = false;
     aHasOcc = false;
