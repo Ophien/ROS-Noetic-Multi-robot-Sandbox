@@ -82,8 +82,8 @@ target_link_libraries(relativeposeestimatornode multirobotexploration ${catkin_L
 ################
 ## navigation ##
 ################
-add_executable(subgoalnav source/navigation/SubGoalNav.cpp)
-target_link_libraries(subgoalnav multirobotexploration ${catkin_LIBRARIES})
+add_executable(integratedglobalplannernode source/navigation/IntegratedGlobalPlannerNode.cpp)
+target_link_libraries(integratedglobalplannernode multirobotexploration ${catkin_LIBRARIES})
 
 add_executable(localplannernode source/navigation/LocalPlannerNode.cpp)
 target_link_libraries(localplannernode multirobotexploration ${catkin_LIBRARIES})

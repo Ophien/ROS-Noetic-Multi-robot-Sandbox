@@ -249,12 +249,12 @@
             <param name="queue_size" type="int" value="2" />
         </node>
 
-        <node name="node_subgoalnav" pkg="multirobotexploration" type="subgoalnav" output="screen">
+        <node name="node_integratedglobalplanner" pkg="multirobotexploration" type="integratedglobalplannernode" output="screen">
             <param name="id" type="int" value="$(arg robot_id)"/>
+            <param name="queue_size" type="int" value="2" />
             <param name="rate" type="double" value="2" />
             <param name="reach_threshold" type="double" value="0.3"/>
-            <param name="queue_size" type="int" value="2" />
-            <param name="delta_threshold" type="double" value="60.0"/>
+            <param name="stuck_time_threshold" type="double" value="60.0"/>
         </node>
 
         <node name="local_planner" pkg="multirobotexploration" type="localplannernode" output="screen">
