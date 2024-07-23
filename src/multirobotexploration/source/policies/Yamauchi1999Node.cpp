@@ -54,6 +54,8 @@ Yamauchi1999Node::Yamauchi1999Node() {
 
     aHasOcc = false;
     aHasPose = false;
+    aFirst = true;
+    aDirty = true;
     aCurrentState = state_idle;
 
     // Subscriptions
@@ -281,6 +283,8 @@ void Yamauchi1999Node::Update() {
 
     // run spin to get the data
     aLastTime = ros::Time::now();
+
+    if(aFirst) aFirst = false;
 }
 
 int main(int argc, char* argv[]) {

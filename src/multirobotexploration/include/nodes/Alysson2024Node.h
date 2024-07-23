@@ -118,6 +118,7 @@ class Alysson2024Node {
         bool aHasPose;
         bool aHasOcc;
         bool aDirty;
+        bool aFirst;
         double aDeltaTime;
         Vec2i aOccPos;
         ros::Time aLastTime;

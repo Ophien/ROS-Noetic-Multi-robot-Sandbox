@@ -53,24 +53,26 @@ Alysson2024Node::Alysson2024Node() {
     if(!node_handle.getParam("waiting_threshold", aWaitingThreshold)) aWaitingThreshold = 120.0;
 
     std::map<std::string, double> pose;
-    node_handle.getParam("/first_rendezvous", pose);
+    if(!node_handle.getParam("/first_rendezvous", pose)) throw std::runtime_error("Could not retrieve /first_rendezvous");
     aFirstRendezvous.setX(pose["x"]);
     aFirstRendezvous.setY(pose["y"]);
     aFirstRendezvous.setZ(pose["z"]);
-    ROS_INFO("[Explorer] First rendezvous location: %f %f %f", pose["x"], pose["y"], pose["z"]); 
+    ROS_INFO("[Alysson2024Node] First rendezvous location: %f %f %f", pose["x"], pose["y"], pose["z"]); 
 
     std::string key = "/footprint_robot_" + std::to_string(aId);
-    node_handle.getParam(key, pose);
+    if(!node_handle.getParam(key, pose)) throw std::runtime_error("Could not retrieve /footprint_robot_" + std::to_string(aId));
     aRendezvousFootprint.setX(pose["x"]);
     aRendezvousFootprint.setY(pose["y"]);
     aRendezvousFootprint.setZ(pose["z"]);
-    ROS_INFO("[Explorer] Rendezvous footprint: %f %f %f", pose["x"], pose["y"], pose["z"]);
+    ROS_INFO("[Alysson2024Node] Rendezvous footprint: %f %f %f", pose["x"], pose["y"], pose["z"]);
 
     aNamespace = ros::this_node::getNamespace();
 
     aHasOcc = false;
     aHasPose = false;
     aHasComm = false;
+    aFirst = true;
+    aDirty = true;
     aTimeWaiting = 0.0;
     aRendezvousMsg.robot_id = aId;
     aRendezvousNewPoseMsg.robot_id = aId;
@@ -527,7 +529,7 @@ void Alysson2024Node::Update() {
 
     // update rendezvous plan only if started
     // the mission
-    if(aCurrentState != state_idle)
+    if(aCurrentState != state_idle && !aFirst)
         aPlan->Update(aDeltaTime);
 
     if(aCurrentState < state_set_rendezvous_location &&
@@ -550,6 +552,8 @@ void Alysson2024Node::Update() {
 
     // run spin to get the data
     aLastTime = ros::Time::now();
+
+    if(aFirst) aFirst = false;
 }
 
 int main(int argc, char* argv[]) {

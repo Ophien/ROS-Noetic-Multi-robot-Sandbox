@@ -55,6 +55,8 @@ RandomizedSocialWelfareNode::RandomizedSocialWelfareNode() {
     aHasOcc = false;
     aHasPose = false;
     aHasComm = false;
+    aFirst = true;
+    aDirty = true;
     aCurrentState = state_idle;
 
     // initialize containers
@@ -320,6 +322,8 @@ void RandomizedSocialWelfareNode::Update() {
 
     // run spin to get the data
     aLastTime = ros::Time::now();
+
+    if(aFirst) aFirst = false;
 }
 
 int main(int argc, char* argv[]) {
