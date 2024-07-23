@@ -303,13 +303,13 @@
             <param name="id" value="$(arg robot_id)"/>
             <param name="rate" value="1"/>
             <param name="queue_size" value="2"/>
-        </node>-->
+        </node> -->
 
         <!-- <node name="node_policy" pkg="multirobotexploration" type="yamauchi1999" output="screen"> 
             <param name="id" value="$(arg robot_id)"/>
             <param name="rate" value="1"/>
             <param name="queue_size" value="2"/>
-        </node>-->
+        </node> -->
 
         <node name="rviz" pkg="rviz" type="rviz"  args="-d $(find multirobotexploration)/rviz/robot_$(arg robot_id).rviz"/>
     </group>

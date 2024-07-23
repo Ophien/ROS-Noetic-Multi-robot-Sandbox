@@ -163,6 +163,9 @@ void RelativePoseEstimatorNode::LoadRelativePoses(ros::NodeHandle& nodeHandle) {
             Vector3ToPose(dir, aRobotsRelStartingPosMsg.poses[robot]);
             ROS_INFO("[Relative_pose_estimator] relative to %d: %f %f %f", robot, dir.getX(), dir.getY(), dir.getZ());
         } else {
+            aRelativePoses[robot].setX(0.0);
+            aRelativePoses[robot].setY(0.0);
+            aRelativePoses[robot].setZ(0.0);
             ROS_INFO("[Relative_pose_estimator] relative to self: %f %f %f", aRelativePoses[robot].getX(), aRelativePoses[robot].getY(), aRelativePoses[robot].getZ());
         }
     }

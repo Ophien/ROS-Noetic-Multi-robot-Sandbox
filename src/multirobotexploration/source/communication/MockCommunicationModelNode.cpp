@@ -100,7 +100,7 @@ void MockCommunicationModelNode::LoadRelativePoses( ros::NodeHandle& nodeHandle)
         std::map<std::string, double> pose;
         nodeHandle.getParam(key, pose);
         poses.push_back(pose);
-        ROS_INFO("[Relative_pose_estimator]: %s: %f %f %f", key.c_str(), pose["x"], pose["y"], pose["z"]);
+        ROS_INFO("[MockCommunicationModelNode]: %s: %f %f %f", key.c_str(), pose["x"], pose["y"], pose["z"]);
     }
 
     // compute relative poses from file
@@ -110,9 +110,12 @@ void MockCommunicationModelNode::LoadRelativePoses( ros::NodeHandle& nodeHandle)
             tf::Vector3 other_pose(poses[robot]["x"], poses[robot]["y"], poses[robot]["z"]);
             tf::Vector3 dir = other_pose - my_pose;
             aRelativePoses[robot] = dir;
-            ROS_INFO("[Relative_pose_estimator] relative to %d: %f %f %f", robot, dir.getX(), dir.getY(), dir.getZ());
+            ROS_INFO("[MockCommunicationModelNode] relative to %d: %f %f %f", robot, dir.getX(), dir.getY(), dir.getZ());
         } else {
-            ROS_INFO("[Relative_pose_estimator] relative to self: %f %f %f", aRelativePoses[robot].getX(), aRelativePoses[robot].getY(), aRelativePoses[robot].getZ());
+            aRelativePoses[robot].setX(0.0);
+            aRelativePoses[robot].setY(0.0);
+            aRelativePoses[robot].setZ(0.0);
+            ROS_INFO("[MockCommunicationModelNode] relative to self: %f %f %f", aRelativePoses[robot].getX(), aRelativePoses[robot].getY(), aRelativePoses[robot].getZ());
         }
     }
 }

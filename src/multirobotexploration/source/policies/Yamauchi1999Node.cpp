@@ -40,328 +40,255 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-/*
- * ros master dependency
- */
-#include "ros/ros.h"
-#include "ros/package.h"
+#include "Yamauchi1999Node.h"
 
-/*
- * messages used to read ccupancy grid data
- * processed configuration spaces
- * and estimate pose from the particle filter
- */
-#include "nav_msgs/OccupancyGrid.h"
-#include "nav_msgs/MapMetaData.h"
-#include "sensor_msgs/Image.h"
-#include "sensor_msgs/LaserScan.h"
-#include "geometry_msgs/Pose.h"
-#include "geometry_msgs/Twist.h"
-#include "geometry_msgs/PoseArray.h"
-#include "std_msgs/String.h"
-#include "std_msgs/Bool.h"
-#include "std_msgs/Int32.h"
-#include "std_msgs/Float64MultiArray.h"
-#include "std_msgs/Int8MultiArray.h"
-#include "multirobotsimulations/CustomPose.h"
-#include "multirobotsimulations/rendezvous.h"
-#include "SearchAlgorithms.h"
-#include "nav_msgs/OccupancyGrid.h"
-#include "Common.h"
-#include "visualization_msgs/Marker.h"
-#include "std_msgs/Float64MultiArray.h"
+Yamauchi1999Node::Yamauchi1999Node() {
+    ros::NodeHandle node_handle("~");
 
-/*
- * tf for potential fields and navigation stuff
- */
-#include "tf/LinearMath/Matrix3x3.h"
-#include "tf/tf.h"
-#include "tf/LinearMath/Scalar.h"
-#include "multirobotsimulations/Frontiers.h"
+    // load all parameters
+    if(!node_handle.getParam("/robots", aRobots)) throw std::runtime_error("Could not retrieve /robots.");
+    if(!node_handle.getParam("id", aId)) throw std::runtime_error("Could not retrieve id.");
+    if(!node_handle.getParam("rate", aRate)) aRate = 2.0;
+    if(!node_handle.getParam("queue_size", aQueueSize)) aQueueSize = 2;
+    aNamespace = ros::this_node::getNamespace();
 
-// numeric limits for max and min 
-#include <limits>
-#include <vector>
-#include <queue>
-#include <list>
-#include <map>
-#include <random>
-#include <time.h>
-#include <iostream>
-#include <sstream>
-#include <fstream>
+    aHasOcc = false;
+    aHasPose = false;
+    aFirst = true;
+    aDirty = true;
+    aCurrentState = state_idle;
 
-#include "geometry_msgs/PoseStamped.h"
-#include "geometry_msgs/Pose.h"
-#include "nav_msgs/Path.h"
+    // Subscriptions
+    aSubscribers.push_back(
+        node_handle.subscribe<multirobotsimulations::Frontiers>(
+            aNamespace + "/frontier_discovery/frontiers_clusters", 
+            aQueueSize, std::bind(&Yamauchi1999Node::ClustersCallback, this, std::placeholders::_1)));
+    
+    aSubscribers.push_back(
+        node_handle.subscribe<multirobotsimulations::CustomPose>(
+            aNamespace + "/gmapping_pose/world_pose", 
+            aQueueSize, 
+            std::bind(&Yamauchi1999Node::EstimatePoseCallback, this, std::placeholders::_1)));
 
-typedef enum {
-    state_select_frontier = 2,
-    state_exploring = 3,
-    state_idle = 11,
-    state_exploration_finished = 12,
-    state_back_to_base = 25,
-    state_back_to_base_finished = 26,
-    state_compute_centroids = 27,
-    state_waiting_centroids = 28,
-    state_set_back_to_base = 30,
-    state_planning = 31,
-} ExplorerState;
+    aSubscribers.push_back(
+        node_handle.subscribe<std_msgs::String>(
+            aNamespace + "/integrated_global_planner/finish", 
+            aQueueSize, 
+            std::bind(&Yamauchi1999Node::SubGoalFinishCallback, this, std::placeholders::_1)));
 
-// store the last obtained pose for processing the 
-// current position estimate
-int TICKS_COUNTER;
-int CURRENT_STATE;
+    aSubscribers.push_back(
+        node_handle.subscribe<nav_msgs::OccupancyGrid>(
+            aNamespace + "/c_space", 
+            aQueueSize, 
+            std::bind(&Yamauchi1999Node::CSpaceCallback, this, std::placeholders::_1)));
 
-bool HAS_POSE;
-bool RECEIVED_FRONTIERS;
-bool RECEIVED_CS;
+    aSubscribers.push_back(
+        node_handle.subscribe<std_msgs::String>(
+            aNamespace + "/explorer/set_idle", 
+            aQueueSize, 
+            std::bind(&Yamauchi1999Node::SetIdleCallback, this, std::placeholders::_1)));
 
-Vec2i POS;
-tf::Vector3 WORLD_POS;
-multirobotsimulations::Frontiers CENTROIDS;
-nav_msgs::OccupancyGrid OCC;
+    aSubscribers.push_back(
+        node_handle.subscribe<std_msgs::String>(
+            aNamespace + "/explorer/set_exploring", 
+            aQueueSize, 
+            std::bind(&Yamauchi1999Node::SetExploringCallback, this, std::placeholders::_1)));
 
-void Initialize(void) {
-    // control variables
-    HAS_POSE = false;
-    RECEIVED_FRONTIERS = false;
-    RECEIVED_CS = false;
+    aSubscribers.push_back(
+        node_handle.subscribe<std_msgs::String>(
+            "/global_explorer/back_to_base", 
+            aQueueSize, 
+            std::bind(&Yamauchi1999Node::SetBasestationCallback, this, std::placeholders::_1)));
 
-    // node behavior variables
-    CURRENT_STATE = state_idle;
+    aSubscribers.push_back(
+        node_handle.subscribe<std_msgs::String>(
+            "/global_explorer/set_exploring", 
+            aQueueSize, 
+            std::bind(&Yamauchi1999Node::SetExploringCallback, this, std::placeholders::_1)));
 
-    // 10 exploration zones and 4 semantic actions
-    TICKS_COUNTER = 0;
+    // Advertisers
+    aGoalPublisher = node_handle.advertise<geometry_msgs::Pose>(aNamespace + "/integrated_global_planner/goal", aQueueSize);
+    aFrontierComputePublisher = node_handle.advertise<std_msgs::String>(aNamespace + "/frontier_discovery/compute", aQueueSize);
+
+    // Node's routines
+    double update_period = PeriodToFreqAndFreqToPeriod(aRate);
+    aTimers.push_back(node_handle.createTimer(ros::Duration(update_period), std::bind(&Yamauchi1999Node::Update, this)));
 }
 
-void EstimatePoseCallback(const multirobotsimulations::CustomPose& rMsg) {
-    WORLD_POS.setX(rMsg.pose.position.x);
-    WORLD_POS.setY(rMsg.pose.position.y);
-    HAS_POSE = true;
+Yamauchi1999Node::~Yamauchi1999Node() {
+
 }
 
-void ClustersCallback(const multirobotsimulations::Frontiers& rMsg) {
-    CENTROIDS.centroids.poses.assign(rMsg.centroids.poses.begin(), rMsg.centroids.poses.end());
-    CENTROIDS.centroids.header = rMsg.centroids.header;
-    CENTROIDS.costs.data.assign(rMsg.costs.data.begin(), rMsg.costs.data.end());
-    CENTROIDS.utilities.data.assign(rMsg.utilities.data.begin(), rMsg.utilities.data.end());
-    CURRENT_STATE = state_select_frontier;
-    RECEIVED_FRONTIERS = true;
+void Yamauchi1999Node::ClustersCallback(multirobotsimulations::Frontiers::ConstPtr msg) {
+    aFrontierCentroidsMsg.centroids.poses.assign(msg->centroids.poses.begin(), msg->centroids.poses.end());
+    aFrontierCentroidsMsg.centroids.header = msg->centroids.header;
+    aFrontierCentroidsMsg.costs.data.assign(msg->costs.data.begin(), msg->costs.data.end());
+    aFrontierCentroidsMsg.utilities.data.assign(msg->utilities.data.begin(), msg->utilities.data.end());
+
+    aFrontierCentroidsMsg.highest_cost_index = msg->highest_cost_index;
+    aFrontierCentroidsMsg.highest_value_index = msg->highest_value_index;
+    aFrontierCentroidsMsg.highest_utility_index = msg->highest_utility_index;
+
+    aFrontierCentroidsMsg.highest_cost = msg->highest_cost;
+    aFrontierCentroidsMsg.highest_value = msg->highest_value;
+    aFrontierCentroidsMsg.highest_utility = msg->highest_utility;
+
+    ChangeState(state_select_frontier);
 }
 
-void SetIdleCallback(const std_msgs::String& rMsg) {
-    CURRENT_STATE = state_idle;
+void Yamauchi1999Node::EstimatePoseCallback(multirobotsimulations::CustomPose::ConstPtr msg) {
+    if(!aHasPose) aHasPose = true;
+    aWorldPos.setX(msg->pose.position.x);
+    aWorldPos.setY(msg->pose.position.y);
 }
 
-void SubGoalFinishCallback(const std_msgs::String& rMsg) {
-    if(CURRENT_STATE == state_exploring) {
-        CURRENT_STATE = state_exploration_finished;
-    }
-    if(CURRENT_STATE == state_back_to_base) {
-        CURRENT_STATE = state_back_to_base_finished;
-    }
+void Yamauchi1999Node::SubGoalFinishCallback(std_msgs::String::ConstPtr msg) {
+    if(aCurrentState == state_exploring) ChangeState(state_exploration_finished);
+    if(aCurrentState == state_back_to_base) ChangeState(state_back_to_base_finished);
 }
 
-void CSpaceCallback(const nav_msgs::OccupancyGrid& rMsg) {
-    OCC.info = rMsg.info;
-    OCC.header = rMsg.header;
-    RECEIVED_CS = true;
+void Yamauchi1999Node::CSpaceCallback(nav_msgs::OccupancyGrid::ConstPtr msg) {
+    if(!aHasOcc) aHasOcc = true;
+    aCSpaceMsg.info = msg->info;
+    aCSpaceMsg.header = msg->header;
 }
 
-void SetExploringCallback(const std_msgs::String& rMsg) {
-    CURRENT_STATE = state_compute_centroids;
+void Yamauchi1999Node::SetIdleCallback(std_msgs::String::ConstPtr msg) {
+    ChangeState(state_idle);
 }
 
-void SetMotherbaseCallback(const std_msgs::String& rMsg) {
-    CURRENT_STATE = state_set_back_to_base;  
+void Yamauchi1999Node::SetBasestationCallback(std_msgs::String::ConstPtr msg) {
+    ChangeState(state_set_back_to_base);
 }
 
-int SelectFrontier(multirobotsimulations::Frontiers& rCentroids, 
-                    tf::Vector3& rWorldPos, 
-                    tf::Vector3& rOutFrontierWorld) {
-    rOutFrontierWorld.setX(rCentroids.centroids.poses[rCentroids.highest_utility_index].position.x);
-    rOutFrontierWorld.setY(rCentroids.centroids.poses[rCentroids.highest_utility_index].position.y);
-    return rCentroids.highest_utility_index;
+void Yamauchi1999Node::SetExploringCallback(std_msgs::String::ConstPtr msg) { 
+    ChangeState(state_compute_centroids);
 }
 
-void SetGoal(tf::Vector3& rGoal, ros::Publisher& rPublisher) {
+int Yamauchi1999Node::SelectFrontier(multirobotsimulations::Frontiers& centroids, tf::Vector3& selectFrontierWorld) {
+    selectFrontierWorld.setX(centroids.centroids.poses[centroids.highest_utility_index].position.x);
+    selectFrontierWorld.setY(centroids.centroids.poses[centroids.highest_utility_index].position.y);
+    return centroids.highest_utility_index;
+}
+
+void Yamauchi1999Node::CreateMarker(visualization_msgs::Marker& input, const char* ns, const int& id, const int& seq) {
+    input.id = id;
+    input.header.frame_id = std::string("robot_") + std::to_string(id) + std::string("/map");
+    input.header.stamp = ros::Time().now();
+    input.ns = ns;
+    input.points.clear();
+    input.type = visualization_msgs::Marker::CYLINDER;
+    input.action = visualization_msgs::Marker::MODIFY;
+    input.pose.orientation.x = 0.0;
+    input.pose.orientation.y = 0.0;
+    input.pose.orientation.z = 0.0;
+    input.pose.orientation.w = 1.0;
+    input.scale.x = 0.5;
+    input.scale.y = 0.5;
+    input.scale.z = 0.5;
+    input.color.a = 1.0;
+    input.color.r = 0.3;
+    input.color.g = 1.0;
+    input.color.b = 0.0;
+    input.lifetime = ros::Duration(1);
+}
+
+void Yamauchi1999Node::SetGoal(const tf::Vector3& goal) {
     geometry_msgs::Pose pose_msg;
-    pose_msg.position.x = rGoal.getX();
-    pose_msg.position.y = rGoal.getY();
-    rPublisher.publish(pose_msg);
+    pose_msg.position.x = goal.getX();
+    pose_msg.position.y = goal.getY();
+    aGoalPublisher.publish(pose_msg);    
 }
 
-void CreateMarker(visualization_msgs::Marker& rInput, const char* pNs, const int& rId, const int& rSeq) {
-    rInput.id = rId;
-    rInput.header.frame_id = std::string("robot_") + std::to_string(rId) + std::string("/map");
-    rInput.header.stamp = ros::Time().now();
-    rInput.ns = pNs;
-    rInput.points.clear();
-    rInput.type = visualization_msgs::Marker::CYLINDER;
-    rInput.action = visualization_msgs::Marker::MODIFY;
-    rInput.pose.orientation.x = 0.0;
-    rInput.pose.orientation.y = 0.0;
-    rInput.pose.orientation.z = 0.0;
-    rInput.pose.orientation.w = 1.0;
-    rInput.scale.x = 0.5;
-    rInput.scale.y = 0.5;
-    rInput.scale.z = 0.5;
-    rInput.color.a = 1.0;
-    rInput.color.r = 0.3;
-    rInput.color.g = 1.0;
-    rInput.color.b = 0.0;
-    rInput.lifetime = ros::Duration(1);
+void Yamauchi1999Node::ChangeState(const ExplorerState& newState) {
+    ROS_INFO("[Yamauchi1999Node] State change %d -> %d.", aCurrentState, newState);
+    aCurrentState = newState;
+}
+
+void Yamauchi1999Node::Update() {
+    if(!aHasPose || !aHasOcc) return;
+
+    WorldToMap(aCSpaceMsg, aWorldPos, aOccPos);
+
+    if(aDirty) {
+        aGoalBasestation.setX(aWorldPos.getX());
+        aGoalBasestation.setY(aWorldPos.getY());
+        aDirty = false;
+    }
+
+    switch(aCurrentState) {
+        case state_idle:
+            // just wait for command
+        break;
+
+        case state_compute_centroids:
+            // ask for centroids to avoid
+            // unnecessary computations
+            aFrontierComputePublisher.publish(std_msgs::String());
+            ChangeState(state_waiting_centroids);
+        break;
+
+        case state_waiting_centroids:
+            // just wait for the centroids to arrive
+        break;
+
+        case state_select_frontier:
+            if(aFrontierCentroidsMsg.centroids.poses.size() == 0) {
+                SetGoal(aGoalBasestation);
+                ChangeState(state_set_back_to_base);
+                ROS_INFO("[Yamauchi1999Node] Not more clusters to explore [%.2f %.2f]", 
+                            aGoalBasestation.getX(), 
+                            aGoalBasestation.getY());
+                break;
+            }
+            
+            if(aFrontierCentroidsMsg.centroids.poses.size() > 0) {
+                ROS_INFO("[Yamauchi1999Node] maximizing utility.");
+                SelectFrontier(aFrontierCentroidsMsg, aGoalFrontier);
+                ROS_INFO("[Yamauchi1999Node] selected frontier [%.2f %.2f]", 
+                            aGoalFrontier.getX(),
+                            aGoalFrontier.getY());
+                SetGoal(aGoalFrontier);
+                ChangeState(state_exploring);
+            } else {
+                ChangeState(state_set_back_to_base);
+            }
+        break;
+
+        case state_set_back_to_base:
+            SetGoal(aGoalBasestation);
+            ROS_INFO("[Yamauchi1999Node] going back to base at [%.2f %.2f]", 
+                        aGoalBasestation.getX(), 
+                        aGoalBasestation.getY());   
+            ChangeState(state_back_to_base);             
+        break;
+
+        case state_back_to_base:
+
+        break;
+
+        case state_back_to_base_finished:
+            ROS_INFO("[Yamauchi1999Node] reached motherbase.");
+            ChangeState(state_idle);
+        break;
+
+        case state_exploration_finished:
+            ROS_INFO("[Yamauchi1999Node] reached frontier.");
+            ChangeState(state_compute_centroids);
+        break;
+    }
+
+    aDeltaTime = ros::Time::now().sec - aLastTime.sec;
+    ROS_INFO("[Yamauchi1999Node] current state %d delta time: %f", aCurrentState, aDeltaTime);
+
+    // run spin to get the data
+    aLastTime = ros::Time::now();
+
+    if(aFirst) aFirst = false;
 }
 
 int main(int argc, char* argv[]) {
-    /*
-     * ros initialization of the node
-     */
-    srand (time(NULL));
-    ros::init(argc, argv, "Yamauchi1999");
-    ros::NodeHandle node_handle;
-    ros::NodeHandle private_handle("~");
-    std::string ns = ros::this_node::getNamespace();
-    Initialize();
-
-    /////////////////////////////////////////////////////////////////
-    //                      Yamauchi 1999 Base                     //
-    /////////////////////////////////////////////////////////////////
-
-    /*
-     * loop frequency to publish stuff
-     */
-    int queue_size = 1;
-    int rate = 10;
-    int robots = 1;
-    int robot_id = -1;
-    double delta_time = 0.0;
-    ros::Time last_time(0,0);
-
-    /*
-     * Rendezvous related stuff
-     */
-    bool set_motherbase = false;
-    tf::Vector3 goal_frontier;
-    tf::Vector3 goal_motherbase;
-    std::vector<ros::Subscriber> subs;
-
-    node_handle.getParam("/robots", robots);
-    private_handle.getParam("id", robot_id);
-    private_handle.getParam("rate", rate);
-    private_handle.getParam("queue_size", queue_size);
-
-    ros::Rate loop_frequency(rate);
-
-    /*
-     * Outer nodes topics
-     */
-    subs.push_back(node_handle.subscribe(ns + "/c_space", queue_size, &CSpaceCallback));
-    subs.push_back(node_handle.subscribe(ns + "/frontier_discovery/frontiers_clusters", queue_size, &ClustersCallback));
-    subs.push_back(node_handle.subscribe(ns + "/gmapping_pose/world_pose", queue_size, &EstimatePoseCallback));
-    subs.push_back(node_handle.subscribe(ns + "/integrated_global_planner/finish", queue_size, &SubGoalFinishCallback));
-
-    ros::Publisher sub_goal_pub = node_handle.advertise<geometry_msgs::Pose>(ns + "/integrated_global_planner/goal", queue_size);
-    ros::Publisher fro_comp = node_handle.advertise<std_msgs::String>(ns + "/frontier_discovery/compute", queue_size);
-
-    /*
-     * This node's topics
-     */    
-    subs.push_back(node_handle.subscribe(ns + "/explorer/set_idle", queue_size, &SetIdleCallback));
-    subs.push_back(node_handle.subscribe(ns + "/explorer/set_exploring", queue_size, &SetExploringCallback));
-    subs.push_back(node_handle.subscribe("/global_explorer/back_to_base", queue_size, &SetMotherbaseCallback));
-    subs.push_back(node_handle.subscribe("/global_explorer/set_exploring", queue_size, &SetExploringCallback));
-
-    // ------------------ End Yamauchi 1999 base ----------------- //
-
-
-    while(ros::ok()) {
-        if(HAS_POSE && RECEIVED_CS) {
-            WorldToMap(OCC, WORLD_POS, POS);
-
-            if(set_motherbase == false) {
-                set_motherbase = true;
-                goal_motherbase.setX(WORLD_POS.getX());
-                goal_motherbase.setY(WORLD_POS.getY());
-            }
-
-            switch(CURRENT_STATE) {
-               case state_idle:
-                    // just wait for command
-               break;
-
-               case state_compute_centroids:
-                    // ask for centroids to avoid
-                    // unnecessary computations
-                    fro_comp.publish(std_msgs::String());
-                    CURRENT_STATE = state_waiting_centroids;
-               break;
-
-               case state_waiting_centroids:
-                    // just wait for the centroids to arrive
-               break;
-
-               case state_select_frontier:
-                    if(CENTROIDS.centroids.poses.size() == 0) {
-                        SetGoal(goal_motherbase, sub_goal_pub);
-                        CURRENT_STATE = state_set_back_to_base;
-                        ROS_INFO("[%s Explorer] Not more clusters to explore [%.2f %.2f]", 
-                                 ns.c_str(), 
-                                 goal_motherbase.getX(), 
-                                 goal_motherbase.getY());
-                        break;
-                    }
-                    
-                    if(CENTROIDS.centroids.poses.size() > 0) {
-                        SelectFrontier(CENTROIDS, WORLD_POS, goal_frontier);
-                        ROS_INFO("[%s Explorer] maximizing utility.", ns.c_str());
-                        
-                        SetGoal(goal_frontier, sub_goal_pub);
-                        CURRENT_STATE = state_exploring;
-                        ROS_INFO("[%s Explorer] selected frontier [%.2f %.2f]", 
-                                    ns.c_str(),
-                                    goal_frontier.getX(),
-                                    goal_frontier.getY());
-                    } else {
-                        CURRENT_STATE = state_set_back_to_base;
-                    }
-               break;
-
-               case state_set_back_to_base:
-                    SetGoal(goal_motherbase, sub_goal_pub);
-                    CURRENT_STATE = state_back_to_base;
-                    ROS_INFO("[%s Explorer] going back to base at [%.2f %.2f]", 
-                                ns.c_str(), 
-                                goal_motherbase.getX(), 
-                                goal_motherbase.getY());                
-               break;
-
-               case state_back_to_base:
-
-               break;
-
-               case state_back_to_base_finished:
-                    CURRENT_STATE = state_idle;
-                    ROS_INFO("[%s Explorer] reached motherbase.", ns.c_str());
-               break;
-
-               case state_exploration_finished:
-                    CURRENT_STATE = state_compute_centroids;
-                    ROS_INFO("[%s Explorer] reached frontier.", ns.c_str());
-               break;
-            }
-            
-        }
-
-        delta_time = ros::Time::now().sec - last_time.sec;
-        ROS_INFO("Current state %d delta time: %f", CURRENT_STATE, delta_time);
-
-        // run spin to get the data
-        last_time = ros::Time::now();
-        ros::spinOnce();
-        loop_frequency.sleep();
-    }
-
-    return 0;
+    ros::init(argc, argv, "yamauchi1999node");
+    std::unique_ptr<Yamauchi1999Node> yamauchi1999Node = std::make_unique<Yamauchi1999Node>();
+    ros::spin();
 }
