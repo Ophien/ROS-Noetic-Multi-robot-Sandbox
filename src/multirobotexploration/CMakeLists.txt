@@ -50,9 +50,9 @@ include_directories(
 
 add_library(
   ${PROJECT_NAME}
-  source/algorithms/SearchAlgorithms.cpp
-  source/algorithms/RRTRoot.cpp
-  source/algorithms/RendezvousPlan.cpp
+  source/common/SearchAlgorithms.cpp
+  source/common/RRTRoot.cpp
+  source/common/RendezvousPlan.cpp
 )
 
 set(CMAKE_CXX_STANDARD 17)
@@ -64,39 +64,29 @@ set(DENABLE_PRECOMPILED_HEADERS OFF)
 ## communication ##
 ###################
 
-add_executable(mockcommunicationmodel source/communication/MockCommunicationModel.cpp)
-target_link_libraries(mockcommunicationmodel multirobotexploration ${catkin_LIBRARIES})
-
-add_executable(mocknetworkhandler source/communication/MockNetworkHandler.cpp)
-target_link_libraries(mocknetworkhandler multirobotexploration ${catkin_LIBRARIES})
+add_executable(mockcommunicationmodelnode source/communication/MockCommunicationModelNode.cpp)
+target_link_libraries(mockcommunicationmodelnode multirobotexploration ${catkin_LIBRARIES})
 
 ##################
 ## localization ##
 ##################
-add_executable(gmappingpose source/localization/GmappingPose.cpp)
-target_link_libraries(gmappingpose ${catkin_LIBRARIES})
+add_executable(gmappingposenode source/localization/GmappingPoseNode.cpp)
+target_link_libraries(gmappingposenode ${catkin_LIBRARIES})
 
-add_executable(averagedisplacement source/localization/AverageDisplacement.cpp)
-target_link_libraries(averagedisplacement multirobotexploration ${catkin_LIBRARIES})
+add_executable(averagevelocityestimatornode source/localization/AverageVelocityEstimatorNode.cpp)
+target_link_libraries(averagevelocityestimatornode multirobotexploration ${catkin_LIBRARIES})
 
-add_executable(relativeposeestimator source/localization/RelativePoseEstimator.cpp)
-target_link_libraries(relativeposeestimator multirobotexploration ${catkin_LIBRARIES})
-
+add_executable(relativeposeestimatornode source/localization/RelativePoseEstimatorNode.cpp)
+target_link_libraries(relativeposeestimatornode multirobotexploration ${catkin_LIBRARIES})
 
 ################
 ## navigation ##
 ################
-add_executable(potentialfieldlocalplanner source/navigation/PotentialFieldLocalPlanner.cpp)
-target_link_libraries(potentialfieldlocalplanner multirobotexploration ${OpenCV_LIBS} ${catkin_LIBRARIES})
+add_executable(integratedglobalplannernode source/navigation/IntegratedGlobalPlannerNode.cpp)
+target_link_libraries(integratedglobalplannernode multirobotexploration ${catkin_LIBRARIES})
 
-add_executable(desaicontroller source/navigation/DesaiController.cpp)
-target_link_libraries(desaicontroller multirobotexploration ${catkin_LIBRARIES})
-
-add_executable(subgoalnav source/navigation/SubGoalNav.cpp)
-target_link_libraries(subgoalnav multirobotexploration ${catkin_LIBRARIES})
-
-add_executable(mrelocalplanner source/navigation/MRELocalPlanner.cpp)
-target_link_libraries(mrelocalplanner multirobotexploration ${catkin_LIBRARIES})
+add_executable(localplannernode source/navigation/LocalPlannerNode.cpp)
+target_link_libraries(localplannernode multirobotexploration ${catkin_LIBRARIES})
 
 ###############
 ## frontiers ##
@@ -107,34 +97,31 @@ target_link_libraries(frontierdiscoverynode multirobotexploration ${catkin_LIBRA
 #############
 ## mapping ##
 #############
-add_executable(cspace source/map/CSpace.cpp)
-target_link_libraries(cspace multirobotexploration ${catkin_LIBRARIES})
+add_executable(cspacenode source/map/CSpaceNode.cpp)
+target_link_libraries(cspacenode multirobotexploration ${catkin_LIBRARIES})
 
-add_executable(localdynamicmap source/map/LocalDynamicMap.cpp)
-target_link_libraries(localdynamicmap multirobotexploration ${catkin_LIBRARIES})
+add_executable(localcspacenode source/map/LocalCSpaceNode.cpp)
+target_link_libraries(localcspacenode multirobotexploration ${catkin_LIBRARIES})
 
-add_executable(fbmapfusionrelative source/map/FBMapFusionRelative.cpp)
-target_link_libraries(fbmapfusionrelative multirobotexploration ${OpenCV_LIBS} ${catkin_LIBRARIES})
+add_executable(mapstitchingnode source/map/MapStitchingNode.cpp)
+target_link_libraries(mapstitchingnode multirobotexploration ${OpenCV_LIBS} ${catkin_LIBRARIES})
 
 #############
 ## sensors ##
 #############
-add_executable(lasertoworld source/laser/LaserToWorld.cpp)
-target_link_libraries(lasertoworld multirobotexploration ${catkin_LIBRARIES})
-
-add_executable(lasernoiser source/laser/LaserNoiser.cpp)
-target_link_libraries(lasernoiser multirobotexploration ${catkin_LIBRARIES})
+add_executable(lasertoworldnode source/laser/LaserToWorldNode.cpp)
+target_link_libraries(lasertoworldnode multirobotexploration ${catkin_LIBRARIES})
 
 ##############
 ## policies ##
 ##############
-add_executable(alysson2024 source/policies/Alysson2024.cpp)
+add_executable(alysson2024 source/policies/Alysson2024Node.cpp)
 target_link_libraries(alysson2024 multirobotexploration ${catkin_LIBRARIES})
 
-add_executable(randomizedsocialwelfare source/policies/RandomizedSocialWelfare.cpp)
+add_executable(randomizedsocialwelfare source/policies/RandomizedSocialWelfareNode.cpp)
 target_link_libraries(randomizedsocialwelfare multirobotexploration ${catkin_LIBRARIES})
 
-add_executable(yamauchi1999 source/policies/Yamauchi1999.cpp)
+add_executable(yamauchi1999 source/policies/Yamauchi1999Node.cpp)
 target_link_libraries(yamauchi1999 multirobotexploration ${catkin_LIBRARIES})
 
 #############

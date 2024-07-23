@@ -134,7 +134,7 @@
             </rosparam>
         </node>
 
-        <node name="node_lidar_to_occ_0" pkg="multirobotexploration" type="lasertoworld">
+        <node name="node_lidar_to_occ_0" pkg="multirobotexploration" type="lasertoworldnode">
             <remap from="/robot_$(arg robot_id)/scan" to="/robot_$(arg robot_id)/ultrasonic"/>
             <remap from="/robot_$(arg robot_id)/laser_to_world/laser_world" to="/robot_$(arg robot_id)/laser_to_world/lidar_world_0"/>
             <remap from="/robot_$(arg robot_id)/laser_to_world/laser_occ" to="/robot_$(arg robot_id)/laser_to_world/lidar_occ_0"/>
@@ -146,7 +146,7 @@
             <param name="y" value="3.14"/>
         </node>
 
-        <node name="node_lidar_to_occ_1" pkg="multirobotexploration" type="lasertoworld">
+        <node name="node_lidar_to_occ_1" pkg="multirobotexploration" type="lasertoworldnode">
             <remap from="/robot_$(arg robot_id)/scan" to="/robot_$(arg robot_id)/ultrasonic_front"/>
             <remap from="/robot_$(arg robot_id)/laser_to_world/laser_world" to="/robot_$(arg robot_id)/laser_to_world/lidar_world_1"/>
             <remap from="/robot_$(arg robot_id)/laser_to_world/laser_occ" to="/robot_$(arg robot_id)/laser_to_world/lidar_occ_1"/>
@@ -158,7 +158,7 @@
             <param name="y" value="0"/>
         </node>
 
-        <node name="node_lidar_to_occ_2" pkg="multirobotexploration" type="lasertoworld">
+        <node name="node_lidar_to_occ_2" pkg="multirobotexploration" type="lasertoworldnode">
             <remap from="/robot_$(arg robot_id)/scan" to="/robot_$(arg robot_id)/ultrasonic_left"/>
             <remap from="/robot_$(arg robot_id)/laser_to_world/laser_world" to="/robot_$(arg robot_id)/laser_to_world/lidar_world_2"/>
             <remap from="/robot_$(arg robot_id)/laser_to_world/laser_occ" to="/robot_$(arg robot_id)/laser_to_world/lidar_occ_2"/>
@@ -170,7 +170,7 @@
             <param name="y" value="1.57"/>
         </node>
 
-        <node name="node_lidar_to_occ_3" pkg="multirobotexploration" type="lasertoworld">
+        <node name="node_lidar_to_occ_3" pkg="multirobotexploration" type="lasertoworldnode">
             <remap from="/robot_$(arg robot_id)/scan" to="/robot_$(arg robot_id)/ultrasonic_right"/>
             <remap from="/robot_$(arg robot_id)/laser_to_world/laser_world" to="/robot_$(arg robot_id)/laser_to_world/lidar_world_3"/>
             <remap from="/robot_$(arg robot_id)/laser_to_world/laser_occ" to="/robot_$(arg robot_id)/laser_to_world/lidar_occ_3"/>
@@ -182,7 +182,12 @@
             <param name="y" value="-1.57"/>
         </node>
 
-        <node name="MOCK_COMM_MODEL" pkg="multirobotexploration" type="mockcommunicationmodel" output="screen">
+        <node name="node_lasertoworld" pkg="multirobotexploration" type="lasertoworldnode">
+            <param name="rate" type="double" value="2"/>
+            <param name="queue_size" type="int" value="2" />
+        </node>
+
+        <node name="MOCK_COMM_MODEL" pkg="multirobotexploration" type="mockcommunicationmodelnode" output="screen">
             <param name="id" type="int" value="$(arg robot_id)"/>
             <param name="rate" type="double" value="5.0"/>
             <param name="dist" type="double" value="3.0"/>
@@ -190,79 +195,74 @@
             <param name="comm_dist" type="double" value="3"/>
         </node>
 
-        <node name="node_lasertoworld" pkg="multirobotexploration" type="lasertoworld">
-            <param name="rate" type="int" value="2"/>
-            <param name="queue_size" type="int" value="2" />
-        </node>
-
         <node name="node_frontierdiscovery_node" pkg="multirobotexploration" type="frontierdiscoverynode" output="screen">
             <param name="id" type="int" value="$(arg robot_id)"/>
-            <param name="rate" type="int" value="1"/> 
+            <param name="rate" type="double" value="1"/> 
             <param name="max_lidar_range" type="double" value="10.0"/>
             <param name="queue_size" type="int" value="2" />
         </node>
 
-        <node name="node_averagedisplacement" pkg="multirobotexploration" type="averagedisplacement" output="screen">
+        <node name="node_averagevelocityestimator" pkg="multirobotexploration" type="averagevelocityestimatornode" output="screen">
             <param name="id" type="int" value="$(arg robot_id)"/>
             <param name="rate" type="double" value="5.0"/>
             <param name="queue_size" type="int" value="2"/>
             <param name="count" type="int" value="10"/>
         </node>
 
-        <node name="node_gmappingpose" pkg="multirobotexploration" type="gmappingpose">
+        <node name="node_gmappingpose" pkg="multirobotexploration" type="gmappingposenode">
             <param name="id" type="int" value="$(arg robot_id)"/>
-            <param name="rate" type="int" value="10"/>
+            <param name="rate" type="double" value="10"/>
             <param name="queue_size" type="int" value="2" />
         </node>
 
-        <node name="node_relativeposes" pkg="multirobotexploration" type="relativeposeestimator" output="screen">
+        <node name="node_relativeposes" pkg="multirobotexploration" type="relativeposeestimatornode" output="screen">
             <param name="id" type="int" value="$(arg robot_id)"/>
-            <param name="rate" type="int" value="5" />
+            <param name="rate" type="double" value="5" />
             <param name="queue_size" type="int" value="2" />
         </node>
         
-        <node name="node_cspace" pkg="multirobotexploration" type="cspace" output="screen">
+        <node name="node_cspace" pkg="multirobotexploration" type="cspacenode" output="screen">
             <param name="id" type="int" value="$(arg robot_id)"/>
-            <param name="rate" type="int" value="1"/>
             <param name="queue_size" type="int" value="2"/>
+            <param name="rate" type="double" value="1"/>
             <param name="max_lidar_range" type="double" value="10.0"/>
             <param name="free_inflation_radius" type="double" value="0.3"/>
-            <param name="ocu_inflation_radius" type="double" value="0.5"/>
+            <param name="ocu_inflation_radius" type="double" value="0.7"/>
             <param name="lidar_sources" type="int" value="4"/>
             <remap from="/robot_$(arg robot_id)/map" to="/robot_$(arg robot_id)/fusion"/>
         </node>
 
-        <node name="node_localdynamicmap" pkg="multirobotexploration" type="localdynamicmap" output="screen">
+        <node name="node_localcspace" pkg="multirobotexploration" type="localcspacenode" output="screen">
             <param name="id" type="int" value="$(arg robot_id)"/>
-            <param name="rate" type="int" value="5"/>
+            <param name="rate" type="double" value="15"/>
             <param name="queue_size" type="int" value="1"/>
             <param name="max_lidar_range" type="double" value="10.0"/>
-            <param name="free_inflation_radius" type="double" value="5.0"/>
-            <param name="ocu_inflation_radius" type="double" value="0.5"/>
+            <param name="free_inflation_radius" type="double" value="0.3"/>
+            <param name="ocu_inflation_radius" type="double" value="0.7"/>
             <param name="lidar_sources" type="int" value="4"/>
             <param name="local_view_size"  type="double" value="5.0"/>
         </node>
 
-        <node name="node_fbmapfusion" pkg="multirobotexploration" type="fbmapfusionrelative" output="screen">
+        <node name="node_mapsticthing" pkg="multirobotexploration" type="mapstitchingnode" output="screen">
             <param name="id" type="int" value="$(arg robot_id)"/>
-            <param name="rate" type="int" value="1"/>
+            <param name="rate" type="double" value="1"/>
             <param name="queue_size" type="int" value="2" />
         </node>
 
-        <node name="node_subgoalnav" pkg="multirobotexploration" type="subgoalnav" output="screen">
+        <node name="node_integratedglobalplanner" pkg="multirobotexploration" type="integratedglobalplannernode" output="screen">
             <param name="id" type="int" value="$(arg robot_id)"/>
-            <param name="rate" type="double" value="2.0" />
+            <param name="queue_size" type="int" value="2" />
+            <param name="rate" type="double" value="2" />
             <param name="reach_threshold" type="double" value="0.3"/>
-            <param name="queue_size" type="int" value="2" />
-            <param name="delta_threshold" type="double" value="60.0"/>
+            <param name="stuck_time_threshold" type="double" value="60.0"/>
         </node>
 
-        <node name="node_mrelocalplanner" pkg="multirobotexploration" type="mrelocalplanner" output="screen">
-            <param name="id" value="$(arg robot_id)"/>
-            <param name="min_displacement" type="double" value="0.005"/>
-            <param name="min_dist" type="double" value="2.0"/>
+        <node name="local_planner" pkg="multirobotexploration" type="localplannernode" output="screen">
+            <param name="id" type="int" value="$(arg robot_id)"/>
             <param name="waypoints_to_use" type="int" value="10"/>
             <param name="via_points_increment" type="int" value="3"/>
+            <param name="rate" type="double" value="15.0"/>
+            <param name="use_priority_stop_behavior" value="False"/>
             <param name="odom_topic" value="/robot_$(arg robot_id)/odom"/>
             <param name="map_frame" value="robot_$(arg robot_id)/map"/>
             <param name="max_vel_x" value="0.5"/>
@@ -280,13 +280,12 @@
             <param name="inflation_dist" value="1.0"/>
             <param name="min_obstacle_dist" value="0.1"/>
             <param name="weight_kinematics_forward_drive" value="1.0"/>
-            <param name="use_priority_stop_behavior" value="False"/>
         </node>
 
         <node name="node_costmapconverter" pkg="costmap_converter" type="standalone_converter" output="screen">
             <param name="costmap_topic" value="/robot_$(arg robot_id)/c_space_local"/>
             <param name="costmap_update_topic" value="/robot_$(arg robot_id)/c_space_local_updates"/>
-            <param name="obstacles_topic" value="/robot_$(arg robot_id)/obstacle_array"/>
+            <param name="obstacles_topic" value="/robot_$(arg robot_id)/costmap_converter/obstacles"/>
             <param name="polygon_marker_topic" value="/robot_$(arg robot_id)/polygon_marker"/>
             <param name="occupied_min_value" value="70"/>
             <param name="converter_plugin" value="costmap_converter::CostmapToPolygonsDBSMCCH"/>
@@ -311,6 +310,8 @@
             <param name="rate" value="1"/>
             <param name="queue_size" value="2"/>
         </node>-->
+
+        <node name="rviz" pkg="rviz" type="rviz"  args="-d $(find multirobotexploration)/rviz/robot_$(arg robot_id).rviz"/>
     </group>
 
 </launch>

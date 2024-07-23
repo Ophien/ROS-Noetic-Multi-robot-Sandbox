@@ -1,4 +1,4 @@
-<!--
+/*
  * Copyright (c) 2020, Alysson Ribeiro da Silva
  * All rights reserved.
  * 
@@ -38,32 +38,89 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
--->
+*/
 
-<launch>
-    <arg name="robot_id" default="0"/>
-    <arg name="u_range" default="19.9"/>
-    <arg name="max_range" default="20.1"/>
-    <group ns="robot_$(arg robot_id)">
-        <param name="tf_prefix" value="robot_$(arg robot_id)"/> 
-        <node name="node_slam_gmapping" pkg="gmapping" type="slam_gmapping" respawn="true">
-            <param name="tf_prefix" value=""/> 
-            <param name="maxUrange" value="$(arg u_range)"/>
-            <param name="maxRange" value="$(arg max_range)"/>
-            <param name="map_update_interval" value="1.0"/>
-            <param name="iterations" value="1"/>
-            <param name="linearUpdate" value="0.25"/>
-            <param name="angularUpdate" value="0.25"/>
-            <param name="temporalUpdate" value="-1.0"/>
-            <param name="particles" value="10"/>
-            <param name="xmin" value="-40.0"/>
-            <param name="ymin" value="-40.0"/>
-            <param name="xmax" value="40.0"/>
-            <param name="ymax" value="40.0"/>
-            <param name="delta" value="0.1"/>
-            <param name="map_frame" value="robot_$(arg robot_id)/map"/>
-            <param name="odom_frame" value="robot_$(arg robot_id)/odom"/>
-            <param name="base_frame" value="robot_$(arg robot_id)/base_link"/>
-        </node>
-    </group>
-</launch>
+/*
+ * ROS and system
+ */
+#include <stdio.h>
+#include <vector>
+#include "ros/ros.h"
+#include "tf/tf.h"
+
+/*
+ * Messages
+ */
+#include "std_msgs/Float64MultiArray.h"
+#include "geometry_msgs/Pose.h"
+#include "geometry_msgs/PoseArray.h"
+#include "std_msgs/Int8MultiArray.h"
+#include "visualization_msgs/Marker.h"
+#include "visualization_msgs/MarkerArray.h"
+#include "multirobotsimulations/CustomPose.h"
+#include "multirobotsimulations/MockPackage.h"
+
+/*
+ * Helpers
+ */
+#include "Common.h"
+
+class RelativePoseEstimatorNode {
+    public:
+        RelativePoseEstimatorNode();
+        ~RelativePoseEstimatorNode();
+
+    private:
+        void LoadRelativePoses(ros::NodeHandle& nodeHandle);
+        void PrepareMarkers(visualization_msgs::Marker& input, const char* ns, const int& id, const int& seq);
+        void SetNear(visualization_msgs::Marker& input);
+        void SetFar(visualization_msgs::Marker& input);
+        void CommCallback(std_msgs::Int8MultiArray::ConstPtr msg);
+        void Update();
+
+        /*
+         * Control variables
+         */
+        int aRobots;
+        int aId;
+        int aQueueSize;
+        int aSeq;
+        double aRate;
+        std::string aNamespace;
+
+        /*
+         * Routines
+         */
+        std::vector<ros::Timer> aTimers;
+
+        /*
+         * Subscribers
+         */
+        std::vector<ros::Subscriber> aSubscribers;
+        
+        /*
+         * Advertisers
+         */   
+        ros::Publisher aStartRelativePosesPublisher;
+        ros::Publisher aRelativePosesPublisher;
+        ros::Publisher aDistancesPublisher;
+        ros::Publisher aNearMarkerPublisher;
+        ros::Publisher aFarMarkerPublisher;
+
+        /*
+         * Messages
+         */
+        geometry_msgs::PoseArray aRobotsRelStartingPosMsg;
+        geometry_msgs::PoseArray aRobotsRelativePosesMsg;
+        visualization_msgs::Marker aClusterMarkerMsg;
+        visualization_msgs::Marker aClusterMarkerFarMsg;
+        std_msgs::Float64MultiArray aRobotsRelativeDistancesMsg;
+        std_msgs::Int8MultiArray aRobotsInCommMsg;
+
+        /*
+         * Helpers
+         */
+        std::vector<geometry_msgs::Pose> aRobotsWorldPoses;
+        std::vector<bool> aReceivedPoses;
+        std::vector<tf::Vector3> aRelativePoses;
+};

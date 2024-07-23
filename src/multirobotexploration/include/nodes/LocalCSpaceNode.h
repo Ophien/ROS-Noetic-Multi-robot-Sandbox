@@ -41,72 +41,88 @@
 */
 
 /*
- * Ros and system
+ * Ros and systems
  */
-#include <vector>
-#include "ros/ros.h"
+#include <string>
+#include <ros/ros.h>
+#include <signal.h>
 #include "tf/tf.h"
+#include "string.h"
 
 /*
  * Messages
  */
+#include "multirobotsimulations/CustomOcc.h"
 #include "nav_msgs/OccupancyGrid.h"
-#include "geometry_msgs/Point.h"
 #include "geometry_msgs/PoseArray.h"
-#include "std_msgs/String.h"
+#include "geometry_msgs/Pose.h"
+#include "costmap_converter/ObstacleArrayMsg.h"
+#include "std_msgs/Int8MultiArray.h"
 #include "multirobotsimulations/CustomPose.h"
-#include "multirobotsimulations/Frontiers.h"
-#include "visualization_msgs/Marker.h"
-#include "visualization_msgs/MarkerArray.h"
 
 /*
- * Helpers
+ * Helpers 
  */
 #include "Common.h"
-#include "SearchAlgorithms.h"
 
 /*
- * FrontierDiscoveryNode states
+ * LocalCSpaceNode class
  */
-typedef enum{
-    IDLE = 0,
-    PROCESSING = 1,
-    FINISHED = 2
-}FrontierState;
-
-/*
- * Frontier discovery node class
- */
-class FrontierDiscoveryNode {
+class LocalCSpaceNode {
     public:
-        FrontierDiscoveryNode();
-        ~FrontierDiscoveryNode();
+        LocalCSpaceNode();
+        ~LocalCSpaceNode();
 
     private:
+        void CreateLocal(nav_msgs::OccupancyGrid& dynamicOcc, 
+                            nav_msgs::OccupancyGrid& localMap,
+                            geometry_msgs::PoseArray& occupiedPoses,
+                            geometry_msgs::PoseArray& freePoses,
+                            tf::Vector3& worldPose,
+                            tf::Vector3& occPose,
+                            const double& freeInflationRadius,
+                            const double& occupiedInflationRadius, 
+                            const int& windws_size_meters,
+                            const int8_t& occupancyThreshold = 90,
+                            const int8_t& freeThreshold = 50,
+                            const int8_t& occupiedValue = 100,
+                            const int8_t& freeVal = 1,
+                            const int8_t& unknownVal = -1);
+
+        void ApplyDynamicData(nav_msgs::OccupancyGrid& occ,
+                                nav_msgs::OccupancyGrid& dynamicOcc,
+                                std::vector<geometry_msgs::PoseArray>& lidarSources,
+                                std::vector<geometry_msgs::PoseArray>& otherSources,
+                                const double& maxLidarRange = 10.0,
+                                const int8_t& occupiedValue = 100);
+        void ClearLocalTrajectories(std::vector<geometry_msgs::PoseArray>& local, 
+                                    std_msgs::Int8MultiArray& comm);
+
+        void RobotsInCommCallback(std_msgs::Int8MultiArray::ConstPtr msg);
+        void OccCallback(nav_msgs::OccupancyGrid::ConstPtr msg);
+        void WorldPoseCallback(multirobotsimulations::CustomPose::ConstPtr msg);
+
         void Update();
-        void CSpaceCallback(nav_msgs::OccupancyGrid::ConstPtr msg);
-        void EstimatePoseCallback(multirobotsimulations::CustomPose::ConstPtr msg);
-        void ComputeCallback(std_msgs::String::ConstPtr msg);
-        void CreateMarker(visualization_msgs::Marker& input, const char* ns, const int& id, const int& seq);
-        void SetPoseArr(geometry_msgs::PoseArray& arr, const int& seq);
-        void ResetFrontierMsg(multirobotsimulations::Frontiers& msg);
-        double ComputeCentroidValue(nav_msgs::OccupancyGrid& occ, Vec2i& centroid, const double& lidarRange);
+
 
         /*
          * Control variables
          */
         int aQueueSize;
         int aId;
-        int aSeq;
-        int aClusterDetectionMin;
-        bool aReceivedCSpace;
+        int aLidarSources;
+        int aRobots;
+        int aLocalViewSize;
+        bool aHasOcc;
         bool aHasPose;
+        bool aReceivedComm;
         double aRate;
-        double aYaw;
-        double aMaxLidarRange;
-        Vec2i aPos;
-        FrontierState aState;
+        double aLidarRange;
+        double aFreeInflateRadius;
+        double aOccuInflateRadius;
+        tf::Vector3 aOccPose;
         std::string aNamespace;
+
 
         /*
          * Routines
@@ -121,27 +137,25 @@ class FrontierDiscoveryNode {
         /*
          * Advertisers
          */   
-        ros::Publisher aClusterMarkerPub;
-        ros::Publisher aFrontiersMapPub;
-        ros::Publisher aFrontiersClustersPub;
+        ros::Publisher aObstaclesPublisher;
+        ros::Publisher aLocalCSpacePublisher;
+        ros::Publisher aOccupiedPositionsPublisher;
+        ros::Publisher aFreePositionsPublisher;
 
         /*
          * Messages
          */
-        multirobotsimulations::Frontiers aFrontierMsg;
-        geometry_msgs::PoseArray aPoseArrMsg;
-        geometry_msgs::Pose aWorldPos;
-        nav_msgs::OccupancyGrid aOcc;
-        nav_msgs::OccupancyGrid aFrontiersMap;
-        visualization_msgs::Marker aClusterMarkerMsg;
-
+        nav_msgs::OccupancyGrid aOccMsg;
+        nav_msgs::OccupancyGrid aOccWithDynamicDataMsg;
+        nav_msgs::OccupancyGrid aLocalCspaceMsg;
+        std_msgs::Int8MultiArray aRobotsInCommMsg;    
+        multirobotsimulations::CustomPose aWorldPoseMsg;
+        geometry_msgs::PoseArray aOccupiedPosesMsg;
+        geometry_msgs::PoseArray aFreePosesMsg;
+        
         /*
          * Helpers
          */
-        std::list<Vec2i> aPath;
-        std::vector<Vec2i> aFrontiers;
-        std::vector<Vec2i> aCentroids;
-        std::vector<Vec2i> aFilteredCentroids;
-        std::vector<std::vector<Vec2i>> aClusters;
-        std::vector<std::vector<Vec2i>> aFilteredClusters;
+        std::vector<geometry_msgs::PoseArray> aTrajectoriesArray;
+        std::vector<geometry_msgs::PoseArray> aLidarsArray;
 };

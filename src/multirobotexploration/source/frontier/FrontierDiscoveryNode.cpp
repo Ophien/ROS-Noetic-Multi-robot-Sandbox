@@ -51,10 +51,10 @@ FrontierDiscoveryNode::FrontierDiscoveryNode() {
     // load all parameters
     ros::NodeHandle node_handle("~");
     if(!node_handle.getParam("id", aId)) throw std::runtime_error("Could not retrieve robot id.");
-    if(!node_handle.getParam("rate", aRate)) throw std::runtime_error("Could not retrived update rate.");
-    if(!node_handle.getParam("queue_size", aQueueSize)) throw std::runtime_error("Could not retrieve queue_size.");
-    if(!node_handle.getParam("max_lidar_range", aMaxLidarRange)) throw std::runtime_error("Could not retrieve max_lidar_range.");
-    aNamespace = ros::NodeHandle().getNamespace();
+    if(!node_handle.getParam("max_lidar_range", aMaxLidarRange)) aMaxLidarRange = 10.0;
+    if(!node_handle.getParam("rate", aRate)) aRate = 2.0;
+    if(!node_handle.getParam("queue_size", aQueueSize)) aQueueSize = 2;
+    aNamespace = ros::this_node::getNamespace();
 
     // subscriptions
     aSubscribers.push_back(

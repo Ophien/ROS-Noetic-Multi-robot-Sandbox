@@ -1,4 +1,4 @@
-<!--
+/*
  * Copyright (c) 2020, Alysson Ribeiro da Silva
  * All rights reserved.
  * 
@@ -38,32 +38,82 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
--->
+*/
 
-<launch>
-    <arg name="robot_id" default="0"/>
-    <arg name="u_range" default="19.9"/>
-    <arg name="max_range" default="20.1"/>
-    <group ns="robot_$(arg robot_id)">
-        <param name="tf_prefix" value="robot_$(arg robot_id)"/> 
-        <node name="node_slam_gmapping" pkg="gmapping" type="slam_gmapping" respawn="true">
-            <param name="tf_prefix" value=""/> 
-            <param name="maxUrange" value="$(arg u_range)"/>
-            <param name="maxRange" value="$(arg max_range)"/>
-            <param name="map_update_interval" value="1.0"/>
-            <param name="iterations" value="1"/>
-            <param name="linearUpdate" value="0.25"/>
-            <param name="angularUpdate" value="0.25"/>
-            <param name="temporalUpdate" value="-1.0"/>
-            <param name="particles" value="10"/>
-            <param name="xmin" value="-40.0"/>
-            <param name="ymin" value="-40.0"/>
-            <param name="xmax" value="40.0"/>
-            <param name="ymax" value="40.0"/>
-            <param name="delta" value="0.1"/>
-            <param name="map_frame" value="robot_$(arg robot_id)/map"/>
-            <param name="odom_frame" value="robot_$(arg robot_id)/odom"/>
-            <param name="base_frame" value="robot_$(arg robot_id)/base_link"/>
-        </node>
-    </group>
-</launch>
+/*
+ * Ros and system
+ */
+#include <vector>
+#include "ros/ros.h"
+#include "tf/tf.h"
+
+/*
+ * Messages
+ */
+#include "sensor_msgs/LaserScan.h"
+#include "geometry_msgs/Pose.h"
+#include "geometry_msgs/PoseArray.h"
+#include "nav_msgs/OccupancyGrid.h"
+#include "nav_msgs/MapMetaData.h"
+#include "multirobotsimulations/CustomPose.h"
+
+/*
+ * Helpers
+ */
+#include "Common.h"
+
+class LaserToWorldNode {
+    public:
+        LaserToWorldNode();
+        ~LaserToWorldNode();
+
+    private:
+        void EstimatePoseWorldCallback(multirobotsimulations::CustomPose::ConstPtr msg);
+        void OccupancyGridCallback(nav_msgs::OccupancyGrid::ConstPtr msg);
+        void LaserCapture(sensor_msgs::LaserScan::ConstPtr msg);
+        void Update();
+
+        /*
+         * Control variables
+         */
+        int aQueueSize;
+        bool aHasLidar;
+        bool aHasPose;
+        bool aHasOccInfo;
+        double aRate;
+        double aRobotYaw;
+        double aLidarError;
+        tf::Vector3 aRobotWorldPosition;
+        tf::Vector3 aLidarPosition;
+        tf::Quaternion aLidarOrientation;
+        std::string aNamespace;
+
+        /*
+         * Routines
+         */
+        std::vector<ros::Timer> aTimers;
+
+        /*
+         * Subscribers
+         */
+        std::vector<ros::Subscriber> aSubscribers;
+        
+        /*
+         * Advertisers
+         */   
+        ros::Publisher aLidarPublisher;
+        ros::Publisher aOccLidarPublisher;
+
+        /*
+         * Messages
+         */
+        geometry_msgs::PoseArray aWorldLidarMsg;
+        geometry_msgs::PoseArray aOccLidarMsg;
+        nav_msgs::OccupancyGrid aOccInfo;
+
+        /*
+         * Helpers
+         */
+        std::vector<geometry_msgs::Pose> aWorldReadings;
+        std::vector<geometry_msgs::Pose> aOccReadings;
+};

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Alysson Ribeiro da Silva
+ * Copyright (c) 2023, Alysson Ribeiro da Silva
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -43,54 +43,54 @@
 /*
  * Ros and system
  */
-#include <vector>
+#include <stdio.h>
+#include <queue>
 #include "ros/ros.h"
 #include "tf/tf.h"
 
 /*
  * Messages
  */
-#include "nav_msgs/OccupancyGrid.h"
-#include "geometry_msgs/Point.h"
-#include "geometry_msgs/PoseArray.h"
+#include "std_msgs/Bool.h"
 #include "std_msgs/String.h"
-#include "multirobotsimulations/CustomPose.h"
-#include "multirobotsimulations/Frontiers.h"
+#include "std_msgs/Float32.h"
+#include "nav_msgs/Path.h"
+#include "nav_msgs/OccupancyGrid.h"
 #include "visualization_msgs/Marker.h"
-#include "visualization_msgs/MarkerArray.h"
+#include "geometry_msgs/PoseStamped.h"
+#include "multirobotsimulations/CustomPose.h"
 
 /*
  * Helpers
  */
-#include "Common.h"
 #include "SearchAlgorithms.h"
+#include "Common.h"
 
-/*
- * FrontierDiscoveryNode states
- */
-typedef enum{
-    IDLE = 0,
-    PROCESSING = 1,
-    FINISHED = 2
-}FrontierState;
+typedef enum {
+    state_idle = 0,
+    state_executing_path = 1
+} SubGoalState;
 
-/*
- * Frontier discovery node class
- */
-class FrontierDiscoveryNode {
+class IntegratedGlobalPlannerNode {
     public:
-        FrontierDiscoveryNode();
-        ~FrontierDiscoveryNode();
+        IntegratedGlobalPlannerNode();
+        ~IntegratedGlobalPlannerNode();
 
     private:
-        void Update();
-        void CSpaceCallback(nav_msgs::OccupancyGrid::ConstPtr msg);
-        void EstimatePoseCallback(multirobotsimulations::CustomPose::ConstPtr msg);
-        void ComputeCallback(std_msgs::String::ConstPtr msg);
         void CreateMarker(visualization_msgs::Marker& input, const char* ns, const int& id, const int& seq);
-        void SetPoseArr(geometry_msgs::PoseArray& arr, const int& seq);
-        void ResetFrontierMsg(multirobotsimulations::Frontiers& msg);
-        double ComputeCentroidValue(nav_msgs::OccupancyGrid& occ, Vec2i& centroid, const double& lidarRange);
+        void DepthFirstSearchFreePath(
+            nav_msgs::OccupancyGrid& cspace, 
+            Vec2i& occpos,
+            Vec2i& source, 
+            Vec2i& closest,
+            std::list<Vec2i>& outpath);
+        void ChangeState(const SubGoalState& newState);
+        void CSpaceCallback(nav_msgs::OccupancyGrid::ConstPtr msg);
+        void PoseCallback(multirobotsimulations::CustomPose::ConstPtr msg);
+        void AverageVelocityCallback(std_msgs::Float32::ConstPtr msg);
+        void GoalCallback(geometry_msgs::Pose::ConstPtr msg);
+        void StopCallBack(std_msgs::String::ConstPtr msg);
+        void Update();
 
         /*
          * Control variables
@@ -98,14 +98,16 @@ class FrontierDiscoveryNode {
         int aQueueSize;
         int aId;
         int aSeq;
-        int aClusterDetectionMin;
-        bool aReceivedCSpace;
+        int aDeltaTimeSec;
         bool aHasPose;
+        bool aHasOcc;
+        bool aHasAverageVelocity;
         double aRate;
-        double aYaw;
-        double aMaxLidarRange;
-        Vec2i aPos;
-        FrontierState aState;
+        double aDistance;
+        double aSubGoalReachThreshold;
+        double aStuckTimeThreshold;
+        double aStuckTime;
+        double aAverageVelocity;
         std::string aNamespace;
 
         /*
@@ -117,31 +119,30 @@ class FrontierDiscoveryNode {
          * Subscribers
          */
         std::vector<ros::Subscriber> aSubscribers;
-        
+
         /*
          * Advertisers
-         */   
-        ros::Publisher aClusterMarkerPub;
-        ros::Publisher aFrontiersMapPub;
-        ros::Publisher aFrontiersClustersPub;
+         */
+        ros::Publisher aPathMarkerPublisher;
+        ros::Publisher aFinishEventPublisher;
+        ros::Publisher aCurrentPathPublisher;
 
         /*
          * Messages
          */
-        multirobotsimulations::Frontiers aFrontierMsg;
-        geometry_msgs::PoseArray aPoseArrMsg;
-        geometry_msgs::Pose aWorldPos;
-        nav_msgs::OccupancyGrid aOcc;
-        nav_msgs::OccupancyGrid aFrontiersMap;
-        visualization_msgs::Marker aClusterMarkerMsg;
+        nav_msgs::Path aPathMsg;
+        std_msgs::String aStrMsg;
+        visualization_msgs::Marker aPathMarkerMsg;
+        nav_msgs::OccupancyGrid aCspace;
 
         /*
          * Helpers
          */
-        std::list<Vec2i> aPath;
-        std::vector<Vec2i> aFrontiers;
-        std::vector<Vec2i> aCentroids;
-        std::vector<Vec2i> aFilteredCentroids;
-        std::vector<std::vector<Vec2i>> aClusters;
-        std::vector<std::vector<Vec2i>> aFilteredClusters;
+        ros::Time last_time;
+        std::list<Vec2i> aWaypoints;
+        tf::Vector3 aLastPos;
+        tf::Vector3 aWorldPos;
+        tf::Vector3 aCurrentGoal;
+        Vec2i aOccPos;
+        SubGoalState aCurrentState;
 };
