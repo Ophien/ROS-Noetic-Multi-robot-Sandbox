@@ -1,6 +1,6 @@
 # MockCommunicationModel
 
-Source: [MockCommunicationModel.cpp](../../src/multirobotexploration/source/communication/MockCommunicationModel.cpp)
+Source: [MockCommunicationModelNode.cpp](../../src/multirobotexploration/source/communication/MockCommunicationModelNode.cpp)
 
 ## Parameters
 

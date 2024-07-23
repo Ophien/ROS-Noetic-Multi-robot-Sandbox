@@ -2,7 +2,7 @@
 
 This node implements a basic ```Utility Theory``` concept of randomizing the Social Welfare into Yamauchi's method for simple coordination. It relies in a configuration space, frontier discovery services, and a sub goal navigation module. Some of its functionality should be coded as services.
 
-Source: [RandomizedSocialWelfare.cpp](../../src/multirobotexploration/source/policies/RandomizedSocialWelfare.cpp)
+Source: [RandomizedSocialWelfareNode.cpp](../../src/multirobotexploration/source/policies/RandomizedSocialWelfareNode.cpp)
 
 ## Parameters
 

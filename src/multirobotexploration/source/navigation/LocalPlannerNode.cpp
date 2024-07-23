@@ -73,7 +73,7 @@ LocalPlannerNode::LocalPlannerNode() {
 
     aSubscribers.push_back(
         node_handle.subscribe<nav_msgs::Path>(
-            aNamespace + "/sub_goal_nav/current_path", 
+            aNamespace + "/integrated_global_planner/current_path", 
             aQueueSize,
             std::bind(&LocalPlannerNode::SubgoalPathCallback, this, std::placeholders::_1)));
 

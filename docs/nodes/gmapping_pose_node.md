@@ -1,6 +1,6 @@
 # GmappingPose
 
-Source: [GmappingPose.cpp](../../src/multirobotexploration/source/localization/GmappingPose.cpp)
+Source: [GmappingPoseNode.cpp](../../src/multirobotexploration/source/localization/GmappingPoseNode.cpp)
 
 ## Parameters
 

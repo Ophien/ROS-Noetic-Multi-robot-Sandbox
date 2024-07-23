@@ -115,13 +115,13 @@ target_link_libraries(lasertoworldnode multirobotexploration ${catkin_LIBRARIES}
 ##############
 ## policies ##
 ##############
-add_executable(alysson2024 source/policies/Alysson2024.cpp)
+add_executable(alysson2024 source/policies/Alysson2024Node.cpp)
 target_link_libraries(alysson2024 multirobotexploration ${catkin_LIBRARIES})
 
-add_executable(randomizedsocialwelfare source/policies/RandomizedSocialWelfare.cpp)
+add_executable(randomizedsocialwelfare source/policies/RandomizedSocialWelfareNode.cpp)
 target_link_libraries(randomizedsocialwelfare multirobotexploration ${catkin_LIBRARIES})
 
-add_executable(yamauchi1999 source/policies/Yamauchi1999.cpp)
+add_executable(yamauchi1999 source/policies/Yamauchi1999Node.cpp)
 target_link_libraries(yamauchi1999 multirobotexploration ${catkin_LIBRARIES})
 
 #############

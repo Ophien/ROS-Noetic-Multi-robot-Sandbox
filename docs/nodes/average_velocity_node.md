@@ -1,6 +1,6 @@
 # AverageDisplacement
 
-Source: [AverageDisplacement.cpp](../../src/multirobotexploration/source/localization/AverageDisplacement.cpp)
+Source: [AverageVelocityNode.cpp](../../src/multirobotexploration/source/localization/AverageVelocityNode.cpp)
 
 ## Parameters
 
@@ -18,7 +18,7 @@ Source: [AverageDisplacement.cpp](../../src/multirobotexploration/source/localiz
 
 ## Published Topics
 
-* ```<namespace>/avgd_average_displacement`` ([std_msgs::Float32](https://docs.ros.org/en/api/std_msgs/html/msg/Float32.html))
+* ```<namespace>/average_velocity`` ([std_msgs::Float32](https://docs.ros.org/en/api/std_msgs/html/msg/Float32.html))
 
 <!-- ## Published Transforms
 

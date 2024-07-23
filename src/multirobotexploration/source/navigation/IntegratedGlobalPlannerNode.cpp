@@ -77,26 +77,26 @@ IntegratedGlobalPlannerNode::IntegratedGlobalPlannerNode() {
 
     aSubscribers.push_back(
         node_handle.subscribe<std_msgs::Float32>(
-            aNamespace + "/avgd_average_displacement", 
+            aNamespace + "/average_velocity", 
             aQueueSize, 
             std::bind(&IntegratedGlobalPlannerNode::AverageVelocityCallback, this, std::placeholders::_1)));
     
     aSubscribers.push_back(
         node_handle.subscribe<geometry_msgs::Pose>(
-            aNamespace + "/sub_goal_nav/goal", 
+            aNamespace + "/integrated_global_planner/goal", 
             aQueueSize, 
             std::bind(&IntegratedGlobalPlannerNode::GoalCallback, this, std::placeholders::_1)));
     
     aSubscribers.push_back(
         node_handle.subscribe<std_msgs::String>(
-            aNamespace + "/sub_goal_nav/stop", 
+            aNamespace + "/integrated_global_planner/stop", 
             aQueueSize,
             std::bind(&IntegratedGlobalPlannerNode::StopCallBack, this, std::placeholders::_1)));
 
     // Advertisers
-    aPathMarkerPublisher =  node_handle.advertise<visualization_msgs::Marker>(aNamespace + "/sub_goal_nav/path", aQueueSize);
-    aFinishEventPublisher = node_handle.advertise<std_msgs::String>(aNamespace + "/sub_goal_nav/finish", aQueueSize);
-    aCurrentPathPublisher = node_handle.advertise<nav_msgs::Path>(aNamespace + "/sub_goal_nav/current_path", aQueueSize);
+    aPathMarkerPublisher =  node_handle.advertise<visualization_msgs::Marker>(aNamespace + "/integrated_global_planner/path", aQueueSize);
+    aFinishEventPublisher = node_handle.advertise<std_msgs::String>(aNamespace + "/integrated_global_planner/finish", aQueueSize);
+    aCurrentPathPublisher = node_handle.advertise<nav_msgs::Path>(aNamespace + "/integrated_global_planner/current_path", aQueueSize);
 
     // Node's routines
     double update_period = PeriodToFreqAndFreqToPeriod(aRate);

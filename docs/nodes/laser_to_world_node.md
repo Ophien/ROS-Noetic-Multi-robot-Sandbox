@@ -1,6 +1,6 @@
 # LaserToWorld
 
-Source: [LaserToWorld.cpp](../../src/multirobotexploration/source/laser/LaserToWorld.cpp)
+Source: [LaserToWorldNode.cpp](../../src/multirobotexploration/source/laser/LaserToWorldNode.cpp)
 
 ## Parameters
 

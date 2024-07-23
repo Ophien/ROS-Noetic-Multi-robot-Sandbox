@@ -2,7 +2,7 @@
 
 This node uses the ```Randomized Social Welfare``` and implements the Intermittent Communication policy from this [research](https://arxiv.org/abs/2309.13494).
 
-Source: [Alysson2024.cpp](../../src/multirobotexploration/source/policies/Alysson2024.cpp)
+Source: [Alysson2024Node.cpp](../../src/multirobotexploration/source/policies/Alysson2024Node.cpp)
 
 ## Parameters
 

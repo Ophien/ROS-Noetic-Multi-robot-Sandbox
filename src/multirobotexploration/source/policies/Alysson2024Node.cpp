@@ -365,9 +365,9 @@ int main(int argc, char* argv[]) {
     subs.push_back(node_handle.subscribe(ns + "/c_space", queue_size, &CSpaceCallback));
     subs.push_back(node_handle.subscribe(ns + "/frontier_discovery/frontiers_clusters", queue_size, &ClustersCallback));
     subs.push_back(node_handle.subscribe(ns + "/gmapping_pose/world_pose", queue_size, &EstimatePoseCallback));
-    subs.push_back(node_handle.subscribe(ns + "/sub_goal_nav/finish", queue_size, &SubGoalFinishCallback));
+    subs.push_back(node_handle.subscribe(ns + "/integrated_global_planner/finish", queue_size, &SubGoalFinishCallback));
 
-    ros::Publisher sub_goal_pub = node_handle.advertise<geometry_msgs::Pose>(ns + "/sub_goal_nav/goal", queue_size);
+    ros::Publisher sub_goal_pub = node_handle.advertise<geometry_msgs::Pose>(ns + "/integrated_global_planner/goal", queue_size);
     ros::Publisher fro_comp = node_handle.advertise<std_msgs::String>(ns + "/frontier_discovery/compute", queue_size);
 
     /*

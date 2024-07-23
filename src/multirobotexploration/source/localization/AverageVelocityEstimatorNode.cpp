@@ -59,7 +59,7 @@ AverageVelocityEstimatorNode::AverageVelocityEstimatorNode() {
         std::bind(&AverageVelocityEstimatorNode::WorldPoseCallback, this, std::placeholders::_1)));
 
     // advertisers
-    aAverageVelocityPublisher = node_handle.advertise<std_msgs::Float32>(aNamespace + "/avgd_average_displacement", aQueueSize);
+    aAverageVelocityPublisher = node_handle.advertise<std_msgs::Float32>(aNamespace + "/average_velocity", aQueueSize);
 
     // node's routines
     double update_period = PeriodToFreqAndFreqToPeriod(aRate);

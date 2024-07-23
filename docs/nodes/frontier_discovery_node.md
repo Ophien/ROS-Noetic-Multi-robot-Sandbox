@@ -26,7 +26,7 @@ Source: [FrontierDiscoveryNode.cpp](../../src/multirobotexploration/source/front
 
 * ```<namespace>/frontier_discovery/frontiers``` ([nav_msgs::OccupancyGrid](https://docs.ros.org/en/api/nav_msgs/html/msg/OccupancyGrid.html))
 
-* ```<namespace>/frontier_discovery/frontiers``` ([multirobotsimulations::Frontiers](../../src/multirobotsimulations/msg/Frontiers.msg))
+* ```<namespace>/frontier_discovery/frontiers_clusters``` ([multirobotsimulations::Frontiers](../../src/multirobotsimulations/msg/Frontiers.msg))
 
 <!-- ## Published Transforms
 

@@ -1,6 +1,6 @@
 # CSpace
 
-Source: [CSpace.cpp](../../src/multirobotexploration/source/map/CSpace.cpp)
+Source: [CSpaceNode.cpp](../../src/multirobotexploration/source/map/CSpaceNode.cpp)
 
 ## Parameters
 
@@ -25,6 +25,8 @@ Source: [CSpace.cpp](../../src/multirobotexploration/source/map/CSpace.cpp)
 * ```<namespace>/gmapping_pose/world_pose``` ([multirobotsimulations::CustomPose](../../src/multirobotsimulations/msg/CustomPose.msg))
 
 * ```<namespace>/laser_to_world/lidar_occ_<i>``` ([geometry_msgs::PoseArray](https://docs.ros.org/en/api/geometry_msgs/html/msg/PoseArray.html))
+
+* ```/robot_<id>/local_planner/optimal_poses``` ([geometry_msgs::PoseArray](https://docs.ros.org/en/api/geometry_msgs/html/msg/PoseArray.html))
 
 ## Published Topics
 

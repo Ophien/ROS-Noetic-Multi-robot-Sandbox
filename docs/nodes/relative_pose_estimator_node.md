@@ -1,6 +1,6 @@
 # RelativePoseEstimator
 
-Source: [RelativePoseEstimator.cpp](../../src/multirobotexploration/source/localization/RelativePoseEstimator.cpp)
+Source: [RelativePoseEstimatorNode.cpp](../../src/multirobotexploration/source/localization/RelativePoseEstimatorNode.cpp)
 
 ## Parameters
 

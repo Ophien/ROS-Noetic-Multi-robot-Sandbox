@@ -1,6 +1,6 @@
 # FBMapFusionRelative
 
-Source: [FBMapFusionRelative.cpp](../../src/multirobotexploration/source/map/FBMapFusionRelative.cpp)
+Source: [MapStitchingNode.cpp](../../src/multirobotexploration/source/map/MapStitchingNode.cpp)
 
 ## Parameters
 
