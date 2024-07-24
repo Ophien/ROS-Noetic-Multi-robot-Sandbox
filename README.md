@@ -78,14 +78,14 @@ If this workspace is somehow useful to you, consider reading this [letter](docs/
 
 ## [Acknowledgements](#acknowledge)
 
-This work was supported by ARL DCIST CRA W911NF-17-2-0181 and Office of Naval Research (ONR) Award No. N00014-19-1-2253.
+The research paper [https://arxiv.org/abs/2309.13494](https://arxiv.org/abs/2309.13494) was supported by ARL DCIST CRA W911NF-17-2-0181 and Office of Naval Research (ONR) Award No. N00014-19-1-2253.
 
 <p align="center">
 <img src="docs/images/dcist.png" alt="drawing" style="width:300px;"/>
 <img src="docs/images/onr.jpg" alt="drawing" style="width:223px;"/>
 </p>
 
-This work was also supported by CAPES, FAPEMIG, and CNPQ.
+It was also supported by CAPES, FAPEMIG, and CNPQ.
 
 <p align="center">
 <img src="docs/images/capes.png" alt="drawing" style="width:150px;"/>
