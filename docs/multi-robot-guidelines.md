@@ -7,7 +7,7 @@
 
 ## [Tmux and Session Manager](#tmux-and-session-manager)
 
-Many students and professionals I've encountered do not rely on tools such as ```tmux``` for visualization and organizational purposes when working with ROS. Consequently, they end up running complex systems with numerous messages, warnings, and errors in their terminal, which degrades debugging and visualization quality. In the multi-robot case, which is considerably more complicated, the situations is even worse. Consequently, I higly encourage the use of ```tmux``` to manage ROS based multi-robot systems. 
+Many students and professionals I've encountered do not rely on tools such as ```tmux``` for visualization and organizational purposes when working with ROS. Consequently, they end up running complex systems with numerous messages, warnings, and errors in their terminal, which degrades debugging and visualization quality. In the multi-robot case, which is considerably more complicated, the situations is even worse. Consequently, I highly encourage the use of ```tmux``` to manage ROS-based multi-robot systems. 
 
 For example, the following terminal session,
 
