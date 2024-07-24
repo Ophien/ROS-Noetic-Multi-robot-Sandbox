@@ -16,7 +16,9 @@
 
 This workspace is a sandbox for multi-robot research.
 
-Initially, it includes a fully opperational multi-robot exploration stack for ROS Noetic and Ubuntu 20.04 that allows them to keep intermittent communication in Gazebo 11 simulations. It contains an implementation and integration of the structures from this research: [https://arxiv.org/abs/2309.13494](https://arxiv.org/abs/2309.13494). The deployment features components highlighted in red in the diagram, allowing robots to explore and maintain intermittent connectivity through a rendezvous plan. Communication is facilitated through topics with a mock communication model.
+Initially, it includes a fully opperational multi-robot exploration stack for ROS Noetic and Ubuntu 20.04 that allows them to keep intermittent communication in Gazebo 11 simulations. It contains an implementation and integration of the structures from this research: [https://arxiv.org/abs/2309.13494](https://arxiv.org/abs/2309.13494). 
+
+The deployment features components highlighted in red in the diagram, allowing robots to explore and maintain intermittent connectivity through a rendezvous plan. Communication is facilitated through topics with a mock communication model.
 
 <p align="center">
 <img src="docs/images/stack_components_high.png" alt="drawing" style="width:1000px;"/>
