@@ -10,7 +10,9 @@ I've configured the box world to run on low-spec computers, such as old laptops.
 
 **World File:** [boxes.world](../gazebo_resources/worlds/boxes.world)
 
-![BoxWorld](images/run_simulation.png)
+<p align="center">
+  <img src="images/run_simulation.png" alt="drawing" style="width:1000px;"/>
+</p>
 
 ## [Forest](#forest)
 
@@ -18,6 +20,10 @@ Alternatively, I've designed the forest environment to include irregular obstacl
 
 **World File:** [forest.world](../gazebo_resources/worlds/forest.world)
 
-![ForestWorld](images/forestworld2.png)
-![ForestWorld](images/forestworld.png)
-![ForestWorld](images/forestworld3.png)
+<p align="center">
+  <img src="images/forestworld2.png" alt="drawing" style="width:1000px;"/>
+  <br>
+  <img src="images/forestworld.png" alt="drawing" style="width:1000px;"/>
+  <br>
+  <img src="images/forestworld3.png" alt="drawing" style="width:1000px;"/>
+</p>

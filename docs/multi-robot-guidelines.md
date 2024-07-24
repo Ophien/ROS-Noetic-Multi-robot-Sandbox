@@ -11,7 +11,9 @@ Many students and professionals I've encountered do not rely on tools such as ``
 
 For example, the following terminal session,
 
-![TmuxSession](images/tmux.png)
+<p align="center">
+  <img src="images/tmux.png" alt="drawing" style="width:1000px;"/>
+</p>
 
 can be created by simply calling ```tmux``` with the ```new-session``` command.
 
@@ -36,7 +38,9 @@ I'm using a simple mechanism, where robots share their controls ```n``` time ste
 
 In the RViz window, the controls of other robots should appear as ```polygon``` obstacles. The following image highlights them as orange and blue striped blobs.
 
-![TrajectorySharing](images/shared_controls_treated.png)
+<p align="center">
+  <img src="images/shared_controls_treated.png" alt="drawing" style="width:800px;"/>
+</p>
 
 ## [Subscriptions Through Lambda](#sumbscriptions-through-lambda)
 
