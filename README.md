@@ -76,7 +76,7 @@ If this workspace is somehow useful to you, consider reading this [letter](docs/
 <img src="docs/images/verlab_logo.png" alt="drawing" style="width:250px;"/>
 </p>
 
-## [Acknowledge](#acknowledge)
+## [Acknowledgements](#acknowledge)
 
 This work was supported by ARL DCIST CRA W911NF-17-2-0181 and Office of Naval Research (ONR) Award No. N00014-19-1-2253.
 
