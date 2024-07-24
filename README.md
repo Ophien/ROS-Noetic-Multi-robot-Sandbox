@@ -14,9 +14,11 @@
 
 ## [ROS-Noetic-Multi-robot-Sandbox](#ros-noetic-multi-robot-sandbox)
 
-This package has a fully opperational multi-robot exploration stack for ROS Noetic and Ubuntu 20.04 that allows them to keep intermittent communication in Gazebo 11 simulations. It contains an implementation and integration of the structures from this research: [https://arxiv.org/abs/2309.13494](https://arxiv.org/abs/2309.13494). With some minor modifications it can be deployed into real robots for indoor exploration.
+This workspace is a sandbox for multi-robot research.
 
-It is a deployment of the diagram's components highlighted in red that allows robots to explore and maintain intermittent connectivity through a rendezvous plan, where the communication is done through topics with a mock communication model.
+Initially, it includes a fully opperational multi-robot exploration stack for ROS Noetic and Ubuntu 20.04 that allows them to keep intermittent communication in Gazebo 11 simulations. It contains an implementation and integration of the structures from this research: [https://arxiv.org/abs/2309.13494](https://arxiv.org/abs/2309.13494). 
+
+The deployment features components highlighted in red in the diagram, allowing robots to explore and maintain intermittent connectivity through a rendezvous plan. Communication is facilitated through topics with a mock communication model.
 
 <p align="center">
 <img src="docs/images/stack_components_high.png" alt="drawing" style="width:1000px;"/>
