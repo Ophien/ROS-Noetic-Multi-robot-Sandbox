@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/images/sandbox_project_logo.png" alt="drawing" style="width:500px;"/>
+</p>
+
 # [Table of Contents](#table-of-contents)
 
 - [Setup](docs/working_environment.md)
