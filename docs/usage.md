@@ -29,9 +29,11 @@ Before running the simulation, make sure you followed the steps I've described i
 
 If everything worked correctly, gazebo and rviz will be opened and you should see the following scene:
 
-![Gazebo](images/forestworld2.png)
+<p align="center">
+  <img src="images/forestworld2.png" alt="drawing" style="width:1000px;"/>
+</p>
 
-5. Run the intermittent communication multi-robot exploration stack.
+1. Run the intermittent communication multi-robot exploration stack.
 
     ```bash
     ./src/scripts/launch_robots.sh
@@ -39,19 +41,25 @@ If everything worked correctly, gazebo and rviz will be opened and you should se
 
 If everything worked correctly, you should see the following in the rviz window for the robot with ```id = 0```,
 
-![Rviz](images/rviz.png)
+<p align="center">
+  <img src="images/rviz.png" alt="drawing" style="width:1000px;"/>
+</p>
 
 and the following rviz windows, one for each robot, that shows their local maps with their trajectories.
 
-![RvizTrajectories](images/trajectories%20before.png)
+<p align="center">
+  <img src="images/trajectories%20before.png" alt="drawing" style="width:1000px;"/>
+</p>
 
 Furthermore, the stack is launched in independend ```tmux``` windows as follows.
 
-![tmux](images/tmux.png)
+<p align="center">
+  <img src="images/tmux.png" alt="drawing" style="width:1000px;"/>
+</p>
 
 It turns out that when working with multiple robots or ```ROS``` with stacks from any nature, ```tmux``` in a setup like this is a **must**.
 
-6. To start the exploration, run the startup script. It will send a message to all robots' controllers so they known when to start doing things.
+1. To start the exploration, run the startup script. It will send a message to all robots' controllers so they known when to start doing things.
 
     ```bash
     ./src/scripts/start_exploration.sh
@@ -59,11 +67,15 @@ It turns out that when working with multiple robots or ```ROS``` with stacks fro
 
 When robots start doing their stuff, you should see some updates in all rviz window the robot with ```id = 0``` as follows.
 
-![RvizUpdate](images/rvizexploration.png)
+<p align="center">
+  <img src="images/rvizexploration.png" alt="drawing" style="width:1000px;"/>
+</p>
 
 The trajectories should looks like the following after some time.
 
-![TrajetoriesAfter](images/trajectoriesafter.png)
+<p align="center">
+  <img src="images/trajectoriesafter.png" alt="drawing" style="width:1000px;"/>
+</p>
 
 I use a stop script to shutdown everything ```src/scripts/stop_forced.sh```, because ```ROS``` takes to long to bring everything down. It is not the best practice, however it can save your time.
 
@@ -71,7 +83,9 @@ I use a stop script to shutdown everything ```src/scripts/stop_forced.sh```, bec
 
 The major data structure from this package is called ```rendezvous plan```. It is composed by agreements that allow robots to decide where, with whom, and when to rendezvous. I encourage you to read our [paper](https://arxiv.org/abs/2309.13494) to better understand it.
 
-![Agreements](images/agreements.png)
+<p align="center">
+  <img src="images/agreements.png" alt="drawing" style="width:1000px;"/>
+</p>
 
 This structure is loaded by robots in this stack through the ```rendezvous_plan.yaml``` configuration file and it looks like the following.
 
@@ -288,7 +302,9 @@ Since robots are properly configured with their namespace, you should be able to
 
 This stack implements the following components highlighted in red.
 
-![Components](images/stack_components_high.png)
+<p align="center">
+  <img src="images/stack_components_high.png" alt="drawing" style="width:1000px;"/>
+</p>
 
 To see how they look in the real system, do the following.
 
@@ -302,7 +318,9 @@ To see how they look in the real system, do the following.
 
 If everything was done correctly, you should see the following system for all robots.
 
-![System](images/rosgraph.png)
+<p align="center">
+  <img src="images/rosgraph.png" alt="drawing" style="width:1000px;"/>
+</p>
 
 **The stack is not perfect, but it serves for its purpose. I encourage you to explore the scene and have some fun! :)**
 

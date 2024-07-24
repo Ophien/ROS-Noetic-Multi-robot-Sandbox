@@ -14,55 +14,33 @@ This package has a fully opperational multi-robot exploration stack for ROS Noet
 
 It is a deployment of the diagram's components highlighted in red that allows robots to explore and maintain intermittent connectivity through a rendezvous plan, where the communication is done through topics with a mock communication model.
 
-![Components](docs/images/stack_components_high.png)
+<p align="center">
+<img src="docs/images/stack_components_high.png" alt="drawing" style="width:1000px;"/>
+</p>
 
 ## [What to Expect?](#what-to-expect)
 
 ### Fully opperational multi-robot exploration with communication constraints to accelerate your research and development.
 
-![Example](docs/images/example_exploration.png)
+<p align="center">
+<img src="docs/images/example_exploration.png" alt="drawing" style="width:800px;"/>
+</p>
 
 ### Complex stack integrated with customized nodes for ROS Noetic, with SLAM, map stitching, trajectory optimization, global and local planning, and more, to simulate a realistic multi-robot exploration application with communication constraints, visualization, and configurations for Gazebo 11 and rviz.
 
-![Stack](docs/images/stack.png)
+<p align="center">
+<img src="docs/images/stack.png" alt="drawing" style="width:800px;"/>
+</p>
 
 ### Intermittent Communication Policy to share information at rendezvous locations spread dynamically while exploration happens.
 
-![Stack](docs/images/spread.png)
+<p align="center">
+<img src="docs/images/spread.png" alt="drawing" style="width:800px;"/>
+</p>
 
 ## [Disclaimer](#disclaimer)
 
 This workspace is not based on the ```move_base``` and the ```nav``` stack for navigation, because they had many drawbacks when I first tried to used them for multi-robot exploration research. Therefore, this project contains its own ```sub-goal``` navigation node with ```global``` and ```local planners``` to handle situations posed by ```multi-robot exploration``` applications when robots do ```SLAM``` individually, have to deal with traffic, and share maps. Furthermore, I'm currently refactoring all nodes to make them more friendly with ROS 2 standards.
-
-## [Packages and their Nodes](#packages)
-
-- [Multi-robot Exploration](docs/multi-robot-exploration.md) - Contains the exploration stack.
-  - [Policies](docs/multi-robot-exploration.md)
-    - [Yamauchi1999 node](docs/nodes/yamauchi1999_node.md)
-    - [RandomizedSocialWelfare node](docs/nodes/randomized_social_welfare_node.md)
-    - [Alysson2024 node](docs/nodes/alysson2024_node.md)
-  - [Navigation](docs/multi-robot-exploration.md)
-    - [LocalPlannerNode](docs/nodes/local_planner_node.md)
-    - [IntegratedGlobalPlannerNode](docs/nodes/integrated_global_planner_node.md)
-  - [Mapping](docs/multi-robot-exploration.md)
-    - [CSpaceNode](docs/nodes/cspace_node.md)
-    - [MapStitchingNode](docs/nodes/map_stitching_node.md)
-    - [LocalCSpaceNode](docs/nodes/local_cspace_node.md)
-  - [Localization](docs/multi-robot-exploration.md)
-    - [AverageVelocityEstimatorNode](docs/nodes/average_velocity_node.md)
-    - [GmappingPoseNode](docs/nodes/gmapping_pose_node.md)
-    - [RelativePoseEstimatorNode](docs/nodes/relative_pose_estimator_node.md)
-  - [Lidar](docs/multi-robot-exploration.md)
-    - [LaserToWorldNode](docs/nodes/laser_to_world_node.md)
-  - [Frontiers](docs/multi-robot-exploration.md)
-    - [FrontierDiscoveryNode](docs/nodes/frontier_discovery_node.md)
-  - [Communication](docs/multi-robot-exploration.md)
-    - [MockCommunicationModelNode](docs/nodes/mock_communication_model_node.md)
-  - [Objects and Algorithms](docs/multi-robot-exploration.md)
-    - [RendezvosPlan](src/multirobotexploration/source/common/RendezvousPlan.cpp)
-    - [SearchAlgorithms](src/multirobotexploration/source/common/SearchAlgorithms.cpp)
-    - [Common](src/multirobotexploration/include/common/Common.h)
-- [Multi-robot Simulations](docs/multi-robot-simulations.md) - Contains the simulations and robots used by the algorithms.
 
 ## [Publications](#publications)
 
@@ -83,8 +61,31 @@ If this workspace is somehow useful to you, consider reading this [letter](docs/
 
 ## [Partnerships](#partnerships)
 
-![Scalar](docs/images/scalar_logo.png)
-![Verlab](docs/images/verlab_logo.png)
+<p align="center">
+<img src="docs/images/penn.png" alt="drawing" style="width:300px;"/>
+<img src="docs/images/scalar_logo.png" alt="drawing" style="width:382px;"/>
+<br>
+<img src="docs/images/ufmg-logo.png" alt="drawing" style="width:250px;"/>
+<img src="docs/images/dcc.png" alt="drawing" style="width:243px;"/>
+<img src="docs/images/verlab_logo.png" alt="drawing" style="width:250px;"/>
+</p>
+
+## [Acknowledge](#acknowledge)
+
+This work was supported by ARL DCIST CRA W911NF-17-2-0181 and Office of Naval Research (ONR) Award No. N00014-19-1-2253.
+
+<p align="center">
+<img src="docs/images/dcist.png" alt="drawing" style="width:300px;"/>
+<img src="docs/images/onr.jpg" alt="drawing" style="width:223px;"/>
+</p>
+
+This work was also supported by CAPES, FAPEMIG, and CNPQ.
+
+<p align="center">
+<img src="docs/images/capes.png" alt="drawing" style="width:150px;"/>
+<img src="docs/images/fapemig.jpg" alt="drawing" style="width:172px;"/>
+<img src="docs/images/cnpq.png" alt="drawing" style="width:250px;"/>
+</p>
 
 ## [License](#license)
 

@@ -23,12 +23,18 @@ I've configured the Pioneer robot with:
 - 4 RGBD Cameras for dynamic obstacles
 - 1 360 Lidar for static obstacles
 
-![Pioneer robot](images/pioneer3at.png "Pioneer")
+<p align="center">
+  <img src="images/pioneer3at.png" alt="drawing" style="width:500px;"/>
+</p>
 
 Its transformation tree should looks like the following.
 
-![TF tree](images/tf.png "Robot TF tree.")
+<p align="center">
+  <img src="images/tf.png" alt="drawing" style="width:1000px;"/>
+</p>
 
 I've also provided a basic rviz file to visualize this robot, its transforms, and model.
 
-![RViz](images/rviz_trajectory.png "Robot Rviz.")
+<p align="center">
+  <img src="images/rviz_trajectory.png" alt="drawing" style="width:1000px;"/>
+</p>
