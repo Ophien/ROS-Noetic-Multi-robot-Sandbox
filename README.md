@@ -3,7 +3,9 @@
 - [Setup](docs/working_environment.md)
 - [Usage](docs/usage.md)
 - [Robots](docs/robots.md)
+- [Maps](docs/maps.md)
 - [Nodes](docs/multi-robot-exploration.md)
+- [Multi-robot Guidelines](docs/multi-robot-guidelines.md)
 - [Contributing](docs/contributing.md)
 
 ## [ROS-Noetic-Multi-robot-Sandbox](#ros-noetic-multi-robot-sandbox)
@@ -64,7 +66,7 @@ This workspace is not based on the ```move_base``` and the ```nav``` stack for n
 
 ## [Publications](#publications)
 
-If this package is somehow useful to you, consider reading this [letter](docs/motivation.md) and mentioning this paper accepted on IROS.
+If this workspace is somehow useful to you, consider reading this [letter](docs/motivation.md) and mentioning this paper accepted on IROS.
 
 > A. R. da Silva, L. Chaimowicz, T. C. Silva, and A. Hsieh, Communication-Constrained Multi-Robot Exploration with Intermittent Rendezvous. 2024.
 

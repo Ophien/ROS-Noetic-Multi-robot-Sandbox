@@ -29,7 +29,7 @@ Before running the simulation, make sure you followed the steps I've described i
 
 If everything worked correctly, gazebo and rviz will be opened and you should see the following scene:
 
-![Gazebo](images/run_simulation.png)
+![Gazebo](images/forestworld2.png)
 
 5. Run the intermittent communication multi-robot exploration stack.
 
@@ -37,9 +37,13 @@ If everything worked correctly, gazebo and rviz will be opened and you should se
     ./src/scripts/launch_robots.sh
     ```
 
-If everything worked correctly, you should see the following in the rviz window.
+If everything worked correctly, you should see the following in the rviz window for the robot with ```id = 0```,
 
 ![Rviz](images/rviz.png)
+
+and the following rviz windows, one for each robot, that shows their local maps with their trajectories.
+
+![RvizTrajectories](images/trajectories%20before.png)
 
 Furthermore, the stack is launched in independend ```tmux``` windows as follows.
 
@@ -52,6 +56,14 @@ It turns out that when working with multiple robots or ```ROS``` with stacks fro
     ```bash
     ./src/scripts/start_exploration.sh
     ```
+
+When robots start doing their stuff, you should see some updates in all rviz window the robot with ```id = 0``` as follows.
+
+![RvizUpdate](images/rvizexploration.png)
+
+The trajectories should looks like the following after some time.
+
+![TrajetoriesAfter](images/trajectoriesafter.png)
 
 I use a stop script to shutdown everything ```src/scripts/stop_forced.sh```, because ```ROS``` takes to long to bring everything down. It is not the best practice, however it can save your time.
 
@@ -103,9 +115,9 @@ Nevertheless, known starting poses are passed through the ```gazebo_robots_start
 
 ## [Rviz Configuration Files](#rviz-configuration-files)
 
-There is one configuration file for each robot I've configured in the main launch file and a ```special``` configuration for the robot with ```id``` 0. They are located at ```src/multirobotexploration/rviz``` folder.
+There is one configuration file for each robot I've configured in the main launch file and a ```special``` configuration for the robot with ```id = 0```. They are located at ```src/multirobotexploration/rviz``` folder.
 
-To run them, do the following.
+They are being run automatically, however, if you want to run them by hand for any reason, do the following.
 
 1. Ensure that the simulation is running as [described](#usage).
 2. Open a new terminal or use ```tmux```.
@@ -134,20 +146,7 @@ To see the topics available to communicate with the robots through ROS, do the f
 4. If everything was done correctly, you should see the following topics for each robot namespace in your terminal
 
     ```bash
-    /clicked_point
-    /clock
-    /gazebo/link_states
-    /gazebo/model_states
-    /gazebo/parameter_descriptions
-    /gazebo/parameter_updates
-    /gazebo/performance_metrics
-    /gazebo/set_link_state
-    /gazebo/set_model_state
-    /global_explorer/back_to_base
-    /global_explorer/set_exploring
-    /initialpose
-    /move_base_simple/goal
-    /robot_0/avgd_average_displacement
+    /robot_0/average_velocity
     /robot_0/c_space
     /robot_0/c_space_local
     /robot_0/c_space_local_updates
@@ -216,11 +215,8 @@ To see the topics available to communicate with the robots through ROS, do the f
     /robot_0/camera_right/parameter_descriptions
     /robot_0/camera_right/parameter_updates
     /robot_0/camera_right/points
-    /robot_0/desai_controller/clear_complete
-    /robot_0/desai_controller/enable
-    /robot_0/desai_controller/set_clear_state
-    /robot_0/desai_controller/set_goal_state
-    /robot_0/desai_controller/set_idle_state
+    /robot_0/cmd_vel
+    /robot_0/costmap_converter/obstacles
     /robot_0/explorer/set_exploring
     /robot_0/explorer/set_idle
     /robot_0/frontier_discovery/compute
@@ -234,6 +230,11 @@ To see the topics available to communicate with the robots through ROS, do the f
     /robot_0/gmapping_pose/pose_stamped
     /robot_0/gmapping_pose/world_pose
     /robot_0/imu
+    /robot_0/integrated_global_planner/current_path
+    /robot_0/integrated_global_planner/finish
+    /robot_0/integrated_global_planner/goal
+    /robot_0/integrated_global_planner/path
+    /robot_0/integrated_global_planner/stop
     /robot_0/joint_states
     /robot_0/laser_to_world/laser_occ
     /robot_0/laser_to_world/laser_world
@@ -247,28 +248,23 @@ To see the topics available to communicate with the robots through ROS, do the f
     /robot_0/laser_to_world/lidar_world_3
     /robot_0/local_free_poses
     /robot_0/local_occupied_poses
+    /robot_0/local_planner/global_plan
+    /robot_0/local_planner/global_via_points
+    /robot_0/local_planner/global_via_points_array
+    /robot_0/local_planner/local_plan
+    /robot_0/local_planner/optimal_poses
+    /robot_0/local_planner/teb_feedback
+    /robot_0/local_planner/teb_markers
+    /robot_0/local_planner/teb_markers_array
+    /robot_0/local_planner/teb_poses
     /robot_0/map
     /robot_0/map_metadata
     /robot_0/mock_communication_model/robots_in_comm
-    /robot_0/mre_local_planner/global_via_points
-    /robot_0/mre_local_planner/global_via_points_array
-    /robot_0/mre_local_planner/gobal_via_points
-    /robot_0/mre_local_planner/gobal_via_points_array
     /robot_0/node_costmapconverter/parameter_descriptions
     /robot_0/node_costmapconverter/parameter_updates
-    /robot_0/node_mrelocalplanner/global_plan
-    /robot_0/node_mrelocalplanner/local_plan
-    /robot_0/node_mrelocalplanner/teb_feedback
-    /robot_0/node_mrelocalplanner/teb_markers
-    /robot_0/node_mrelocalplanner/teb_markers_array
-    /robot_0/node_mrelocalplanner/teb_poses
-    /robot_0/node_rosaria/cmd_vel
     /robot_0/node_slam_gmapping/entropy
-    /robot_0/obstacle_array
-    /robot_0/obstacle_cells
     /robot_0/odom
     /robot_0/path
-    /robot_0/pfield_local_planner/goal_occ
     /robot_0/plan_updater
     /robot_0/polygon_marker
     /robot_0/realizing_plan
@@ -280,21 +276,13 @@ To see the topics available to communicate with the robots through ROS, do the f
     /robot_0/relative_pose_estimator/relative_poses
     /robot_0/relative_pose_estimator/relative_start
     /robot_0/scan
-    /robot_0/sub_goal_nav/clear
-    /robot_0/sub_goal_nav/clear_finish
-    /robot_0/sub_goal_nav/current_path
-    /robot_0/sub_goal_nav/finish
-    /robot_0/sub_goal_nav/goal
-    /robot_0/sub_goal_nav/path
-    /robot_0/sub_goal_nav/stop
     /robot_0/ultrasonic
     /robot_0/ultrasonic_front
     /robot_0/ultrasonic_left
     /robot_0/ultrasonic_right
     ```
 
-Since robots are properly configured with their namespace, you should be able to control and visualize them apropriately if needed.
-
+Since robots are properly configured with their namespace, you should be able to control and visualize them apropriately if needed with ros commands such as ```rostopic pub```, ```rostopic info```, and ```rostopic echo```.
 
 ## [Stack Overview](#stack-overview)
 
@@ -312,9 +300,9 @@ To see how they look in the real system, do the following.
     rosrun rqt_graph rqt_graph
     ```
 
-If everything was done correctly, you should see the following system for each robot.
+If everything was done correctly, you should see the following system for all robots.
 
-![System](images/system.png)
+![System](images/rosgraph.png)
 
 **The stack is not perfect, but it serves for its purpose. I encourage you to explore the scene and have some fun! :)**
 
