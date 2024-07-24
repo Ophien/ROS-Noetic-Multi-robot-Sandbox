@@ -31,7 +31,7 @@ You can run as many windows as you need for any number of components, attach the
 
 ## [Traffic Avoidance](#traffic-avoidance)
 
-A huge problem in multi-robot systems is traffic managements. There are a lot of solutions to cope with this, such as using [level sets](https://en.wikipedia.org/wiki/Level_set) when optimizing trajectories. In this project
+A huge problem in multi-robot systems is traffic management. There are a lot of solutions to cope with this, such as using [level sets](https://en.wikipedia.org/wiki/Level_set) when optimizing trajectories. In this project
 I'm using a simple mechanism, where robots share their controls ```n``` time steps in the future to all robots they can communicate with when enhance their global and local configuration spaces for planning. The system is fully distributed, however, robots can act as fully rational agents without sharing their controls by replacing this mechanism with anything that predicts others' trajectories.
 
 In the RViz window, the controls of other robots should appear as ```polygon``` obstacles. The following image highlights them as orange and blue striped blobs.
