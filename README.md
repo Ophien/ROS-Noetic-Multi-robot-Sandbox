@@ -66,12 +66,12 @@ If this workspace is somehow useful to you, consider reading this [letter](docs/
 ## [Partnerships](#partnerships)
 
 <p align="center">
-<img src="docs/images/penn.png" alt="drawing" style="width:300px;"/>
-<img src="docs/images/scalar_logo.png" alt="drawing" style="width:382px;"/>
+<img src="docs/images/penn.png" alt="drawing" style="width:200px;"/>
+<img src="docs/images/scalar_logo.png" alt="drawing" style="width:200px;"/>
 <br>
-<img src="docs/images/ufmg-logo.png" alt="drawing" style="width:250px;"/>
-<img src="docs/images/dcc.png" alt="drawing" style="width:243px;"/>
-<img src="docs/images/verlab_logo.png" alt="drawing" style="width:250px;"/>
+<img src="docs/images/ufmg-logo.png" alt="drawing" style="width:200px;"/>
+<img src="docs/images/dcc.png" alt="drawing" style="width:200px;"/>
+<img src="docs/images/verlab_logo.png" alt="drawing" style="width:200px;"/>
 </p>
 
 ## [Acknowledge](#acknowledge)
@@ -79,16 +79,16 @@ If this workspace is somehow useful to you, consider reading this [letter](docs/
 This work was supported by ARL DCIST CRA W911NF-17-2-0181 and Office of Naval Research (ONR) Award No. N00014-19-1-2253.
 
 <p align="center">
-<img src="docs/images/dcist.png" alt="drawing" style="width:300px;"/>
-<img src="docs/images/onr.jpg" alt="drawing" style="width:223px;"/>
+<img src="docs/images/dcist.png" alt="drawing" style="width:200px;"/>
+<img src="docs/images/onr.jpg" alt="drawing" style="width:200px;"/>
 </p>
 
 This work was also supported by CAPES, FAPEMIG, and CNPQ.
 
 <p align="center">
-<img src="docs/images/capes.png" alt="drawing" style="width:150px;"/>
-<img src="docs/images/fapemig.jpg" alt="drawing" style="width:172px;"/>
-<img src="docs/images/cnpq.png" alt="drawing" style="width:250px;"/>
+<img src="docs/images/capes.png" alt="drawing" style="width:100px;"/>
+<img src="docs/images/fapemig.jpg" alt="drawing" style="width:120px;"/>
+<img src="docs/images/cnpq.png" alt="drawing" style="width:200px;"/>
 </p>
 
 ## [License](#license)
