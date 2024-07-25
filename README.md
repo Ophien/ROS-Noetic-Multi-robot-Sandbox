@@ -4,6 +4,8 @@
 
 # Support
 
+<sub><sub><span style="color:red">This project is currently without funding. Your support is very important to help my opperations and to pay my bills.</span><sub><sub>
+
 Support Open Source mobile robots projects for search and rescue in natural disasters, which is my main motivation. Your donation can change lives!
 
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?business=YWAAG5LVWXBQC&no_recurring=0&item_name=Support+Open+Source+mobile+robots+projects+for+search+and+rescue+in+natural+disasters.+Your+donation+can+change+lives%21&currency_code=USD)
@@ -15,6 +17,7 @@ Support Open Source mobile robots projects for search and rescue in natural disa
 | Enhance Documentation | <span style="color:green">in-progress</span> |
 | [ROS 2 Jazzy Jalisco Integration](https://github.com/Ophien/ROS-Jazzy-Multi-robot-Sandbox) | <span style="color:green">in-progress</span> |
 | [Add Real World Deployment](https://youtu.be/8FP3UK7kpRA?feature=shared) | |
+| Youtube Channel | |
 | Add Robust Testing | |
 | Add Probabilistic-based Global Planner | |
 | Add Pose Graph-base Mapping | |
