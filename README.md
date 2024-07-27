@@ -2,35 +2,6 @@
   <img src="docs/images/sandbox_project_logo.png" alt="drawing" style="width:500px;"/>
 </p>
 
-# Support
-
-<sub><sub><span style="color:red">This project is currently without funding. Your support is very important to help my opperations and to pay my bills.</span><sub><sub>
-
-Support Open Source mobile robots projects for search and rescue in natural disasters, which is my main motivation. Your donation will make a huge difference!
-
-[![Donate](docs/images/Donate-PayPal-green-usd.png)](https://www.paypal.com/donate/?business=YWAAG5LVWXBQC&no_recurring=0&item_name=Support+Open+Source+mobile+robots+projects+for+search+and+rescue+in+natural+disasters.+Your+donation+can+change+lives%21&currency_code=USD)
-[![Donate](docs/images/Donate-PayPal-green-brl.png)](https://www.paypal.com/donate/?business=YWAAG5LVWXBQC&no_recurring=0&item_name=Support+Open+Source+mobile+robots+projects+for+search+and+rescue+in+natural+disasters.+Your+donation+can+change+lives%21&currency_code=BRL)
-
-## Features Roadmap
-
-| Feature | Status |
-|-|-|
-| Enhance Documentation | <span style="color:green">in-progress</span> |
-| [ROS 2 Jazzy Jalisco Integration](https://github.com/Ophien/ROS-Jazzy-Multi-robot-Sandbox) | <span style="color:green">in-progress</span> |
-| [Add Real World Deployment](https://youtu.be/8FP3UK7kpRA?feature=shared) | |
-| Youtube Channel | |
-| Add Robust Testing | |
-| Add Probabilistic-based Global Planner | |
-| Add Pose Graph-base Mapping | |
-| Add Pose Graph Merging | |
-| Add Heterogeneous Robot Teams Support | |
-| Add Human Computer Interfaces for Ground Teams | |
-| Add Mission Assignment and Inspector | |
-| Add Other Baselines and Algorithms | |
-| Add Other Coordination Methods | |
-| [Add More Realistic Maps and Environments for Fuel](https://app.gazebosim.org/fuel/models) | |
-| [Add Safety Mechanisms for Navigation and Traffic Avoidance](https://youtu.be/HSFmGdI0TAY?si=gvVgttymSCMpddl7) | |
-
 # [Table of Contents](#table-of-contents)
 
 - [Setup](docs/working_environment.md)
@@ -77,6 +48,28 @@ The deployment features components highlighted in red in the diagram, allowing r
 
 This workspace is not based on the ```move_base``` and the ```nav``` stack for navigation, because they had many drawbacks when I first tried to used them for multi-robot exploration research. Therefore, this project contains its own ```sub-goal``` navigation node with ```global``` and ```local planners``` to handle situations posed by ```multi-robot exploration``` applications when robots do ```SLAM``` individually, have to deal with traffic, and share maps. Furthermore, I'm currently refactoring all nodes to make them more friendly with ROS 2 standards.
 
+
+## [Features Roadmap](#features-roadmap)
+
+| Feature | Status |
+|-|-|
+| Enhance Documentation | <span style="color:green">in-progress</span> |
+| [ROS 2 Jazzy Jalisco Integration](https://github.com/Ophien/ROS-Jazzy-Multi-robot-Sandbox) | <span style="color:green">in-progress</span> |
+| [Add Real World Deployment](https://youtu.be/8FP3UK7kpRA?feature=shared) | |
+| Youtube Channel | |
+| Add Robust Testing | |
+| Add Probabilistic-based Global Planner | |
+| Add Pose Graph-base Mapping | |
+| Add Pose Graph Merging | |
+| Add Heterogeneous Robot Teams Support | |
+| Add Human Computer Interfaces for Ground Teams | |
+| Add Mission Assignment and Inspector | |
+| Add Other Baselines and Algorithms | |
+| Add Other Coordination Methods | |
+| [Add More Realistic Maps and Environments for Fuel](https://app.gazebosim.org/fuel/models) | |
+| [Add Safety Mechanisms for Navigation and Traffic Avoidance](https://youtu.be/HSFmGdI0TAY?si=gvVgttymSCMpddl7) | |
+| Unity3D integration | |
+
 ## [Publications](#publications)
 
 If this workspace is somehow useful to you, consider reading this [letter](docs/motivation.md) and mentioning this paper accepted on IROS.
@@ -122,6 +115,13 @@ It was also supported by CAPES, FAPEMIG, and CNPQ.
 <img src="docs/images/cnpq.png" alt="drawing" style="width:200px;"/>
 </p>
 
+## [Support this Project](#support-this-project)
+
+Support Open Source mobile robots projects for search and rescue in natural disasters, which is my main motivation. Your donation will make a huge difference!
+
+[![Donate](docs/images/Donate-PayPal-green-usd.png)](https://www.paypal.com/donate/?business=YWAAG5LVWXBQC&no_recurring=0&item_name=Support+Open+Source+mobile+robots+projects+for+search+and+rescue+in+natural+disasters.+Your+donation+can+change+lives%21&currency_code=USD)
+[![Donate](docs/images/Donate-PayPal-green-brl.png)](https://www.paypal.com/donate/?business=YWAAG5LVWXBQC&no_recurring=0&item_name=Support+Open+Source+mobile+robots+projects+for+search+and+rescue+in+natural+disasters.+Your+donation+can+change+lives%21&currency_code=BRL)
+
 ## [License](#license)
 
 All content from this repository is released under a modified [BSD 4-clause license](LICENSE).
@@ -130,15 +130,10 @@ Author/Maintainer:
 
 - [Alysson Ribeiro da Silva](https://alysson.thegeneralsolution.com/)
 
-Collaborators:
-
-- [Ani Hsieh](https://mhsieh.seas.upenn.edu/)
-- [Luiz Chaimowicz](https://dcc.ufmg.br/professor/luiz-chaimowicz/)
-- [Thales Costa Silva](https://scalar.seas.upenn.edu/about-us/people/)
-
 emails:
 
 - <alysson.ribeiro.silva@gmail.com>
+
 
 ## [Bug & Feature Requests](#bug--feature-requests)
 
