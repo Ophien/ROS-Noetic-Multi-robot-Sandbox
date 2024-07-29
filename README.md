@@ -10,6 +10,7 @@
 - [Maps](docs/maps.md)
 - [Nodes](docs/multi-robot-exploration.md)
 - [Multi-robot Guidelines](docs/multi-robot-guidelines.md)
+- [Documentation](html/index.html)
 - [Contributing](docs/contributing.md)
 
 ## [ROS-Noetic-Multi-robot-Sandbox](#ros-noetic-multi-robot-sandbox)
